@@ -44,10 +44,13 @@ model Organization {
   address    String?
 
   // ---- Branding / white-label ----
+  displayName  String? @map("display_name")
   logoUrl      String? @map("logo_url")
+  logoDarkUrl  String? @map("logo_dark_url")
   primaryColor String? @default("#2563eb") @map("primary_color")
   accentColor  String? @default("#22c55e") @map("accent_color")
   faviconUrl   String? @map("favicon_url")
+  loginBgUrl   String? @map("login_bg_url")
   customDomain String? @map("custom_domain")
 
   // ---- Preferences (no separate settings model, so these live here) ----

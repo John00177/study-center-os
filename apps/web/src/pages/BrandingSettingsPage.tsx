@@ -39,6 +39,10 @@ export function BrandingSettingsPage() {
   const updateBranding = useUpdateBranding();
   const uploadLogo = useUploadLogo();
 
+  const [displayName, setDisplayName] = useState("");
+  const [logoDarkUrl, setLogoDarkUrl] = useState("");
+  const [faviconUrl, setFaviconUrl] = useState("");
+  const [loginBgUrl, setLoginBgUrl] = useState("");
   const [primaryColor, setPrimaryColor] = useState(DEFAULT_PRIMARY_COLOR);
   const [accentColor, setAccentColor] = useState(DEFAULT_ACCENT_COLOR);
   const [theme, setTheme] = useState<ThemeMode>("light");
@@ -47,6 +51,10 @@ export function BrandingSettingsPage() {
 
   useEffect(() => {
     if (!branding) return;
+    setDisplayName(branding.displayName ?? "");
+    setLogoDarkUrl(branding.logoDarkUrl ?? "");
+    setFaviconUrl(branding.faviconUrl ?? "");
+    setLoginBgUrl(branding.loginBgUrl ?? "");
     setPrimaryColor(branding.primaryColor ?? DEFAULT_PRIMARY_COLOR);
     setAccentColor(branding.accentColor ?? DEFAULT_ACCENT_COLOR);
     setTheme(branding.theme);
@@ -67,7 +75,16 @@ export function BrandingSettingsPage() {
 
   async function handleSave() {
     try {
-      await updateBranding.mutateAsync({ primaryColor, accentColor, theme, language });
+      await updateBranding.mutateAsync({
+        displayName: displayName.trim() || null,
+        logoDarkUrl: logoDarkUrl.trim() || null,
+        faviconUrl: faviconUrl.trim() || null,
+        loginBgUrl: loginBgUrl.trim() || null,
+        primaryColor,
+        accentColor,
+        theme,
+        language,
+      });
       showToast("Branding saved.");
     } catch {
       showToast("Failed to save branding.", "error");
@@ -115,6 +132,8 @@ export function BrandingSettingsPage() {
     return <p className="text-sm text-slate-500">Loading...</p>;
   }
 
+  const previewName = displayName.trim() || branding?.name || "Your Study Center";
+
   return (
     <div className="mx-auto max-w-3xl space-y-6">
       <div>
@@ -122,9 +141,31 @@ export function BrandingSettingsPage() {
         <p className="text-sm text-slate-600">Make {branding?.name ?? "your study center"} feel like your own.</p>
       </div>
 
+      <SectionCard title="General">
+        <div>
+          <label className="mb-1 block text-sm font-medium text-slate-700">Display Name</label>
+          <input
+            type="text"
+            value={displayName}
+            onChange={(e) => setDisplayName(e.target.value)}
+            placeholder={branding?.name ?? "Study Center OS"}
+            className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm transition focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/30"
+          />
+          <p className="mt-1 text-xs text-slate-500">
+            Shown to users in the header, login page, and browser tab in place of "{branding?.name ?? "Study Center OS"}".
+            Leave blank to use the default.
+          </p>
+        </div>
+      </SectionCard>
+
       <SectionCard title="Logo">
         <div className="flex flex-wrap items-center gap-6">
-          <OrgLogo logoUrl={branding?.logoUrl} name={branding?.name} className="h-16 w-16 rounded-lg border border-slate-200 p-2" />
+          <OrgLogo
+            logoUrl={branding?.logoUrl}
+            logoDarkUrl={logoDarkUrl || undefined}
+            name={branding?.name}
+            className="h-16 w-16 rounded-lg border border-slate-200 p-2"
+          />
           <div className="flex-1">
             <div
               onDragOver={(e) => {
@@ -157,6 +198,66 @@ export function BrandingSettingsPage() {
                 <Trash2 className="h-4 w-4" />
                 Remove Logo
               </button>
+            )}
+          </div>
+        </div>
+
+        <div className="mt-4 border-t border-slate-100 pt-4">
+          <label className="mb-1 block text-sm font-medium text-slate-700">Logo URL (Dark Mode)</label>
+          <div className="flex items-center gap-3">
+            {logoDarkUrl && (
+              <img
+                src={logoDarkUrl}
+                alt="Dark logo preview"
+                className="h-10 w-10 shrink-0 rounded-lg border border-slate-800 bg-slate-900 object-contain p-1"
+              />
+            )}
+            <input
+              type="text"
+              value={logoDarkUrl}
+              onChange={(e) => setLogoDarkUrl(e.target.value)}
+              placeholder="https://example.com/logo-dark.png"
+              className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm transition focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/30"
+            />
+          </div>
+          <p className="mt-1 text-xs text-slate-500">Optional. Used instead of the logo above when dark theme is active.</p>
+        </div>
+      </SectionCard>
+
+      <SectionCard title="Favicon & Login Background">
+        <div className="space-y-4">
+          <div>
+            <label className="mb-1 block text-sm font-medium text-slate-700">Favicon URL</label>
+            <div className="flex items-center gap-3">
+              {faviconUrl && (
+                <img src={faviconUrl} alt="Favicon preview" className="h-8 w-8 shrink-0 rounded border border-slate-200 object-contain" />
+              )}
+              <input
+                type="text"
+                value={faviconUrl}
+                onChange={(e) => setFaviconUrl(e.target.value)}
+                placeholder="https://example.com/favicon.ico"
+                className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm transition focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/30"
+              />
+            </div>
+          </div>
+
+          <div>
+            <label className="mb-1 block text-sm font-medium text-slate-700">Login Background URL</label>
+            <input
+              type="text"
+              value={loginBgUrl}
+              onChange={(e) => setLoginBgUrl(e.target.value)}
+              placeholder="https://example.com/login-bg.jpg"
+              className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm transition focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/30"
+            />
+            <p className="mt-1 text-xs text-slate-500">Optional. Shown full-bleed behind the login card.</p>
+            {loginBgUrl && (
+              <img
+                src={loginBgUrl}
+                alt="Login background preview"
+                className="mt-2 h-32 w-full rounded-lg border border-slate-200 object-cover"
+              />
             )}
           </div>
         </div>
@@ -248,16 +349,19 @@ export function BrandingSettingsPage() {
       <SectionCard title="Preview">
         <div className="overflow-hidden rounded-lg border border-slate-200">
           <div className="flex items-center gap-2 border-b border-primary/10 bg-primary/5 px-4 py-3">
-            <OrgLogo logoUrl={branding?.logoUrl} name={branding?.name} className="h-6 w-6" />
-            <span className="text-sm font-semibold text-slate-900">{branding?.name ?? "Your Study Center"}</span>
+            <OrgLogo logoUrl={branding?.logoUrl} logoDarkUrl={logoDarkUrl || undefined} name={previewName} className="h-6 w-6" />
+            <span className="text-sm font-semibold text-slate-900">{previewName}</span>
           </div>
-          <div className="flex flex-col items-center gap-3 bg-slate-100 p-6">
+          <div
+            className="flex flex-col items-center gap-3 bg-slate-100 bg-cover bg-center p-6"
+            style={loginBgUrl ? { backgroundImage: `url(${loginBgUrl})` } : undefined}
+          >
             <div className="h-1.5 w-full max-w-xs rounded-full bg-primary" />
             <div className="w-full max-w-xs rounded-xl bg-white p-4 shadow-sm">
               <div className="mb-3 flex justify-center">
-                <OrgLogo logoUrl={branding?.logoUrl} name={branding?.name} className="h-10 w-10" />
+                <OrgLogo logoUrl={branding?.logoUrl} logoDarkUrl={logoDarkUrl || undefined} name={previewName} className="h-10 w-10" />
               </div>
-              <p className="text-center text-sm font-bold text-slate-900">Welcome to {branding?.name ?? "Your Study Center"}</p>
+              <p className="text-center text-sm font-bold text-slate-900">Welcome to {previewName}</p>
               <button className="mt-3 w-full rounded-lg bg-primary py-2 text-sm font-medium text-white shadow-sm">Sign in</button>
             </div>
           </div>

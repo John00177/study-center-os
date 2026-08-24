@@ -22,7 +22,11 @@ export function useMyBranding(enabled = true) {
 }
 
 export interface UpdateBrandingInput {
+  displayName?: string | null;
   logoUrl?: string | null;
+  logoDarkUrl?: string | null;
+  faviconUrl?: string | null;
+  loginBgUrl?: string | null;
   primaryColor?: string;
   accentColor?: string;
   theme?: string;

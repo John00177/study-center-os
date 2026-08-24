@@ -1,5 +1,6 @@
 import { Printer } from "lucide-react";
 import { useTheme } from "../../contexts/ThemeContext";
+import { resolveOrgDisplayName } from "../../lib/theme";
 import { formatCurrency } from "../../lib/format";
 import { numberToWords } from "../../lib/number-to-words";
 import { OrgLogo } from "../branding/OrgLogo";
@@ -20,7 +21,7 @@ function monthLabel(month: string): string {
 
 export function SalarySlip({ teacherName, month, amount, currency, paidAt, paymentMethod }: SalarySlipProps) {
   const { branding } = useTheme();
-  const orgName = branding?.name ?? "Study Center OS";
+  const orgName = resolveOrgDisplayName(branding);
 
   return (
     <div>

@@ -6,6 +6,7 @@ import { OrgLogo } from "../components/branding/OrgLogo";
 import { DailyBriefing } from "../components/DailyBriefing";
 import { FeedbackWidget } from "../components/feedback/FeedbackWidget";
 import { useTheme } from "../contexts/ThemeContext";
+import { resolveOrgDisplayName } from "../lib/theme";
 
 const NAV_ITEMS = [
   { to: "/student", label: "Dashboard", icon: LayoutDashboard, end: true },
@@ -36,10 +37,15 @@ export function StudentLayout() {
     <div className="flex min-h-screen flex-col bg-slate-50">
       <header className="flex items-center justify-between border-b border-primary/10 bg-primary/5 px-4 py-3">
         <div className="flex items-center gap-2">
-          <OrgLogo logoUrl={branding?.logoUrl} name={branding?.name} className="h-8 w-8" />
+          <OrgLogo
+            logoUrl={branding?.logoUrl}
+            logoDarkUrl={branding?.logoDarkUrl}
+            name={resolveOrgDisplayName(branding)}
+            className="h-8 w-8"
+          />
           <div>
             <p className="text-sm font-semibold text-slate-900">{student?.name}</p>
-            <p className="text-xs text-slate-500">{branding?.name ?? "Study Center OS"}</p>
+            <p className="text-xs text-slate-500">{resolveOrgDisplayName(branding)}</p>
           </div>
         </div>
         <button

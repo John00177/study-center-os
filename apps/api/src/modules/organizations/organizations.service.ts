@@ -6,10 +6,13 @@ import { UpdateBrandingDto } from "./dto/update-branding.dto";
 const BRANDING_SELECT = {
   name: true,
   slug: true,
+  displayName: true,
   logoUrl: true,
+  logoDarkUrl: true,
   primaryColor: true,
   accentColor: true,
   faviconUrl: true,
+  loginBgUrl: true,
 };
 
 const FULL_BRANDING_SELECT = {

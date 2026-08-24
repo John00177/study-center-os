@@ -49,10 +49,13 @@ export type UiLanguage = "uz" | "en" | "ru";
 export interface OrganizationBrandingDto {
   name: string;
   slug: string;
+  displayName: string | null;
   logoUrl: string | null;
+  logoDarkUrl: string | null;
   primaryColor: string | null;
   accentColor: string | null;
   faviconUrl: string | null;
+  loginBgUrl: string | null;
 }
 
 /** GET /organizations/me/branding — authenticated, includes preferences. */

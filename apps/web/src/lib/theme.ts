@@ -5,6 +5,12 @@ export const DEFAULT_PRIMARY_COLOR = "#2563eb";
 export const DEFAULT_ACCENT_COLOR = "#22c55e";
 
 const DEFAULT_FAVICON_HREF = "/icon-192.png";
+const DEFAULT_ORG_NAME = "Study Center OS";
+
+/** displayName overrides the org's canonical `name` for anything user-facing, when set. */
+export function resolveOrgDisplayName(branding: Partial<OrganizationBrandingDto> | null | undefined): string {
+  return branding?.displayName || branding?.name || DEFAULT_ORG_NAME;
+}
 
 let currentPrimaryColor = DEFAULT_PRIMARY_COLOR;
 let currentAccentColor = DEFAULT_ACCENT_COLOR;
@@ -57,6 +63,8 @@ export function applyBranding(branding: Partial<OrganizationBrandingDto> | null 
   if (link.href !== faviconHref) {
     link.href = faviconHref;
   }
+
+  document.title = resolveOrgDisplayName(branding);
 }
 
 /**

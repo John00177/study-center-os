@@ -8,6 +8,7 @@ import { DailyBriefing } from "../components/DailyBriefing";
 import { FeedbackWidget } from "../components/feedback/FeedbackWidget";
 import { useAuthStore, useUserRole } from "../stores/auth.store";
 import { useTheme } from "../contexts/ThemeContext";
+import { resolveOrgDisplayName } from "../lib/theme";
 import { api } from "../lib/api";
 
 export function DashboardLayout() {
@@ -24,13 +25,13 @@ export function DashboardLayout() {
     navigate("/login");
   }
 
-  const orgName = branding?.name ?? "Study Center OS";
+  const orgName = resolveOrgDisplayName(branding);
 
   return (
     <div className="flex min-h-screen bg-slate-50">
       <aside className="hidden w-60 shrink-0 border-r border-slate-200 bg-white sm:block">
         <div className="flex items-center gap-2 border-b border-slate-200 px-4 py-4">
-          <OrgLogo logoUrl={branding?.logoUrl} name={orgName} className="h-8 w-8" />
+          <OrgLogo logoUrl={branding?.logoUrl} logoDarkUrl={branding?.logoDarkUrl} name={orgName} className="h-8 w-8" />
           <span className="truncate text-lg font-semibold tracking-tight text-slate-900">{orgName}</span>
         </div>
         <Navigation role={role} />
@@ -42,7 +43,7 @@ export function DashboardLayout() {
           <aside className="animate-fade-in absolute inset-y-0 left-0 w-64 bg-white shadow-xl">
             <div className="flex items-center justify-between border-b border-slate-200 px-4 py-4">
               <div className="flex items-center gap-2">
-                <OrgLogo logoUrl={branding?.logoUrl} name={orgName} className="h-7 w-7" />
+                <OrgLogo logoUrl={branding?.logoUrl} logoDarkUrl={branding?.logoDarkUrl} name={orgName} className="h-7 w-7" />
                 <span className="truncate text-lg font-semibold tracking-tight text-slate-900">{orgName}</span>
               </div>
               <button
@@ -72,7 +73,7 @@ export function DashboardLayout() {
               <Menu className="h-5 w-5" />
             </button>
             <div className="flex items-center gap-2 sm:hidden">
-              <OrgLogo logoUrl={branding?.logoUrl} name={orgName} className="h-6 w-6" />
+              <OrgLogo logoUrl={branding?.logoUrl} logoDarkUrl={branding?.logoDarkUrl} name={orgName} className="h-6 w-6" />
               <span className="truncate text-sm font-semibold text-slate-900">{orgName}</span>
             </div>
             <span className="hidden text-sm text-slate-500 sm:inline">{orgName}</span>

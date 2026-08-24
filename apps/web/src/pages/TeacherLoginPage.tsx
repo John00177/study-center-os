@@ -3,6 +3,7 @@ import { GraduationCap } from "lucide-react";
 import { RoleLoginCard } from "../components/auth/RoleLoginCard";
 import { useRoleLogin } from "../hooks/use-role-login";
 import { useTheme } from "../contexts/ThemeContext";
+import { resolveOrgDisplayName } from "../lib/theme";
 
 export function TeacherLoginPage() {
   const { branding } = useTheme();
@@ -16,8 +17,10 @@ export function TeacherLoginPage() {
       title="Teacher Portal"
       subtitle="Access your classes and attendance"
       icon={<GraduationCap className="h-8 w-8 text-primary" />}
-      orgName={branding?.name}
+      orgName={branding ? resolveOrgDisplayName(branding) : undefined}
       logoUrl={branding?.logoUrl}
+      logoDarkUrl={branding?.logoDarkUrl}
+      backgroundUrl={branding?.loginBgUrl}
       email={email}
       onEmailChange={setEmail}
       password={password}

@@ -8,6 +8,7 @@ import { FeedbackWidget } from "../components/feedback/FeedbackWidget";
 import { LockedFeaturePage } from "../components/subscription/LockedFeaturePage";
 import { parsePlanLockError } from "../lib/plan-lock";
 import { useTheme } from "../contexts/ThemeContext";
+import { resolveOrgDisplayName } from "../lib/theme";
 
 const NAV_ITEMS = [
   { to: "/parent/dashboard", label: "Dashboard", icon: LayoutDashboard, end: true },
@@ -40,7 +41,12 @@ export function ParentLayout() {
       <header className="border-b border-primary/10 bg-primary/5 px-4 py-3">
         <div className="flex items-start justify-between">
           <div className="flex items-center gap-2">
-            <OrgLogo logoUrl={branding?.logoUrl} name={branding?.name} className="h-8 w-8" />
+            <OrgLogo
+              logoUrl={branding?.logoUrl}
+              logoDarkUrl={branding?.logoDarkUrl}
+              name={resolveOrgDisplayName(branding)}
+              className="h-8 w-8"
+            />
             <div>
               <p className="text-sm font-semibold text-slate-900">Welcome, {parent?.parentName ?? "Parent"}!</p>
               <p className="text-xs text-slate-500">Your child: {parent?.studentName}</p>

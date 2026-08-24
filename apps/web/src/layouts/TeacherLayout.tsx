@@ -10,6 +10,7 @@ import { FeedbackWidget } from "../components/feedback/FeedbackWidget";
 import { useSyncOfflineQueue } from "../hooks/use-offline-sync";
 import { useCurrentSubscription } from "../hooks/use-subscription";
 import { useTheme } from "../contexts/ThemeContext";
+import { resolveOrgDisplayName } from "../lib/theme";
 
 const NAV_ITEMS = [
   { to: "/teacher", label: "Dashboard", icon: LayoutDashboard, end: true },
@@ -39,13 +40,13 @@ export function TeacherLayout() {
     navigate("/teacher/login");
   }
 
-  const orgName = branding?.name ?? "Study Center OS";
+  const orgName = resolveOrgDisplayName(branding);
 
   return (
     <div className="flex min-h-screen bg-slate-50">
       <aside className="hidden w-60 shrink-0 border-r border-slate-200 bg-white sm:block">
         <div className="flex items-center gap-2 border-b border-slate-200 px-4 py-4">
-          <OrgLogo logoUrl={branding?.logoUrl} name={orgName} className="h-8 w-8" />
+          <OrgLogo logoUrl={branding?.logoUrl} logoDarkUrl={branding?.logoDarkUrl} name={orgName} className="h-8 w-8" />
           <span className="truncate text-lg font-semibold tracking-tight text-slate-900">{orgName}</span>
         </div>
         <nav className="flex flex-col gap-1 p-3">
@@ -90,7 +91,7 @@ export function TeacherLayout() {
         <OfflineBanner />
         <header className="flex items-center justify-between border-b border-primary/10 bg-primary/5 px-4 py-3 sm:px-6">
           <div className="flex items-center gap-2 sm:hidden">
-            <OrgLogo logoUrl={branding?.logoUrl} name={orgName} className="h-6 w-6" />
+            <OrgLogo logoUrl={branding?.logoUrl} logoDarkUrl={branding?.logoDarkUrl} name={orgName} className="h-6 w-6" />
             <span className="truncate text-sm font-semibold text-slate-900">{orgName}</span>
           </div>
           <span className="hidden text-sm text-slate-500 sm:inline">{orgName}</span>

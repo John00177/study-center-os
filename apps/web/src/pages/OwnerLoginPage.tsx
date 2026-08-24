@@ -7,6 +7,7 @@ import { useRoleLogin } from "../hooks/use-role-login";
 import { api } from "../lib/api";
 import { useStudentAuthStore } from "../stores/student-auth.store";
 import { useTheme } from "../contexts/ThemeContext";
+import { resolveOrgDisplayName } from "../lib/theme";
 
 function StudentLoginForm({ onBack }: { onBack: () => void }) {
   const navigate = useNavigate();
@@ -110,8 +111,10 @@ export function OwnerLoginPage() {
       title="Study Center Owner Login"
       subtitle="Manage your study center"
       icon={<Building2 className="h-8 w-8 text-primary" />}
-      orgName={branding?.name}
+      orgName={branding ? resolveOrgDisplayName(branding) : undefined}
       logoUrl={branding?.logoUrl}
+      logoDarkUrl={branding?.logoDarkUrl}
+      backgroundUrl={branding?.loginBgUrl}
       email={email}
       onEmailChange={setEmail}
       password={password}

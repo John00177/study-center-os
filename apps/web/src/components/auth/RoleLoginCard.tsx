@@ -10,6 +10,9 @@ interface RoleLoginCardProps {
   /** Org name/logo to brand this login page with — omitted entirely for the (unbranded) Platform Admin portal. */
   orgName?: string;
   logoUrl?: string | null;
+  logoDarkUrl?: string | null;
+  /** Optional full-bleed background image behind the card; a dark scrim keeps the card readable over any photo. */
+  backgroundUrl?: string | null;
   email: string;
   onEmailChange: (value: string) => void;
   password: string;
@@ -28,6 +31,8 @@ export function RoleLoginCard({
   dark = false,
   orgName,
   logoUrl,
+  logoDarkUrl,
+  backgroundUrl,
   email,
   onEmailChange,
   password,
@@ -52,12 +57,20 @@ export function RoleLoginCard({
   const hintClass = dark ? "text-slate-500" : "text-slate-400";
 
   return (
-    <div className={`flex min-h-screen items-center justify-center p-4 ${bgClass}`}>
-      <div className={`animate-fade-in w-full max-w-sm overflow-hidden rounded-xl shadow-md ${cardClass}`}>
+    <div
+      className={`flex min-h-screen items-center justify-center bg-cover bg-center p-4 ${backgroundUrl ? "" : bgClass}`}
+      style={backgroundUrl ? { backgroundImage: `url(${backgroundUrl})` } : undefined}
+    >
+      {backgroundUrl && <div className="fixed inset-0 bg-black/50" />}
+      <div className={`animate-fade-in relative z-10 w-full max-w-sm overflow-hidden rounded-xl shadow-md ${cardClass}`}>
         {!dark && <div className="h-1.5 w-full bg-primary" />}
         <div className="p-8">
           <div className="mb-4 flex justify-center">
-            {logoUrl !== undefined ? <OrgLogo logoUrl={logoUrl} name={orgName} className="h-14 w-14" /> : icon}
+            {logoUrl !== undefined ? (
+              <OrgLogo logoUrl={logoUrl} logoDarkUrl={logoDarkUrl} name={orgName} className="h-14 w-14" />
+            ) : (
+              icon
+            )}
           </div>
           <h1 className={`mb-1 text-center text-2xl font-bold tracking-tight ${titleClass}`}>
             {!dark && orgName ? `Welcome to ${orgName}` : title}
