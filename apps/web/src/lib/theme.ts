@@ -74,12 +74,21 @@ export function applyBranding(branding: Partial<OrganizationBrandingDto> | null 
  * whichever org the api client last talked to (getActiveOrganizationSlug
  * already defaults that to the demo org).
  */
+// Platform hosting domains whose first label is never an org's own
+// subdomain (e.g. "study-center-os.vercel.app" — "study-center-os" here is
+// this app's Vercel project name, not a customer subdomain). Only a genuine
+// third-party custom domain should hit the subdomain heuristic below.
+const PLATFORM_HOST_SUFFIXES = ["vercel.app", "up.railway.app", "localhost"];
+
 export function getOrgSlugHint(): string {
   const fromQuery = new URLSearchParams(window.location.search).get("org");
   if (fromQuery) return fromQuery;
 
-  const hostParts = window.location.hostname.split(".");
-  if (hostParts.length >= 3 && hostParts[0] !== "www") {
+  const hostname = window.location.hostname;
+  const isPlatformHost = PLATFORM_HOST_SUFFIXES.some((suffix) => hostname === suffix || hostname.endsWith(`.${suffix}`));
+
+  const hostParts = hostname.split(".");
+  if (!isPlatformHost && hostParts.length >= 3 && hostParts[0] !== "www") {
     return hostParts[0];
   }
 
