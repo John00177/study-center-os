@@ -1,0 +1,82 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Space-separated RGB channels (not a hex string) so Tailwind's
+       rgb(var(--color-primary) / <alpha-value>) pattern can apply opacity
+       modifiers like bg-primary/10 — see tailwind.config.js and lib/theme.ts,
+       which overwrites these at runtime with the active org's colors. */
+    --color-primary: 37 99 235; /* #2563eb */
+    --color-accent: 34 197 94; /* #22c55e */
+  }
+}
+
+@layer utilities {
+  .animate-fade-in {
+    animation: fade-in 0.2s ease-out;
+  }
+
+  @keyframes fade-in {
+    from {
+      opacity: 0;
+      transform: translateY(4px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .animate-modal-in {
+    animation: modal-in 0.15s ease-out;
+  }
+
+  @keyframes modal-in {
+    from {
+      opacity: 0;
+      transform: scale(0.95);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+
+  /* Used by SalarySlip (and anything else print-only): only the marked
+     region survives printing, regardless of whether it's on a full page or
+     inside a modal overlay. */
+  @media print {
+    body * {
+      visibility: hidden;
+    }
+    .print-area,
+    .print-area * {
+      visibility: visible;
+    }
+    .print-area {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+    }
+  }
+
+  .animate-shake {
+    animation: shake 0.3s ease-in-out;
+  }
+
+  @keyframes shake {
+    0%,
+    100% {
+      transform: translateX(0);
+    }
+    25% {
+      transform: translateX(-4px);
+    }
+    75% {
+      transform: translateX(4px);
+    }
+  }
+}

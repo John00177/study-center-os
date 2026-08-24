@@ -1,0 +1,909 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ---------------------------------------------------------------------------
+// Core / identity (kept from the original foundation)
+// ---------------------------------------------------------------------------
+
+enum OrganizationStatus {
+  active
+  suspended
+  trial
+  pending
+}
+
+enum UserStatus {
+  active
+  suspended
+  pending
+}
+
+enum TeamMemberStatus {
+  active
+  invited
+  suspended
+}
+
+model Organization {
+  id         String             @id @default(uuid())
+  name       String
+  slug       String             @unique
+  status     OrganizationStatus @default(trial)
+  settings   Json               @default("{}")
+  ownerName  String?            @map("owner_name")
+  ownerEmail String?            @map("owner_email")
+  ownerPhone String?            @map("owner_phone")
+  country    String?
+  city       String?
+  address    String?
+
+  // ---- Branding / white-label ----
+  logoUrl      String? @map("logo_url")
+  primaryColor String? @default("#2563eb") @map("primary_color")
+  accentColor  String? @default("#22c55e") @map("accent_color")
+  faviconUrl   String? @map("favicon_url")
+  customDomain String? @map("custom_domain")
+
+  // ---- Preferences (no separate settings model, so these live here) ----
+  theme      String @default("light") @map("theme")
+  language   String @default("uz") @map("language")
+  dateFormat String @default("DD.MM.YYYY") @map("date_format")
+  timeFormat String @default("24h") @map("time_format")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  userOrganizationRoles   UserOrganizationRole[]
+  auditLogs               AuditLog[]
+  branches                Branch[]
+  staffBranchAssignments  StaffBranchAssignment[]
+  teachers                Teacher[]
+  students                Student[]
+  parents                 Parent[]
+  courses                 Course[]
+  groups                  Group[]
+  tests                   Test[]
+  supportTickets          SupportTicket[]
+
+  @@map("organizations")
+}
+
+model User {
+  id              String     @id @default(uuid())
+  email           String     @unique
+  password        String
+  name            String
+  avatarUrl       String?
+  status          UserStatus @default(active)
+  pushToken       String?
+  pushPlatform    String?
+  isPlatformAdmin Boolean    @default(false) @map("is_platform_admin")
+  // Set when an owner/admin creates this account with a generated temp
+  // password — forces a password change before any other route works (see
+  // MustChangePasswordGuard). tempPassword is the plaintext, shown once to
+  // the creator, then cleared on change.
+  mustChangePassword Boolean @default(false) @map("must_change_password")
+  tempPassword       String? @map("temp_password")
+  createdAt       DateTime   @default(now())
+  updatedAt       DateTime   @updatedAt
+
+  userOrganizationRoles UserOrganizationRole[]
+  auditLogsAsActor      AuditLog[]
+
+  @@map("users")
+}
+
+model Role {
+  id             String   @id @default(cuid())
+  organizationId String?  @map("organization_id")
+  name           String
+  slug           String
+  isSystem       Boolean  @default(false) @map("is_system")
+  createdAt      DateTime @default(now()) @map("created_at")
+  updatedAt      DateTime @updatedAt @map("updated_at")
+
+  rolePermissions       RolePermission[]
+  userOrganizationRoles UserOrganizationRole[]
+
+  @@unique([organizationId, slug])
+  @@map("roles")
+}
+
+model Permission {
+  id   String @id @default(cuid())
+  slug String @unique
+  name String
+
+  rolePermissions RolePermission[]
+
+  @@map("permissions")
+}
+
+model RolePermission {
+  id           String @id @default(cuid())
+  roleId       String @map("role_id")
+  permissionId String @map("permission_id")
+
+  role       Role       @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  permission Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
+
+  @@unique([roleId, permissionId])
+  @@map("role_permissions")
+}
+
+model UserOrganizationRole {
+  id             String            @id @default(cuid())
+  userId         String            @map("user_id")
+  organizationId String            @map("organization_id")
+  roleId         String            @map("role_id")
+  status         TeamMemberStatus  @default(invited)
+  invitedAt      DateTime?         @map("invited_at")
+  acceptedAt     DateTime?         @map("accepted_at")
+  suspendedAt    DateTime?         @map("suspended_at")
+  createdAt      DateTime          @default(now()) @map("created_at")
+  updatedAt      DateTime          @updatedAt @map("updated_at")
+
+  user         User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  role         Role         @relation(fields: [roleId], references: [id])
+
+  @@unique([userId, organizationId])
+  @@map("user_organization_roles")
+}
+
+model AuditLog {
+  id             String   @id @default(uuid())
+  organizationId String
+  actorId        String
+  action         String
+  entityType     String
+  entityId       String
+  beforeValue    Json?
+  afterValue     Json?
+  metadata       Json?
+  createdAt      DateTime @default(now())
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  actor        User         @relation(fields: [actorId], references: [id])
+
+  @@index([organizationId, createdAt])
+  @@index([entityType, entityId])
+  @@index([actorId, createdAt])
+  @@map("audit_logs")
+}
+
+// ---------------------------------------------------------------------------
+// Study Center OS domain
+// ---------------------------------------------------------------------------
+
+enum BranchStatus {
+  active
+  inactive
+}
+
+enum DashboardStatus {
+  not_activated
+  active
+  suspended
+}
+
+enum GroupStatus {
+  active
+  inactive
+  completed
+}
+
+enum AssignmentRole {
+  primary
+  assistant
+  substitute
+}
+
+enum AssignmentStatus {
+  active
+  ended
+}
+
+enum MembershipStatus {
+  active
+  completed
+  dropped
+}
+
+enum StudentStatus {
+  newcomer
+  active
+  dropped
+  completed
+  archived
+}
+
+enum AttendanceStatus {
+  present
+  absent
+  late
+  excused
+}
+
+enum AccountType {
+  cash_desk
+  bank_account
+  card_terminal
+  other
+}
+
+enum ChargeStatus {
+  pending
+  paid
+  overdue
+  cancelled
+}
+
+enum TransactionDirection {
+  debit
+  credit
+}
+
+enum ReminderType {
+  sms
+  whatsapp
+  email
+  push
+}
+
+enum ReminderStatus {
+  pending
+  sent
+  delivered
+  failed
+}
+
+enum HomeworkStatus {
+  active
+  completed
+  cancelled
+}
+
+enum CourseCategory {
+  language
+  mathematics
+  science
+  it_computer
+  arts
+  music
+  sports
+  preparation
+  other
+}
+
+enum SubmissionStatus {
+  pending
+  submitted
+  graded
+  late
+}
+
+model Branch {
+  id             String       @id @default(cuid())
+  organizationId String       @map("organization_id")
+  name           String
+  slug           String
+  status         BranchStatus @default(active)
+  address        String?
+  phone          String?
+  email          String?
+  createdAt      DateTime     @default(now()) @map("created_at")
+  updatedAt      DateTime     @updatedAt @map("updated_at")
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  staffAssignments StaffBranchAssignment[]
+  classrooms       Classroom[]
+  groups           Group[]
+
+  @@unique([organizationId, slug])
+  @@map("branches")
+}
+
+model StaffBranchAssignment {
+  id             String   @id @default(cuid())
+  userId         String   @map("user_id")
+  branchId       String   @map("branch_id")
+  organizationId String   @map("organization_id")
+  createdAt      DateTime @default(now()) @map("created_at")
+  updatedAt      DateTime @updatedAt @map("updated_at")
+
+  branch       Branch       @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, branchId])
+  @@map("staff_branch_assignments")
+}
+
+model Teacher {
+  id             String   @id @default(cuid())
+  organizationId String   @map("organization_id")
+  userId         String?  @map("user_id")
+  name           String
+  email          String?
+  phone          String?
+  specialization String?
+  createdAt      DateTime @default(now()) @map("created_at")
+  updatedAt      DateTime @updatedAt @map("updated_at")
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  tests        Test[]
+  salaries     TeacherSalary[]
+
+  @@map("teachers")
+}
+
+model TeacherDashboardAccess {
+  id             String          @id @default(cuid())
+  teacherId      String          @map("teacher_id")
+  organizationId String          @map("organization_id")
+  status         DashboardStatus @default(not_activated)
+  activatedBy    String?         @map("activated_by")
+  activatedAt    DateTime?       @map("activated_at")
+  suspendedBy    String?         @map("suspended_by")
+  suspendedAt    DateTime?       @map("suspended_at")
+  lastChangedBy  String?         @map("last_changed_by")
+  lastChangedAt  DateTime?       @map("last_changed_at")
+  createdAt      DateTime        @default(now()) @map("created_at")
+
+  @@map("teacher_dashboard_access")
+}
+
+model Student {
+  id               String        @id @default(cuid())
+  organizationId   String        @map("organization_id")
+  name             String
+  email            String?
+  phone            String?
+  dateOfBirth      DateTime?     @map("date_of_birth")
+  address          String?
+  emergencyContact String?       @map("emergency_contact")
+  status           StudentStatus @default(newcomer)
+  password         String?
+  notes            String?
+  interestedCourse String?       @map("interested_course")
+  parentName       String?       @map("parent_name")
+  parentEmail      String?       @map("parent_email")
+  parentPhone      String?       @map("parent_phone")
+  parentPassword   String?       @map("parent_password")
+  // Shared by design between the student's own login and the parent's
+  // (see students.service.ts linkParent) — whichever password was most
+  // recently (re)generated forces a change on next login for that side.
+  mustChangePassword Boolean     @default(false) @map("must_change_password")
+  tempPassword       String?     @map("temp_password")
+  registeredAt     DateTime      @default(now()) @map("registered_at")
+  convertedAt      DateTime?     @map("converted_at")
+  createdAt        DateTime      @default(now()) @map("created_at")
+  updatedAt        DateTime      @updatedAt @map("updated_at")
+
+  organization    Organization     @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  testSubmissions TestSubmission[]
+
+  @@index([organizationId, status])
+  @@map("students")
+}
+
+model Parent {
+  id             String   @id @default(cuid())
+  organizationId String   @map("organization_id")
+  name           String
+  email          String?
+  phone          String?
+  createdAt      DateTime @default(now()) @map("created_at")
+  updatedAt      DateTime @updatedAt @map("updated_at")
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@map("parents")
+}
+
+model Course {
+  id             String   @id @default(cuid())
+  organizationId String   @map("organization_id")
+  name           String
+  slug           String
+  description    String?
+  duration       String?
+  level          String?
+  category       CourseCategory @default(other)
+  monthlyFee     Int?     @map("monthly_fee")
+  createdAt      DateTime @default(now()) @map("created_at")
+  updatedAt      DateTime @updatedAt @map("updated_at")
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@unique([organizationId, slug])
+  @@map("courses")
+}
+
+model Classroom {
+  id             String   @id @default(cuid())
+  branchId       String   @map("branch_id")
+  organizationId String   @map("organization_id")
+  name           String
+  capacity       Int?
+  createdAt      DateTime @default(now()) @map("created_at")
+  updatedAt      DateTime @updatedAt @map("updated_at")
+
+  branch Branch @relation(fields: [branchId], references: [id], onDelete: Cascade)
+
+  @@map("classrooms")
+}
+
+model Group {
+  id             String      @id @default(cuid())
+  organizationId String      @map("organization_id")
+  branchId       String      @map("branch_id")
+  courseId       String      @map("course_id")
+  name           String
+  status         GroupStatus @default(active)
+  maxStudents    Int?        @map("max_students")
+  startDate      DateTime?   @map("start_date")
+  endDate        DateTime?   @map("end_date")
+  monthlyFee     Int?        @map("monthly_fee")
+  createdAt      DateTime    @default(now()) @map("created_at")
+  updatedAt      DateTime    @updatedAt @map("updated_at")
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  branch       Branch       @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  tests        Test[]
+
+  @@map("groups")
+}
+
+model GroupTeacherAssignment {
+  id             String           @id @default(cuid())
+  organizationId String           @map("organization_id")
+  branchId       String           @map("branch_id")
+  groupId        String           @map("group_id")
+  teacherId      String           @map("teacher_id")
+  assignmentRole AssignmentRole   @default(primary)
+  startDate      DateTime         @map("start_date")
+  endDate        DateTime?        @map("end_date")
+  status         AssignmentStatus @default(active)
+  assignedBy     String           @map("assigned_by")
+  createdAt      DateTime         @default(now()) @map("created_at")
+  updatedAt      DateTime         @updatedAt @map("updated_at")
+
+  @@map("group_teacher_assignments")
+}
+
+model GroupMembership {
+  id             String           @id @default(cuid())
+  organizationId String           @map("organization_id")
+  groupId        String           @map("group_id")
+  studentId      String           @map("student_id")
+  enrolledAt     DateTime         @map("enrolled_at")
+  status         MembershipStatus @default(active)
+  createdAt      DateTime         @default(now()) @map("created_at")
+  updatedAt      DateTime         @updatedAt @map("updated_at")
+
+  @@map("group_memberships")
+}
+
+model Schedule {
+  id             String   @id @default(cuid())
+  groupId        String   @map("group_id")
+  branchId       String   @map("branch_id")
+  organizationId String   @map("organization_id")
+  dayOfWeek      Int      @map("day_of_week")
+  startTime      String   @map("start_time")
+  endTime        String   @map("end_time")
+  classroomId    String?  @map("classroom_id")
+  createdAt      DateTime @default(now()) @map("created_at")
+  updatedAt      DateTime @updatedAt @map("updated_at")
+
+  @@map("schedules")
+}
+
+model Attendance {
+  id             String           @id @default(cuid())
+  organizationId String           @map("organization_id")
+  branchId       String           @map("branch_id")
+  groupId        String           @map("group_id")
+  studentId      String           @map("student_id")
+  date           DateTime
+  status         AttendanceStatus
+  notes          String?
+  createdAt      DateTime         @default(now()) @map("created_at")
+  updatedAt      DateTime         @updatedAt @map("updated_at")
+
+  @@unique([groupId, studentId, date])
+  @@index([organizationId, groupId, date])
+  @@index([organizationId, studentId])
+  @@map("attendances")
+}
+
+model Lesson {
+  id             String   @id @default(cuid())
+  organizationId String   @map("organization_id")
+  branchId       String   @map("branch_id")
+  groupId        String   @map("group_id")
+  teacherId      String   @map("teacher_id")
+  title          String
+  description    String?
+  date           DateTime
+  createdAt      DateTime @default(now()) @map("created_at")
+  updatedAt      DateTime @updatedAt @map("updated_at")
+
+  @@index([organizationId, groupId, date])
+  @@map("lessons")
+}
+
+model Homework {
+  id             String         @id @default(cuid())
+  organizationId String         @map("organization_id")
+  branchId       String         @map("branch_id")
+  groupId        String         @map("group_id")
+  lessonId       String?        @map("lesson_id")
+  teacherId      String         @map("teacher_id")
+  title          String
+  description    String?
+  dueDate        DateTime       @map("due_date")
+  status         HomeworkStatus @default(active)
+  createdAt      DateTime       @default(now()) @map("created_at")
+  updatedAt      DateTime       @updatedAt @map("updated_at")
+
+  @@index([organizationId, dueDate])
+  @@index([groupId, dueDate])
+  @@map("homework")
+}
+
+model HomeworkSubmission {
+  id             String           @id @default(cuid())
+  organizationId String           @map("organization_id")
+  homeworkId     String           @map("homework_id")
+  studentId      String           @map("student_id")
+  status         SubmissionStatus @default(pending)
+  submittedAt    DateTime?        @map("submitted_at")
+  score          Int?
+  feedback       String?
+  createdAt      DateTime         @default(now()) @map("created_at")
+  updatedAt      DateTime         @updatedAt @map("updated_at")
+
+  @@unique([homeworkId, studentId])
+  @@index([homeworkId, status])
+  @@map("homework_submissions")
+}
+
+model Test {
+  id         String @id @default(cuid())
+  title      String
+  topic      String
+  subject    String
+  level      String
+  duration   Int
+  totalMarks Int    @map("total_marks")
+  passMarks  Int    @map("pass_marks")
+  status     String @default("draft")
+
+  teacherId String  @map("teacher_id")
+  teacher   Teacher @relation(fields: [teacherId], references: [id], onDelete: Cascade)
+
+  groupId String? @map("group_id")
+  group   Group?  @relation(fields: [groupId], references: [id], onDelete: SetNull)
+
+  organizationId String       @map("organization_id")
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  questions   Question[]
+  submissions TestSubmission[]
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@index([organizationId, teacherId])
+  @@map("tests")
+}
+
+model Question {
+  id     String @id @default(cuid())
+  testId String @map("test_id")
+  test   Test   @relation(fields: [testId], references: [id], onDelete: Cascade)
+
+  type          String
+  text          String
+  options       String[]
+  correctAnswer String?  @map("correct_answer")
+  marks         Int      @default(1)
+  explanation   String?
+  order         Int
+
+  @@map("questions")
+}
+
+model TestSubmission {
+  id             String @id @default(cuid())
+  organizationId String @map("organization_id")
+
+  testId String @map("test_id")
+  test   Test   @relation(fields: [testId], references: [id], onDelete: Cascade)
+
+  studentId String  @map("student_id")
+  student   Student @relation(fields: [studentId], references: [id], onDelete: Cascade)
+
+  answers    Json
+  totalScore Int    @map("total_score")
+  percentage Float
+  status     String @default("submitted")
+  feedback   String?
+
+  startedAt   DateTime  @default(now()) @map("started_at")
+  submittedAt DateTime? @map("submitted_at")
+
+  @@unique([testId, studentId])
+  @@map("test_submissions")
+}
+
+model FinancialAccount {
+  id             String      @id @default(cuid())
+  organizationId String      @map("organization_id")
+  branchId       String?     @map("branch_id")
+  name           String
+  type           AccountType
+  isActive       Boolean     @default(true) @map("is_active")
+  createdAt      DateTime    @default(now()) @map("created_at")
+  updatedAt      DateTime    @updatedAt @map("updated_at")
+
+  @@map("financial_accounts")
+}
+
+model Charge {
+  id             String       @id @default(cuid())
+  organizationId String       @map("organization_id")
+  branchId       String       @map("branch_id")
+  studentId      String       @map("student_id")
+  amount         Int
+  currency       String       @default("UZS")
+  description    String?
+  dueDate        DateTime     @map("due_date")
+  status         ChargeStatus @default(pending)
+  createdAt      DateTime     @default(now()) @map("created_at")
+  updatedAt      DateTime     @updatedAt @map("updated_at")
+
+  @@map("charges")
+}
+
+model Payment {
+  id                  String   @id @default(cuid())
+  organizationId      String   @map("organization_id")
+  branchId            String   @map("branch_id")
+  studentId           String   @map("student_id")
+  financialAccountId  String   @map("financial_account_id")
+  chargeId            String?  @map("charge_id")
+  amount              Int
+  currency            String   @default("UZS")
+  paymentMethod       String   @map("payment_method")
+  reference           String?
+  createdAt           DateTime @default(now()) @map("created_at")
+  updatedAt           DateTime @updatedAt @map("updated_at")
+
+  @@map("payments")
+}
+
+// type: fixed | hourly | per_student. status: active | paused | terminated.
+// Setting a new salary doesn't overwrite the old row — it closes it out via
+// effectiveTo and inserts a fresh active one, so salary history stays intact
+// (mirrors how the app never mutates settled financial records elsewhere).
+model TeacherSalary {
+  id        String  @id @default(cuid())
+  teacherId String  @map("teacher_id")
+  teacher   Teacher @relation(fields: [teacherId], references: [id], onDelete: Cascade)
+
+  amount   Int // monthly salary in UZS (or the base for hourly/per_student estimates)
+  currency String @default("UZS")
+
+  type           String @default("fixed")
+  hourlyRate     Int?   @map("hourly_rate")
+  perStudentRate Int?   @map("per_student_rate")
+
+  effectiveFrom DateTime  @default(now()) @map("effective_from")
+  effectiveTo   DateTime? @map("effective_to")
+
+  status String  @default("active")
+  notes  String?
+
+  organizationId String @map("organization_id")
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  payments SalaryPayment[]
+
+  @@index([organizationId, teacherId])
+  @@map("teacher_salaries")
+}
+
+// status: pending | paid | delayed. One row per teacher per month; the
+// owner marks it paid rather than the app inferring payment from a ledger,
+// since salary payouts happen outside the student-payment flow.
+model SalaryPayment {
+  id              String        @id @default(cuid())
+  teacherSalaryId String        @map("teacher_salary_id")
+  teacherSalary   TeacherSalary @relation(fields: [teacherSalaryId], references: [id])
+
+  amount   Int
+  currency String @default("UZS")
+  month    String // "2026-08"
+  status   String @default("pending")
+
+  paidAt        DateTime? @map("paid_at")
+  paymentMethod String?   @map("payment_method")
+  notes         String?
+
+  organizationId String @map("organization_id")
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@unique([teacherSalaryId, month])
+  @@index([organizationId, month])
+  @@map("salary_payments")
+}
+
+model Reminder {
+  id             String         @id @default(cuid())
+  organizationId String         @map("organization_id")
+  chargeId       String         @map("charge_id")
+  studentId      String         @map("student_id")
+  parentId       String?        @map("parent_id")
+  type           ReminderType
+  status         ReminderStatus @default(pending)
+  content        String
+  sentAt         DateTime?      @map("sent_at")
+  deliveredAt    DateTime?      @map("delivered_at")
+  failedReason   String?        @map("failed_reason")
+  createdById    String         @map("created_by_id")
+  createdAt      DateTime       @default(now()) @map("created_at")
+
+  @@index([organizationId, chargeId])
+  @@index([organizationId, studentId])
+  @@index([organizationId, createdAt])
+  @@map("reminders")
+}
+
+model FinancialTransaction {
+  id                  String               @id @default(cuid())
+  organizationId      String               @map("organization_id")
+  branchId            String?              @map("branch_id")
+  financialAccountId  String?              @map("financial_account_id")
+  studentId           String?              @map("student_id")
+  type                String
+  direction           TransactionDirection
+  amount              Int
+  currency            String               @default("UZS")
+  referenceId         String?              @map("reference_id")
+  referenceType       String?              @map("reference_type")
+  metadata            Json?
+  createdAt           DateTime             @default(now()) @map("created_at")
+
+  @@map("financial_transactions")
+}
+
+model Subscription {
+  id                 String   @id @default(cuid())
+  organizationId     String   @map("organization_id")
+  planId             String   @map("plan_id")
+  status             String
+  currentPeriodStart DateTime @map("current_period_start")
+  currentPeriodEnd   DateTime @map("current_period_end")
+  createdAt          DateTime @default(now()) @map("created_at")
+  updatedAt          DateTime @updatedAt @map("updated_at")
+
+  @@map("subscriptions")
+}
+
+model SubscriptionPlan {
+  id          String   @id @default(cuid())
+  name        String
+  slug        String   @unique
+  description String?
+  price       Int
+  currency    String   @default("USD")
+  interval    String
+  features    Json?
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  @@map("subscription_plans")
+}
+
+model PlatformInvoice {
+  id             String    @id @default(cuid())
+  organizationId String    @map("organization_id")
+  subscriptionId String    @map("subscription_id")
+  amount         Int
+  currency       String    @default("USD")
+  status         String
+  dueDate        DateTime  @map("due_date")
+  paidAt         DateTime? @map("paid_at")
+  createdAt      DateTime  @default(now()) @map("created_at")
+  updatedAt      DateTime  @updatedAt @map("updated_at")
+
+  @@map("platform_invoices")
+}
+
+model PlatformPayment {
+  id             String   @id @default(cuid())
+  organizationId String   @map("organization_id")
+  invoiceId      String   @map("invoice_id")
+  amount         Int
+  currency       String   @default("USD")
+  paymentMethod  String   @map("payment_method")
+  status         String
+  createdAt      DateTime @default(now()) @map("created_at")
+
+  @@map("platform_payments")
+}
+
+// ---------------------------------------------------------------------------
+// Feedback & support tickets
+// ---------------------------------------------------------------------------
+
+enum TicketType {
+  issue
+  idea
+  question
+  other
+}
+
+enum TicketStatus {
+  open
+  in_progress
+  resolved
+  closed
+}
+
+enum TicketPriority {
+  low
+  medium
+  high
+  urgent
+}
+
+model SupportTicket {
+  id          String     @id @default(cuid())
+  type        TicketType
+  title       String
+  description String
+
+  contactName  String  @map("contact_name")
+  contactEmail String? @map("contact_email")
+  contactPhone String? @map("contact_phone")
+
+  status        TicketStatus   @default(open)
+  priority      TicketPriority @default(medium)
+  internalNotes String?        @map("internal_notes")
+
+  // Who submitted — a plain string pair rather than a real FK, since the
+  // submitter can be any of six different identity shapes (User row for
+  // staff, Student row for student/parent) with no single foreign key that
+  // fits all of them.
+  submitterType String @map("submitter_type") // owner, admin, teacher, reception, student, parent, platform_admin
+  submitterId   String @map("submitter_id") // userId or studentId
+  submitterName String @map("submitter_name")
+
+  organizationId String?       @map("organization_id") // null = platform admin ticket
+  organization   Organization? @relation(fields: [organizationId], references: [id])
+
+  // For org-level visibility
+  visibleToOrg Boolean @default(true) @map("visible_to_org")
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@index([organizationId, status])
+  @@index([submitterType, submitterId])
+  @@map("support_tickets")
+}

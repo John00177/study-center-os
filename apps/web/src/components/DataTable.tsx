@@ -1,0 +1,106 @@
+import type { ReactNode } from "react";
+import { BrandedSpinner } from "./branding/BrandedSpinner";
+import { EmptyState, type EmptyStateIcon } from "./branding/EmptyState";
+
+export interface DataTableColumn<T> {
+  header: string;
+  render: (row: T) => ReactNode;
+  align?: "left" | "right";
+}
+
+interface DataTableProps<T> {
+  columns: DataTableColumn<T>[];
+  data: T[] | undefined;
+  isLoading: boolean;
+  emptyMessage: string;
+  emptyIcon?: EmptyStateIcon;
+  getRowKey: (row: T) => string;
+  onRowClick?: (row: T) => void;
+  renderActions?: (row: T) => ReactNode;
+  /** Alternating row backgrounds for easier scanning on wide/dense tables. */
+  striped?: boolean;
+}
+
+export function DataTable<T>({
+  columns,
+  data,
+  isLoading,
+  emptyMessage,
+  emptyIcon,
+  getRowKey,
+  onRowClick,
+  renderActions,
+  striped = false,
+}: DataTableProps<T>) {
+  const columnCount = columns.length + (renderActions ? 1 : 0);
+
+  return (
+    <div className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm transition-shadow hover:shadow-md">
+      <div className="overflow-x-auto">
+        <table className="min-w-full divide-y divide-slate-200 tabular-nums">
+          <thead className="bg-slate-50">
+            <tr>
+              {columns.map((col) => (
+                <th
+                  key={col.header}
+                  className={`px-4 py-3 text-xs font-semibold uppercase tracking-wide text-slate-600 ${
+                    col.align === "right" ? "text-right" : "text-left"
+                  }`}
+                >
+                  {col.header}
+                </th>
+              ))}
+              {renderActions && (
+                <th className="px-4 py-3 text-right text-xs font-semibold uppercase tracking-wide text-slate-600">
+                  Actions
+                </th>
+              )}
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-slate-100">
+            {isLoading && (
+              <tr>
+                <td className="px-4 py-8" colSpan={columnCount}>
+                  <div className="flex items-center justify-center gap-2 text-sm text-slate-500">
+                    <BrandedSpinner className="h-4 w-4" />
+                    Loading...
+                  </div>
+                </td>
+              </tr>
+            )}
+            {!isLoading && (!data || data.length === 0) && (
+              <tr>
+                <td className="px-4" colSpan={columnCount}>
+                  <EmptyState message={emptyMessage} icon={emptyIcon} />
+                </td>
+              </tr>
+            )}
+            {data?.map((row, index) => (
+              <tr
+                key={getRowKey(row)}
+                className={`transition-colors hover:bg-slate-50 ${
+                  striped && index % 2 === 1 ? "bg-slate-50/50" : ""
+                } ${onRowClick ? "cursor-pointer" : ""}`}
+                onClick={onRowClick ? () => onRowClick(row) : undefined}
+              >
+                {columns.map((col) => (
+                  <td
+                    key={col.header}
+                    className={`px-4 py-3 text-sm text-slate-600 ${col.align === "right" ? "text-right" : "text-left"}`}
+                  >
+                    {col.render(row)}
+                  </td>
+                ))}
+                {renderActions && (
+                  <td className="px-4 py-3 text-right text-sm" onClick={(e) => e.stopPropagation()}>
+                    <div className="flex justify-end gap-1">{renderActions(row)}</div>
+                  </td>
+                )}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+}
