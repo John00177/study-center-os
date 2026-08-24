@@ -33,6 +33,7 @@ import { DailyBriefingModule } from "./modules/daily-briefing/daily-briefing.mod
 import { SalaryModule } from "./modules/salary/salary.module";
 import { MustChangePasswordGuard } from "./common/guards/must-change-password.guard";
 import { SupportTicketsModule } from "./modules/support-tickets/support-tickets.module";
+import { HealthController } from "./health.controller";
 
 @Module({
   imports: [
@@ -71,6 +72,7 @@ import { SupportTicketsModule } from "./modules/support-tickets/support-tickets.
     SalaryModule,
     SupportTicketsModule,
   ],
+  controllers: [HealthController],
   providers: [
     {
       provide: APP_GUARD,

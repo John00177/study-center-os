@@ -7,7 +7,7 @@ import { PrismaService } from "../../prisma/prisma.service";
 // simple allowlist (auth flows + public branding needed to render the login
 // screen) rather than an exhaustive per-route list, since the alternative
 // (denylisting) risks silently leaving a new route unprotected.
-const ALLOWED_PREFIXES = ["/api/auth/", "/api/organizations/"];
+const ALLOWED_PREFIXES = ["/api/auth/", "/api/organizations/", "/api/health"];
 
 /**
  * Global (APP_GUARD) — once an account has a pending forced password
