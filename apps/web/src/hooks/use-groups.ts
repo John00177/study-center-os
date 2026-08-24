@@ -35,6 +35,9 @@ export interface GroupInput {
   startDate?: string;
   endDate?: string;
   monthlyFee?: number;
+  scheduleDays?: string[];
+  startTime?: string;
+  endTime?: string;
 }
 
 export function useCreateGroup() {

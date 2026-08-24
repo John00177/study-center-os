@@ -25,12 +25,20 @@ import {
   useUpdateStudent,
 } from "../hooks/use-students";
 
+const LEAD_SOURCES = ["Google", "Instagram", "Referral", "Walk-in", "Other"] as const;
+
 interface FormState {
   name: string;
   email: string;
   phone: string;
   address: string;
   emergencyContact: string;
+  gender: string;
+  dateOfBirth: string;
+  parentPhone: string;
+  leadSource: string;
+  medicalCard: boolean;
+  notes: string;
 }
 
 function toFormState(student?: StudentDto | null): FormState {
@@ -40,6 +48,12 @@ function toFormState(student?: StudentDto | null): FormState {
     phone: student?.phone ?? "",
     address: student?.address ?? "",
     emergencyContact: student?.emergencyContact ?? "",
+    gender: student?.gender ?? "",
+    dateOfBirth: student?.dateOfBirth ? student.dateOfBirth.slice(0, 10) : "",
+    parentPhone: student?.parentPhone ?? "",
+    leadSource: student?.leadSource ?? "",
+    medicalCard: student?.medicalCard ?? false,
+    notes: student?.notes ?? "",
   };
 }
 
@@ -80,6 +94,12 @@ function StudentForm({
       phone: form.phone.trim() || undefined,
       address: form.address.trim() || undefined,
       emergencyContact: form.emergencyContact.trim() || undefined,
+      gender: form.gender || undefined,
+      dateOfBirth: form.dateOfBirth || undefined,
+      parentPhone: form.parentPhone.trim() || undefined,
+      leadSource: form.leadSource || undefined,
+      medicalCard: form.medicalCard,
+      notes: form.notes.trim() || undefined,
     };
 
     try {
@@ -129,6 +149,64 @@ function StudentForm({
           value={form.emergencyContact}
           onChange={(e) => setForm((f) => ({ ...f, emergencyContact: e.target.value }))}
         />
+
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <SelectField
+            label="Gender"
+            value={form.gender}
+            onChange={(e) => setForm((f) => ({ ...f, gender: e.target.value }))}
+          >
+            <option value="">Not specified</option>
+            <option value="male">Male</option>
+            <option value="female">Female</option>
+          </SelectField>
+          <TextField
+            label="Birth Date"
+            type="date"
+            value={form.dateOfBirth}
+            onChange={(e) => setForm((f) => ({ ...f, dateOfBirth: e.target.value }))}
+          />
+        </div>
+
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <TextField
+            label="Parent Phone"
+            value={form.parentPhone}
+            onChange={(e) => setForm((f) => ({ ...f, parentPhone: e.target.value }))}
+          />
+          <SelectField
+            label="Lead Source"
+            value={form.leadSource}
+            onChange={(e) => setForm((f) => ({ ...f, leadSource: e.target.value }))}
+          >
+            <option value="">Not specified</option>
+            {LEAD_SOURCES.map((source) => (
+              <option key={source} value={source}>
+                {source}
+              </option>
+            ))}
+          </SelectField>
+        </div>
+
+        <label className="flex items-center gap-2 text-sm text-slate-700">
+          <input
+            type="checkbox"
+            checked={form.medicalCard}
+            onChange={(e) => setForm((f) => ({ ...f, medicalCard: e.target.checked }))}
+            className="h-4 w-4 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500"
+          />
+          Has medical card
+        </label>
+
+        <div>
+          <label className="mb-1 block text-sm font-medium text-slate-700">Note</label>
+          <textarea
+            rows={2}
+            value={form.notes}
+            onChange={(e) => setForm((f) => ({ ...f, notes: e.target.value }))}
+            className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm text-slate-900 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+          />
+        </div>
 
         <div className="flex justify-end gap-3 border-t border-slate-200 pt-4">
           <button
@@ -438,6 +516,17 @@ function ViewTempPasswordModal({ studentId, onClose }: { studentId: string | nul
   );
 }
 
+function ageFromBirthDate(dateOfBirth?: string | null): string {
+  if (!dateOfBirth) return "-";
+  const birth = new Date(dateOfBirth);
+  const now = new Date();
+  let age = now.getFullYear() - birth.getFullYear();
+  const hasHadBirthdayThisYear =
+    now.getMonth() > birth.getMonth() || (now.getMonth() === birth.getMonth() && now.getDate() >= birth.getDate());
+  if (!hasHadBirthdayThisYear) age -= 1;
+  return String(age);
+}
+
 function PasswordStatusBadge({ mustChangePassword }: { mustChangePassword: boolean }) {
   return mustChangePassword ? (
     <span className="inline-flex items-center rounded-full bg-yellow-100 px-2 py-0.5 text-xs font-medium text-yellow-700">
@@ -525,6 +614,7 @@ export function StudentsPage() {
         columns={[
           { header: "Name", render: (s) => <span className="font-medium text-slate-900">{s.name}</span> },
           { header: "Phone", render: (s) => s.phone ?? "-" },
+          { header: "Age", render: (s) => ageFromBirthDate(s.dateOfBirth), align: "right" },
           {
             header: "Enrollment",
             render: (s) => (

@@ -24,6 +24,10 @@ export interface StudentInput {
   address?: string;
   emergencyContact?: string;
   interestedCourse?: string;
+  gender?: string;
+  leadSource?: string;
+  medicalCard?: boolean;
+  parentPhone?: string;
   notes?: string;
 }
 

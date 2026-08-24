@@ -56,12 +56,18 @@ importers:
       connect-redis:
         specifier: ^7.1.1
         version: 7.1.1(express-session@1.19.0)
+      express:
+        specifier: ^4.21.0
+        version: 4.22.1
       express-session:
         specifier: ^1.18.1
         version: 1.19.0
       ioredis:
         specifier: ^5.4.1
         version: 5.11.1
+      multer:
+        specifier: ^2.0.0
+        version: 2.0.2
       passport:
         specifier: ^0.7.0
         version: 0.7.0

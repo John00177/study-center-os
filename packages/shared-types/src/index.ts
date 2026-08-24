@@ -164,6 +164,9 @@ export interface StudentDto {
   status: StudentStatus;
   notes?: string | null;
   interestedCourse?: string | null;
+  gender?: string | null;
+  leadSource?: string | null;
+  medicalCard?: boolean | null;
   parentName?: string | null;
   parentEmail?: string | null;
   parentPhone?: string | null;
@@ -262,6 +265,9 @@ export interface GroupDto {
   startDate?: string | null;
   endDate?: string | null;
   monthlyFee?: number | null;
+  scheduleDays: string[];
+  startTime?: string | null;
+  endTime?: string | null;
   branch: BranchDto;
   course: CourseDto | null;
   teacherCount: number;

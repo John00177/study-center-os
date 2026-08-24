@@ -1,8 +1,9 @@
 [build]
 builder = "NIXPACKS"
+buildCommand = "pnpm --filter=@crm/api exec prisma generate && pnpm turbo run build --filter=@crm/api... --force"
 
 [deploy]
-startCommand = "cd apps/api && npx prisma migrate deploy && npx prisma db seed && npm run start:prod"
+startCommand = "cd apps/api && pnpm prisma db push --skip-generate && pnpm prisma db seed && pnpm start:prod"
 healthcheckPath = "/api/health"
 healthcheckTimeout = 300
 restartPolicyType = "ON_FAILURE"

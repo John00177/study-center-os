@@ -1,7 +1,0 @@
-[build]
-builder = "NIXPACKS"
-nixpacksPlan = { providers = ["node"] }
-
-[deploy]
-startCommand = "npx prisma migrate deploy && npx prisma db seed && npm run start:prod"
-numReplicas = 1

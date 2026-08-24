@@ -18,6 +18,7 @@ import {
 import { useUserRole } from "../stores/auth.store";
 
 const STATUS_OPTIONS: GroupStatus[] = ["active", "inactive", "completed"];
+const SCHEDULE_DAYS = ["Du", "Se", "Cho", "Pa", "Ju", "Sha", "Yak"] as const;
 
 interface FormState {
   name: string;
@@ -26,6 +27,9 @@ interface FormState {
   status: GroupStatus;
   maxStudents: string;
   monthlyFee: string;
+  scheduleDays: string[];
+  startTime: string;
+  endTime: string;
 }
 
 function toFormState(group?: GroupDto | null): FormState {
@@ -36,7 +40,19 @@ function toFormState(group?: GroupDto | null): FormState {
     status: group?.status ?? "active",
     maxStudents: group?.maxStudents ? String(group.maxStudents) : "",
     monthlyFee: group?.monthlyFee != null ? String(group.monthlyFee) : "",
+    scheduleDays: group?.scheduleDays ?? [],
+    startTime: group?.startTime ?? "",
+    endTime: group?.endTime ?? "",
   };
+}
+
+/** "Se, Cho, Pa | 19:00 - 20:30" — used by both the group list column and the display helper below. */
+export function formatGroupSchedule(group: Pick<GroupDto, "scheduleDays" | "startTime" | "endTime">): string {
+  const days = group.scheduleDays.length ? group.scheduleDays.join(", ") : "";
+  const time = group.startTime && group.endTime ? `${group.startTime} - ${group.endTime}` : "";
+  if (!days && !time) return "—";
+  if (days && time) return `${days} | ${time}`;
+  return days || time;
 }
 
 function GroupForm({
@@ -84,6 +100,9 @@ function GroupForm({
       status: form.status,
       maxStudents: form.maxStudents ? Number(form.maxStudents) : undefined,
       monthlyFee: form.monthlyFee.trim() !== "" ? Number(form.monthlyFee) : undefined,
+      scheduleDays: form.scheduleDays,
+      startTime: form.startTime || undefined,
+      endTime: form.endTime || undefined,
     };
 
     try {
@@ -182,6 +201,53 @@ function GroupForm({
           </p>
         </div>
 
+        <div>
+          <label className="mb-1.5 block text-sm font-medium text-slate-700">Schedule Days</label>
+          <div className="flex flex-wrap gap-2">
+            {SCHEDULE_DAYS.map((day) => {
+              const selected = form.scheduleDays.includes(day);
+              return (
+                <button
+                  key={day}
+                  type="button"
+                  onClick={() =>
+                    setForm((f) => ({
+                      ...f,
+                      scheduleDays: selected ? f.scheduleDays.filter((d) => d !== day) : [...f.scheduleDays, day],
+                    }))
+                  }
+                  className={`rounded-md border px-3 py-1 text-sm font-medium transition ${
+                    selected
+                      ? "border-indigo-500 bg-indigo-600 text-white"
+                      : "border-slate-300 bg-white text-slate-500 hover:bg-slate-50"
+                  }`}
+                >
+                  {day}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
+        <div>
+          <label className="mb-1.5 block text-sm font-medium text-slate-700">Lesson Time</label>
+          <div className="flex items-center gap-3">
+            <input
+              type="time"
+              value={form.startTime}
+              onChange={(e) => setForm((f) => ({ ...f, startTime: e.target.value }))}
+              className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm text-slate-900 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+            />
+            <span className="text-slate-400">—</span>
+            <input
+              type="time"
+              value={form.endTime}
+              onChange={(e) => setForm((f) => ({ ...f, endTime: e.target.value }))}
+              className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm text-slate-900 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+            />
+          </div>
+        </div>
+
         <div className="flex justify-end gap-3 border-t border-slate-200 pt-4">
           <button
             type="button"
@@ -265,6 +331,7 @@ export function GroupsPage() {
           { header: "Name", render: (g) => <span className="font-medium text-slate-900">{g.name}</span> },
           { header: "Branch", render: (g) => g.branch?.name ?? "-" },
           { header: "Course", render: (g) => g.course?.name ?? "-" },
+          { header: "Schedule", render: (g) => formatGroupSchedule(g) },
           { header: "Teachers", render: (g) => g.teacherCount, align: "right" },
           { header: "Students", render: (g) => g.studentCount, align: "right" },
         ]}

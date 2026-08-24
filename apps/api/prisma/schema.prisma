@@ -373,6 +373,9 @@ model Student {
   password         String?
   notes            String?
   interestedCourse String?       @map("interested_course")
+  gender           String?
+  leadSource       String?       @map("lead_source")
+  medicalCard      Boolean?      @default(false) @map("medical_card")
   parentName       String?       @map("parent_name")
   parentEmail      String?       @map("parent_email")
   parentPhone      String?       @map("parent_phone")
@@ -452,6 +455,13 @@ model Group {
   startDate      DateTime?   @map("start_date")
   endDate        DateTime?   @map("end_date")
   monthlyFee     Int?        @map("monthly_fee")
+  // Simple denormalized weekly-recurring-slot summary shown on the group
+  // list (e.g. "Se, Cho, Pa | 19:00 - 20:30") — a lightweight display-only
+  // field, distinct from the per-classroom Schedule model used by the
+  // calendar and conflict-checking, which remains the system of record.
+  scheduleDays   String[]    @default([]) @map("schedule_days")
+  startTime      String?     @map("start_time")
+  endTime        String?     @map("end_time")
   createdAt      DateTime    @default(now()) @map("created_at")
   updatedAt      DateTime    @updatedAt @map("updated_at")
 

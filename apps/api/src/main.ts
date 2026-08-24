@@ -12,6 +12,13 @@ import { AppModule } from "./app.module";
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
+  // Railway (and most PaaS hosts) terminate TLS at an edge proxy and forward
+  // plain HTTP internally. Without trusting that proxy, Express's req.secure
+  // is always false, and express-session silently refuses to set a `secure`
+  // cookie — logins appear to succeed (200 + user data) but no session
+  // persists. See: https://expressjs.com/en/guide/behind-proxies.html
+  app.getHttpAdapter().getInstance().set("trust proxy", 1);
+
   const redisClient = new Redis(process.env.REDIS_URL ?? "redis://localhost:6379");
   const redisStore = new RedisStore({ client: redisClient, prefix: "crm-os:sess:" });
 
@@ -34,8 +41,12 @@ async function bootstrap() {
       saveUninitialized: false,
       cookie: {
         httpOnly: true,
+        // In production the frontend (Vercel) and API (Railway) are different
+        // domains, so the session cookie is cross-site and needs SameSite=None
+        // (which browsers only honor alongside Secure) — in dev they share an
+        // origin via the Vite proxy, where Lax is simpler and doesn't need HTTPS.
         secure: process.env.NODE_ENV === "production",
-        sameSite: "lax",
+        sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
         maxAge: Number(process.env.SESSION_MAX_AGE_MS ?? 7 * 24 * 60 * 60 * 1000),
       },
     }),
