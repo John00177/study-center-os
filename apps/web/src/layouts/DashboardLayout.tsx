@@ -85,7 +85,7 @@ export function DashboardLayout() {
           </div>
           <div className="flex items-center gap-4">
             <span className="hidden text-sm font-medium text-slate-700 sm:inline dark:text-slate-300">{user?.name}</span>
-            <NotificationBell />
+            <NotificationBell canSend />
             <LanguageSwitcher />
             <ThemeToggle />
             <button

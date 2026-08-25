@@ -1,7 +1,9 @@
-import { Bell } from "lucide-react";
+import { Bell, Send } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { useUnreadNotificationCount } from "../../hooks/use-notifications";
 import { NotificationPanel } from "./NotificationPanel";
+import { SendNotificationModal } from "./SendNotificationModal";
+import { useTranslation } from "../../hooks/use-translation";
 
 // "light" adapts to the app's light/dark toggle via dark: classes (used in
 // DashboardLayout). "dark" is a fixed dark palette for surfaces that never
@@ -9,10 +11,19 @@ import { NotificationPanel } from "./NotificationPanel";
 // (bg-slate-950 etc, no `dark` class on <html>), so dark: variants there
 // would never activate and the button would render with light-mode colors
 // on a dark background.
-export function NotificationBell({ variant = "light" }: { variant?: "light" | "dark" }) {
+export function NotificationBell({
+  variant = "light",
+  canSend = false,
+}: {
+  variant?: "light" | "dark";
+  /** Shows the compose button next to the bell. Platform admin has no org to send within. */
+  canSend?: boolean;
+}) {
   const [open, setOpen] = useState(false);
+  const [composeOpen, setComposeOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const { data } = useUnreadNotificationCount();
+  const { t } = useTranslation();
   const unreadCount = data?.count ?? 0;
 
   useEffect(() => {
@@ -26,16 +37,26 @@ export function NotificationBell({ variant = "light" }: { variant?: "light" | "d
     return () => document.removeEventListener("mousedown", onPointerDown);
   }, [open]);
 
+  const buttonClass =
+    variant === "dark"
+      ? "relative rounded-md p-1.5 text-slate-400 hover:bg-slate-800 hover:text-white"
+      : "relative rounded-md p-1.5 text-gray-500 hover:text-gray-700 hover:bg-slate-100 dark:text-gray-400 dark:hover:bg-slate-700 dark:hover:text-gray-200";
+
   return (
-    <div ref={containerRef} className="relative">
+    <div ref={containerRef} className="relative flex items-center gap-1">
+      {canSend && (
+        <>
+          <button onClick={() => setComposeOpen(true)} aria-label={t("sendNotification")} title={t("sendNotification")} className={buttonClass}>
+            <Send className="h-5 w-5" />
+          </button>
+          <SendNotificationModal open={composeOpen} onClose={() => setComposeOpen(false)} />
+        </>
+      )}
+
       <button
         onClick={() => setOpen((o) => !o)}
         aria-label="Notifications"
-        className={
-          variant === "dark"
-            ? "relative rounded-md p-1.5 text-slate-400 hover:bg-slate-800 hover:text-white"
-            : "relative rounded-md p-1.5 text-gray-500 hover:text-gray-700 hover:bg-slate-100 dark:text-gray-400 dark:hover:bg-slate-700 dark:hover:text-gray-200"
-        }
+        className={buttonClass}
       >
         <Bell className="h-5 w-5" />
         {unreadCount > 0 && (

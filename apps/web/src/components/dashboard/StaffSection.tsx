@@ -189,7 +189,7 @@ function StaffActions({ member, onResetPassword }: { member: StaffMemberDto; onR
       <button
         onClick={toggleStatus}
         disabled={isPending}
-        className="rounded p-1.5 text-xs font-medium text-slate-500 hover:bg-slate-100 hover:text-slate-900 disabled:opacity-60"
+        className="rounded p-1.5 text-xs font-medium text-slate-500 hover:bg-slate-100 hover:text-slate-900 dark:text-slate-100 disabled:opacity-60"
       >
         {isPending && <Loader2 className="mr-1 inline h-3 w-3 animate-spin" />}
         {member.status === "suspended" ? "Activate" : "Suspend"}
@@ -245,7 +245,7 @@ export function StaffSection() {
         emptyMessage="No staff members yet."
         getRowKey={(m) => m.userId}
         columns={[
-          { header: "Name", render: (m) => <span className="font-medium text-slate-900">{m.name}</span> },
+          { header: "Name", render: (m) => <span className="font-medium text-slate-900 dark:text-slate-100">{m.name}</span> },
           { header: "Role", render: (m) => <span className="capitalize">{m.roleName}</span> },
           { header: "Branch", render: (m) => m.branchName ?? "—" },
           {

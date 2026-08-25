@@ -375,7 +375,7 @@ export function TeachersPage() {
       <SubscriptionLimitBanners resource="teacher" />
 
       <div className="mb-6 flex items-center justify-between">
-        <h1 className="text-2xl font-semibold text-slate-900">Teachers</h1>
+        <h1 className="text-2xl font-semibold text-slate-900 dark:text-slate-100">Teachers</h1>
         <button
           onClick={() => setAddOpen(true)}
           className="flex items-center gap-2 rounded-md bg-indigo-600 px-3 py-2 text-sm font-medium text-white hover:bg-indigo-700"
@@ -391,7 +391,7 @@ export function TeachersPage() {
         emptyMessage='No teachers yet. Click "Add Teacher" to add one.'
         getRowKey={(t) => t.id}
         columns={[
-          { header: "Name", render: (t) => <span className="font-medium text-slate-900">{t.name}</span> },
+          { header: "Name", render: (t) => <span className="font-medium text-slate-900 dark:text-slate-100">{t.name}</span> },
           { header: "Specialization", render: (t) => t.specialization ?? "-" },
           { header: "Groups", render: (t) => t.activeGroupCount, align: "right" },
           { header: "Dashboard", render: (t) => <DashboardStatusBadge status={t.dashboardStatus} /> },

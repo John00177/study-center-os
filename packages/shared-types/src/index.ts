@@ -1497,13 +1497,32 @@ export type NotificationType = "info" | "success" | "warning" | "error";
 export interface NotificationDto {
   id: string;
   userId: string;
+  recipientType?: "user" | "student";
   title: string;
   message: string;
   type: NotificationType;
   entityType?: string | null;
   entityId?: string | null;
+  /** Set for person-to-person sends; null for system/auto-triggered notifications. */
+  senderId?: string | null;
+  senderName?: string | null;
   read: boolean;
   createdAt: string;
+}
+
+export interface NotificationRecipientDto {
+  id: string;
+  name: string;
+  recipientType: "user" | "student";
+  /** Grouping label for the picker, e.g. "Teacher" / "Reception" / "Student". */
+  group: string;
+}
+
+export interface SendNotificationInput {
+  title: string;
+  message: string;
+  recipientIds: string[];
+  type?: NotificationType;
 }
 
 export interface NotificationListDto {

@@ -32,7 +32,7 @@ export function ReminderHistoryPage() {
 
   return (
     <div>
-      <h1 className="mb-6 text-2xl font-semibold text-slate-900">Reminder History</h1>
+      <h1 className="mb-6 text-2xl font-semibold text-slate-900 dark:text-slate-100">Reminder History</h1>
 
       <div className="mb-4 flex flex-wrap gap-4">
         <div className="w-48">

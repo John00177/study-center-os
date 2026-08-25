@@ -132,7 +132,11 @@ function NotificationRow({
       <div className="min-w-0 flex-1">
         <p className={`truncate text-sm font-semibold ${palette.title}`}>{notification.title}</p>
         <p className={`text-xs ${palette.message}`}>{notification.message}</p>
-        <p className="mt-0.5 text-xs text-gray-400">{relativeTime(notification.createdAt)}</p>
+        <p className="mt-0.5 text-xs text-gray-400">
+          {/* senderName is only set on person-to-person sends; system events show just the time. */}
+          {notification.senderName ? `From: ${notification.senderName} · ` : ""}
+          {relativeTime(notification.createdAt)}
+        </p>
       </div>
     </button>
   );

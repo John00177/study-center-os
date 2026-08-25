@@ -267,7 +267,7 @@ function RevenueTab({ filters }: { filters: AnalyticsFilters }) {
         />
         <div className="rounded-lg border border-slate-200 bg-white p-3 shadow-sm">
           <span className="text-xs font-medium text-slate-500">Teachers Paid / Total</span>
-          <p className="mt-1.5 text-xl font-semibold text-slate-900">
+          <p className="mt-1.5 text-xl font-semibold text-slate-900 dark:text-slate-100">
             {teachersPaidCount} / {teachersTotalCount}
           </p>
           <div className="mt-2 h-2 overflow-hidden rounded-full bg-slate-100">
@@ -519,7 +519,7 @@ export function AnalyticsPage() {
   return (
     <div>
       <div className="mb-6 flex items-center justify-between">
-        <h1 className="text-2xl font-semibold text-slate-900">Analytics</h1>
+        <h1 className="text-2xl font-semibold text-slate-900 dark:text-slate-100">Analytics</h1>
         <div className="w-56">
           <SelectField label="" value={branchId} onChange={(e) => setBranchId(e.target.value)}>
             <option value="">All branches</option>

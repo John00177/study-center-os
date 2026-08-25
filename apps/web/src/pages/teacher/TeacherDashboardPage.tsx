@@ -26,7 +26,7 @@ function StatCard({ label, value, icon: Icon, onClick }: StatCardProps) {
         <span className="text-sm font-medium text-slate-500">{label}</span>
         <Icon size={18} />
       </div>
-      <p className="mt-3 text-3xl font-semibold text-slate-900">{value ?? "-"}</p>
+      <p className="mt-3 text-3xl font-semibold text-slate-900 dark:text-slate-100">{value ?? "-"}</p>
     </>
   );
 
@@ -72,7 +72,7 @@ function StudentHomeworkPreviewCard() {
           <span className="text-sm font-medium text-slate-500">My Homework</span>
           <ClipboardList size={18} />
         </div>
-        <p className="mt-3 text-3xl font-semibold text-slate-900">{isLoading ? "-" : pendingCount}</p>
+        <p className="mt-3 text-3xl font-semibold text-slate-900 dark:text-slate-100">{isLoading ? "-" : pendingCount}</p>
         <p className="mt-1 text-xs text-slate-400">
           {previewStudent ? `Student preview: ${previewStudent.name}` : "No students to preview yet"}
         </p>
@@ -124,7 +124,7 @@ function AiTestGeneratorWidget() {
             <Sparkles className="h-5 w-5 text-indigo-600" />
           </div>
           <div>
-            <p className="text-sm font-semibold text-slate-900">AI Test Generator</p>
+            <p className="text-sm font-semibold text-slate-900 dark:text-slate-100">AI Test Generator</p>
             <p className="text-sm text-slate-500">
               {isLoading ? "-" : data?.countThisMonth ?? 0} tests created this month
               {!isLoading && ` · ${data?.submissionsThisWeek ?? 0} submissions this week`}
@@ -148,7 +148,7 @@ function AiTestGeneratorWidget() {
               to="/teacher/ai-tests"
               className="flex items-center justify-between rounded-md px-2 py-1.5 text-sm hover:bg-slate-50"
             >
-              <span className="truncate font-medium text-slate-800">{t.title}</span>
+              <span className="truncate font-medium text-slate-800 dark:text-slate-200">{t.title}</span>
               <span className="shrink-0 text-xs text-slate-400">{new Date(t.createdAt).toLocaleDateString()}</span>
             </Link>
           ))}
@@ -171,7 +171,7 @@ export function TeacherDashboardPage() {
 
   return (
     <div>
-      <h1 className="mb-6 text-2xl font-semibold text-slate-900">My Dashboard</h1>
+      <h1 className="mb-6 text-2xl font-semibold text-slate-900 dark:text-slate-100">My Dashboard</h1>
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
         <div className="lg:col-span-2">

@@ -87,7 +87,7 @@ export function CalendarPage() {
   return (
     <div>
       <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
-        <h1 className="text-2xl font-semibold text-slate-900">Calendar</h1>
+        <h1 className="text-2xl font-semibold text-slate-900 dark:text-slate-100">Calendar</h1>
         <button
           onClick={() =>
             setCreateSlot({ dayOfWeek: mobileDayIndex === 6 ? 0 : mobileDayIndex + 1, startTime: "09:00", endTime: "10:00" })

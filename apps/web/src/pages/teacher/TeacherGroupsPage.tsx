@@ -20,7 +20,7 @@ export function TeacherGroupsPage() {
 
   return (
     <div>
-      <h1 className="mb-6 text-2xl font-semibold text-slate-900">My Groups</h1>
+      <h1 className="mb-6 text-2xl font-semibold text-slate-900 dark:text-slate-100">My Groups</h1>
 
       {isLoading && <p className="text-sm text-slate-500">Loading...</p>}
 
@@ -45,7 +45,7 @@ function GroupCard({ group }: { group: TeacherGroupDto }) {
       to={`/teacher/groups/${group.id}`}
       className="block rounded-xl border border-slate-200 bg-white p-5 shadow-sm transition hover:shadow-md"
     >
-      <p className="font-semibold text-slate-900">{group.name}</p>
+      <p className="font-semibold text-slate-900 dark:text-slate-100">{group.name}</p>
       <p className="mt-1 text-sm text-slate-500">{group.course?.name ?? "-"}</p>
       <p className="text-sm text-slate-500">{group.branch.name}</p>
 

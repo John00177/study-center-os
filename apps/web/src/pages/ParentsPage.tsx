@@ -149,7 +149,7 @@ export function ParentsPage() {
   return (
     <div>
       <div className="mb-6 flex items-center justify-between">
-        <h1 className="text-2xl font-semibold text-slate-900">Parents</h1>
+        <h1 className="text-2xl font-semibold text-slate-900 dark:text-slate-100">Parents</h1>
         <button
           onClick={() => {
             setEditing(null);
@@ -172,7 +172,7 @@ export function ParentsPage() {
           setFormOpen(true);
         }}
         columns={[
-          { header: "Name", render: (p) => <span className="font-medium text-slate-900">{p.name}</span> },
+          { header: "Name", render: (p) => <span className="font-medium text-slate-900 dark:text-slate-100">{p.name}</span> },
           { header: "Phone", render: (p) => p.phone ?? "-" },
         ]}
         renderActions={(p) => (

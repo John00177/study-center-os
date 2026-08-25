@@ -190,7 +190,7 @@ export function StudentForm({
             rows={2}
             value={form.notes}
             onChange={(e) => setForm((f) => ({ ...f, notes: e.target.value }))}
-            className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm text-slate-900 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+            className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm text-slate-900 dark:text-slate-100 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
           />
         </div>
 
@@ -426,7 +426,7 @@ function LinkParentModal({ student, onClose }: { student: StudentDto | null; onC
     return (
       <Modal open={Boolean(student)} onClose={onClose} title="Parent Linked">
         <p className="mb-4 text-sm text-slate-600">
-          Parent can log in at <span className="font-medium text-slate-900">/parent/login</span> with their email or
+          Parent can log in at <span className="font-medium text-slate-900 dark:text-slate-100">/parent/login</span> with their email or
           phone and the password below.
         </p>
         <TempPasswordReveal label="Parent temporary password" password={tempPassword} onDone={onClose} />
@@ -572,7 +572,7 @@ export function StudentsPage() {
       <SubscriptionLimitBanners resource="student" />
 
       <div className="mb-6 flex items-center justify-between">
-        <h1 className="text-2xl font-semibold text-slate-900">Students</h1>
+        <h1 className="text-2xl font-semibold text-slate-900 dark:text-slate-100">Students</h1>
         <button
           onClick={() => {
             if (isReception) {

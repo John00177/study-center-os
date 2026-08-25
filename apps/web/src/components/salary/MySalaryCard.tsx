@@ -45,7 +45,7 @@ export function MySalaryCard() {
         <PaymentStatusBadge status={salary.thisMonthPaymentStatus} />
       </div>
 
-      <p className="mt-3 text-3xl font-semibold text-slate-900">{formatCurrency(salary.amount, salary.currency)}</p>
+      <p className="mt-3 text-3xl font-semibold text-slate-900 dark:text-slate-100">{formatCurrency(salary.amount, salary.currency)}</p>
       <p className="mt-1 text-xs text-slate-500">
         {TYPE_LABELS[salary.type] ?? salary.type} · Last paid{" "}
         {salary.lastPaidAt ? new Date(salary.lastPaidAt).toLocaleDateString() : "—"}

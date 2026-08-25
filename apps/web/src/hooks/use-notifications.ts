@@ -1,5 +1,10 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import type { NotificationListDto, UnreadCountDto } from "@crm/shared-types";
+import type {
+  NotificationListDto,
+  NotificationRecipientDto,
+  SendNotificationInput,
+  UnreadCountDto,
+} from "@crm/shared-types";
 import { api } from "../lib/api";
 
 export interface RegisterPushTokenInput {
@@ -66,5 +71,25 @@ export function useUnreadNotificationCount(enabled = true) {
     queryFn: async () => (await api.get<UnreadCountDto>("/notifications/unread-count")).data,
     enabled,
     refetchInterval: 30_000,
+  });
+}
+
+// ---- Person-to-person sending ----
+
+/** Who the current user may notify — derived server-side from their role. */
+export function useNotificationRecipients(enabled = true) {
+  return useQuery({
+    queryKey: ["notifications", "recipients"],
+    queryFn: async () => (await api.get<NotificationRecipientDto[]>("/notifications/recipients")).data,
+    enabled,
+  });
+}
+
+export function useSendNotification() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (input: SendNotificationInput) =>
+      (await api.post<{ sentCount: number }>("/notifications/send", input)).data,
+    onSuccess: () => invalidateNotificationQueries(queryClient),
   });
 }

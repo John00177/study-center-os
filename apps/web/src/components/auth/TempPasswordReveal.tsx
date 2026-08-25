@@ -27,7 +27,7 @@ export function TempPasswordReveal({ label, password, onDone }: TempPasswordReve
       <div>
         <label className="mb-1 block text-sm font-medium text-slate-700">{label}</label>
         <div className="flex items-center gap-2">
-          <code className="flex-1 rounded-lg border border-slate-300 bg-slate-50 px-3 py-2 font-mono text-lg tracking-wider text-slate-900">
+          <code className="flex-1 rounded-lg border border-slate-300 bg-slate-50 px-3 py-2 font-mono text-lg tracking-wider text-slate-900 dark:text-slate-100">
             {password}
           </code>
           <button

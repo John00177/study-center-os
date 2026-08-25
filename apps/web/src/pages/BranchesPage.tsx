@@ -177,7 +177,7 @@ export function BranchesPage() {
       <SubscriptionLimitBanners resource="branch" />
 
       <div className="mb-6 flex items-center justify-between">
-        <h1 className="text-2xl font-semibold text-slate-900">Branches</h1>
+        <h1 className="text-2xl font-semibold text-slate-900 dark:text-slate-100">Branches</h1>
         <button
           onClick={() => {
             setEditing(null);
@@ -200,7 +200,7 @@ export function BranchesPage() {
           setFormOpen(true);
         }}
         columns={[
-          { header: "Name", render: (b) => <span className="font-medium text-slate-900">{b.name}</span> },
+          { header: "Name", render: (b) => <span className="font-medium text-slate-900 dark:text-slate-100">{b.name}</span> },
           { header: "Status", render: (b) => <span className="capitalize">{b.status}</span> },
           { header: "Address", render: (b) => b.address ?? "-" },
         ]}

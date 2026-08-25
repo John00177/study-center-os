@@ -27,7 +27,7 @@ export function TeacherSalaryPage() {
   if (!salary) {
     return (
       <div>
-        <h1 className="mb-6 text-2xl font-semibold text-slate-900">My Salary</h1>
+        <h1 className="mb-6 text-2xl font-semibold text-slate-900 dark:text-slate-100">My Salary</h1>
         <div className="rounded-xl border border-slate-200 bg-white p-6 text-center shadow-sm">
           <Wallet className="mx-auto h-8 w-8 text-slate-300" />
           <p className="mt-3 text-sm text-slate-500">Salary not yet configured. Contact administration.</p>
@@ -40,7 +40,7 @@ export function TeacherSalaryPage() {
 
   return (
     <div>
-      <h1 className="mb-6 text-2xl font-semibold text-slate-900">My Salary</h1>
+      <h1 className="mb-6 text-2xl font-semibold text-slate-900 dark:text-slate-100">My Salary</h1>
 
       <div className="mb-8 grid grid-cols-1 gap-6 lg:grid-cols-2">
         <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
@@ -48,15 +48,15 @@ export function TeacherSalaryPage() {
             <span className="text-sm font-medium text-slate-500">Monthly Salary</span>
             <SalaryStatusBadge status={salary.status} />
           </div>
-          <p className="mt-2 text-3xl font-bold text-slate-900">{formatCurrency(salary.amount, salary.currency)}</p>
+          <p className="mt-2 text-3xl font-bold text-slate-900 dark:text-slate-100">{formatCurrency(salary.amount, salary.currency)}</p>
           <dl className="mt-4 grid grid-cols-2 gap-3 text-sm">
             <div>
               <dt className="text-xs text-slate-500">Type</dt>
-              <dd className="font-medium text-slate-900">{TYPE_LABELS[salary.type] ?? salary.type}</dd>
+              <dd className="font-medium text-slate-900 dark:text-slate-100">{TYPE_LABELS[salary.type] ?? salary.type}</dd>
             </div>
             <div>
               <dt className="text-xs text-slate-500">Effective From</dt>
-              <dd className="font-medium text-slate-900">{new Date(salary.effectiveFrom).toLocaleDateString()}</dd>
+              <dd className="font-medium text-slate-900 dark:text-slate-100">{new Date(salary.effectiveFrom).toLocaleDateString()}</dd>
             </div>
             <div>
               <dt className="text-xs text-slate-500">This Month</dt>
@@ -66,7 +66,7 @@ export function TeacherSalaryPage() {
             </div>
             <div>
               <dt className="text-xs text-slate-500">Last Paid</dt>
-              <dd className="font-medium text-slate-900">
+              <dd className="font-medium text-slate-900 dark:text-slate-100">
                 {salary.lastPaidAt ? new Date(salary.lastPaidAt).toLocaleDateString() : "—"}
               </dd>
             </div>

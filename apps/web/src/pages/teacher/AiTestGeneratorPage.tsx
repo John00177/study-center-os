@@ -216,7 +216,7 @@ function QuestionCard({
   return (
     <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
       <div className="flex items-start justify-between gap-2">
-        <p className="font-medium text-slate-900">
+        <p className="font-medium text-slate-900 dark:text-slate-100">
           Question {index + 1}: {question.text}
         </p>
         {editable && (
@@ -410,7 +410,7 @@ export function AiTestGeneratorPage() {
     <div className="mx-auto max-w-3xl space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-semibold text-slate-900">AI Test Generator</h1>
+          <h1 className="text-2xl font-semibold text-slate-900 dark:text-slate-100">AI Test Generator</h1>
           <p className="text-sm text-slate-500">Generate a complete test with AI in seconds.</p>
         </div>
         <Link to="/teacher/ai-tests" className="text-sm font-medium text-indigo-600 hover:text-indigo-700">
@@ -529,7 +529,7 @@ export function AiTestGeneratorPage() {
                 AI Generated
               </span>
             </div>
-            <h2 className="mt-2 text-lg font-bold text-slate-900">
+            <h2 className="mt-2 text-lg font-bold text-slate-900 dark:text-slate-100">
               {test.topic} — {test.level} Test ({test.questions.length} questions, {test.duration} min)
             </h2>
             <p className="mt-1 text-sm text-slate-600">

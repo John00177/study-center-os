@@ -115,7 +115,7 @@ export function OverduePaymentsPage() {
   return (
     <div>
       <div className="mb-6 flex items-center justify-between">
-        <h1 className="text-2xl font-semibold text-slate-900">Overdue Payments</h1>
+        <h1 className="text-2xl font-semibold text-slate-900 dark:text-slate-100">Overdue Payments</h1>
       </div>
 
       {!isLoading && charges && (

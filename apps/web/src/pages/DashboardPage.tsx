@@ -60,7 +60,7 @@ function StatCard({
   icon: Icon,
   sparklineValues,
   sparklineColor = "#6366f1",
-  valueColorClass = "text-slate-900",
+  valueColorClass = "text-slate-900 dark:text-slate-100",
   trend,
 }: StatCardProps) {
   const showSparkline = sparklineValues && sparklineValues.length >= 2;
@@ -207,7 +207,7 @@ export function DashboardPage() {
       {canSeeFinance && (
         <div className="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
           <KpiCard
-            label="Monthly Plan"
+            label={t("monthlyPlan")}
             value={dashboardStats.data ? formatCurrency(dashboardStats.data.monthlyPlan, "UZS") : "-"}
             borderColorClass="border-t-blue-500"
           />
@@ -223,7 +223,7 @@ export function DashboardPage() {
             borderColorClass="border-t-orange-500"
           />
           <KpiCard
-            label="Total Debt"
+            label={t("totalDebt")}
             value={dashboardStats.data ? formatCurrency(dashboardStats.data.totalDebt, "UZS") : "-"}
             borderColorClass="border-t-red-500"
           />
@@ -244,7 +244,7 @@ export function DashboardPage() {
       {canSeeFinance && (
         <div className="mb-8">
           <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
-            Today's report
+            {t("todaysReport")}
           </h2>
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
             <TodayStat
@@ -272,7 +272,7 @@ export function DashboardPage() {
         <div className="mb-8 grid grid-cols-1 gap-4 lg:grid-cols-2">
           <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-700 dark:bg-slate-800">
             <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
-              Expected vs Actual
+              {t("expectedVsActual")}
             </h2>
             <div className="h-64">
               <ResponsiveContainer width="100%" height="100%">
@@ -291,7 +291,7 @@ export function DashboardPage() {
 
           <div>
             <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
-              Last 10 Payments
+              {t("last10Payments")}
             </h2>
             <DataTable
               data={last10Payments}
@@ -299,10 +299,10 @@ export function DashboardPage() {
               emptyMessage="No payments yet."
               getRowKey={(p) => p.id}
               columns={[
-                { header: "Student", render: (p) => p.student?.name ?? "-" },
-                { header: "Amount", render: (p) => formatCurrency(p.amount, p.currency) },
-                { header: "Method", render: (p) => <PaymentMethodBadge method={p.paymentMethod} /> },
-                { header: "Date", render: (p) => new Date(p.createdAt).toLocaleDateString() },
+                { header: t("student"), render: (p) => p.student?.name ?? "-" },
+                { header: t("amount"), render: (p) => formatCurrency(p.amount, p.currency) },
+                { header: t("method"), render: (p) => <PaymentMethodBadge method={p.paymentMethod} /> },
+                { header: t("date"), render: (p) => new Date(p.createdAt).toLocaleDateString() },
               ]}
             />
           </div>
@@ -311,9 +311,9 @@ export function DashboardPage() {
 
       <div className="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {hasBranches && <StatCard label="Branches" value={branches.data?.length} icon={Building2} />}
-        <StatCard label="Teachers" value={teachers.data?.length} icon={GraduationCap} />
-        <StatCard label="Active Students" value={enrollment.data?.totalStudents} icon={Users} />
-        <StatCard label="Groups" value={groups.data?.length} icon={UsersRound} />
+        <StatCard label={t("teachers")} value={teachers.data?.length} icon={GraduationCap} />
+        <StatCard label={t("activeStudents")} value={enrollment.data?.totalStudents} icon={Users} />
+        <StatCard label={t("groups")} value={groups.data?.length} icon={UsersRound} />
         {canSeeRevenue && (
           <StatCard
             label="Revenue (this month)"
@@ -324,7 +324,7 @@ export function DashboardPage() {
         )}
         {canSeeRevenue && (
           <StatCard
-            label="Outstanding Payments"
+            label={t("outstandingPayments")}
             value={revenue.data ? formatCurrency(revenue.data.outstandingBalance, "UZS") : undefined}
             icon={Wallet}
           />
@@ -365,10 +365,10 @@ export function DashboardPage() {
 
       {canSeeFinance && (
         <div className="mb-8 rounded-xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-700 dark:bg-slate-800">
-          <h2 className="mb-4 text-sm font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">Finance Overview</h2>
+          <h2 className="mb-4 text-sm font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">{t("financeOverview")}</h2>
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
             <div>
-              <p className="text-xs text-slate-500 dark:text-slate-400">Cash on hand</p>
+              <p className="text-xs text-slate-500 dark:text-slate-400">{t("cashOnHand")}</p>
               <p className="mt-1 text-xl font-semibold text-slate-900 dark:text-slate-100">
                 {financeHealth.data ? formatCurrency(financeHealth.data.totalCashOnHand, "UZS") : "-"}
               </p>

@@ -42,19 +42,19 @@ function AuditLogDetailModal({ id, onClose }: { id: string | null; onClose: () =
           <div className="grid grid-cols-2 gap-4">
             <div>
               <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">Actor</p>
-              <p className="text-slate-900">{entry.actorName ?? "Unknown"}</p>
+              <p className="text-slate-900 dark:text-slate-100">{entry.actorName ?? "Unknown"}</p>
             </div>
             <div>
               <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">When</p>
-              <p className="text-slate-900">{new Date(entry.createdAt).toLocaleString()}</p>
+              <p className="text-slate-900 dark:text-slate-100">{new Date(entry.createdAt).toLocaleString()}</p>
             </div>
             <div>
               <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">Action</p>
-              <p className="text-slate-900">{entry.action}</p>
+              <p className="text-slate-900 dark:text-slate-100">{entry.action}</p>
             </div>
             <div>
               <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">Entity</p>
-              <p className="text-slate-900">
+              <p className="text-slate-900 dark:text-slate-100">
                 {formatEntityType(entry.entityType)} <span className="text-slate-400">#{entry.entityId.slice(0, 8)}</span>
               </p>
             </div>
@@ -101,7 +101,7 @@ export function AuditLogPage() {
   return (
     <div>
       <div className="mb-6">
-        <h1 className="text-2xl font-semibold text-slate-900">Audit Log</h1>
+        <h1 className="text-2xl font-semibold text-slate-900 dark:text-slate-100">Audit Log</h1>
         <p className="text-sm text-slate-600">A record of who changed what, and when.</p>
       </div>
 

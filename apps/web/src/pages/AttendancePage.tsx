@@ -99,7 +99,7 @@ export function AttendancePage() {
 
   return (
     <div>
-      <h1 className="mb-6 text-2xl font-semibold text-slate-900">Attendance</h1>
+      <h1 className="mb-6 text-2xl font-semibold text-slate-900 dark:text-slate-100">Attendance</h1>
 
       <div className="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-2 sm:max-w-lg">
         <SelectField label="Group" value={groupId} onChange={(e) => setGroupId(e.target.value)}>
@@ -142,7 +142,7 @@ export function AttendancePage() {
                 const entry = entries[member.studentId] ?? { status: null, notes: "" };
                 return (
                   <div key={member.studentId} className="flex flex-col gap-3 p-4 sm:flex-row sm:items-center sm:justify-between">
-                    <p className="font-medium text-slate-900 sm:w-40 sm:shrink-0">{member.student?.name}</p>
+                    <p className="font-medium text-slate-900 dark:text-slate-100 sm:w-40 sm:shrink-0">{member.student?.name}</p>
 
                     <div className="flex flex-wrap gap-2">
                       {STATUS_OPTIONS.map((opt) => {
@@ -169,7 +169,7 @@ export function AttendancePage() {
                       placeholder="Notes (optional)"
                       value={entry.notes}
                       onChange={(e) => setNotes(member.studentId, e.target.value)}
-                      className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm text-slate-900 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 sm:w-48"
+                      className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm text-slate-900 dark:text-slate-100 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 sm:w-48"
                     />
                   </div>
                 );

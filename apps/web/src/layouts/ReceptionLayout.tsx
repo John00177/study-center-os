@@ -25,6 +25,7 @@ import { resolveOrgDisplayName } from "../lib/theme";
 import { api } from "../lib/api";
 import { ThemeToggle } from "../components/ui/ThemeToggle";
 import { LanguageSwitcher } from "../components/ui/LanguageSwitcher";
+import { NotificationBell } from "../components/notifications/NotificationBell";
 import { useTranslation } from "../hooks/use-translation";
 import type { TranslationKey } from "../i18n/translations";
 
@@ -137,6 +138,7 @@ export function ReceptionLayout() {
           </div>
           <div className="flex items-center gap-4">
             <span className="hidden text-sm font-medium text-slate-700 sm:inline dark:text-slate-300">{user?.name}</span>
+            <NotificationBell canSend />
             <LanguageSwitcher />
             <ThemeToggle />
             <button

@@ -249,14 +249,14 @@ function GroupForm({
               type="time"
               value={form.startTime}
               onChange={(e) => setForm((f) => ({ ...f, startTime: e.target.value }))}
-              className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm text-slate-900 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+              className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm text-slate-900 dark:text-slate-100 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
             />
             <span className="text-slate-400">—</span>
             <input
               type="time"
               value={form.endTime}
               onChange={(e) => setForm((f) => ({ ...f, endTime: e.target.value }))}
-              className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm text-slate-900 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+              className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm text-slate-900 dark:text-slate-100 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
             />
           </div>
         </div>
@@ -314,7 +314,7 @@ export function GroupsPage() {
   return (
     <div>
       <div className="mb-6 flex items-center justify-between">
-        <h1 className="text-2xl font-semibold text-slate-900">Groups</h1>
+        <h1 className="text-2xl font-semibold text-slate-900 dark:text-slate-100">Groups</h1>
         {canManage && (
           <button
             onClick={() => {
@@ -343,7 +343,7 @@ export function GroupsPage() {
             : undefined
         }
         columns={[
-          { header: "Name", render: (g) => <span className="font-medium text-slate-900">{g.name}</span> },
+          { header: "Name", render: (g) => <span className="font-medium text-slate-900 dark:text-slate-100">{g.name}</span> },
           ...(hasBranches ? [{ header: "Branch", render: (g: GroupDto) => g.branch?.name ?? "-" }] : []),
           { header: "Course", render: (g) => g.course?.name ?? "-" },
           { header: "Schedule", render: (g) => formatGroupSchedule(g) },

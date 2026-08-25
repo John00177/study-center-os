@@ -100,7 +100,7 @@ function DetailRow({ label, value }: { label: string; value: string }) {
   return (
     <div className="flex justify-between">
       <span className="text-slate-500">{label}</span>
-      <span className="font-medium text-slate-900">{value}</span>
+      <span className="font-medium text-slate-900 dark:text-slate-100">{value}</span>
     </div>
   );
 }

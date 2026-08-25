@@ -13,7 +13,7 @@ function SummaryCard({ label, value }: { label: string; value: string | number }
   return (
     <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
       <p className="text-xs font-medium uppercase tracking-wide text-slate-500">{label}</p>
-      <p className="mt-1 text-2xl font-semibold text-slate-900">{value}</p>
+      <p className="mt-1 text-2xl font-semibold text-slate-900 dark:text-slate-100">{value}</p>
     </div>
   );
 }
@@ -58,7 +58,7 @@ function SubmissionDetailModal({
           </p>
           {detail.questions.map((q, i) => (
             <div key={q.id} className="rounded-lg border border-slate-200 p-3">
-              <p className="text-sm font-medium text-slate-900">
+              <p className="text-sm font-medium text-slate-900 dark:text-slate-100">
                 Question {i + 1}: {q.text}
               </p>
               <p className="mt-1 text-sm">
@@ -123,7 +123,7 @@ export function TestResultsPage() {
             <ArrowLeft className="h-4 w-4" />
             Back to My Tests
           </Link>
-          <h1 className="text-2xl font-semibold text-slate-900">{test?.title ?? "Test Results"}</h1>
+          <h1 className="text-2xl font-semibold text-slate-900 dark:text-slate-100">{test?.title ?? "Test Results"}</h1>
         </div>
       </div>
 

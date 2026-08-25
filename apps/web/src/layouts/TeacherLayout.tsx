@@ -13,6 +13,7 @@ import { useTheme } from "../contexts/ThemeContext";
 import { resolveOrgDisplayName } from "../lib/theme";
 import { ThemeToggle } from "../components/ui/ThemeToggle";
 import { LanguageSwitcher } from "../components/ui/LanguageSwitcher";
+import { NotificationBell } from "../components/notifications/NotificationBell";
 import { useTranslation } from "../hooks/use-translation";
 
 const NAV_ITEMS = [
@@ -103,6 +104,7 @@ export function TeacherLayout() {
           <span className="hidden text-sm text-slate-500 sm:inline dark:text-slate-400">{orgName}</span>
           <div className="flex items-center gap-4">
             <span className="hidden text-sm font-medium text-slate-700 sm:inline dark:text-slate-300">{user?.name}</span>
+            <NotificationBell canSend />
             <LanguageSwitcher />
             <ThemeToggle />
             <button

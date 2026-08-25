@@ -59,7 +59,7 @@ export function AnimatedStatCard({ icon: Icon, value, label, delay = 0, urgent =
       } ${mounted ? "translate-y-0 opacity-100" : "translate-y-4 opacity-0"}`}
     >
       <Icon size={24} className={urgent ? "text-red-500" : "text-primary"} />
-      <div className="mt-3 text-2xl font-bold text-slate-900 sm:text-3xl">
+      <div className="mt-3 text-2xl font-bold text-slate-900 dark:text-slate-100 sm:text-3xl">
         {formatValue ? formatValue(displayValue) : displayValue.toLocaleString()}
       </div>
       <div className="mt-1 text-sm text-slate-500">{label}</div>

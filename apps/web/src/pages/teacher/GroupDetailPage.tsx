@@ -82,7 +82,7 @@ function StudentsTab({ groupId }: { groupId: string }) {
         getRowKey={(s) => s.id}
         onRowClick={(s) => setViewingHomeworkFor({ id: s.id, name: s.name })}
         columns={[
-          { header: "Name", render: (s) => <span className="font-medium text-slate-900">{s.name}</span> },
+          { header: "Name", render: (s) => <span className="font-medium text-slate-900 dark:text-slate-100">{s.name}</span> },
           { header: "Phone", render: (s) => s.phone ?? "-" },
           {
             header: "Attendance Rate",
@@ -259,7 +259,7 @@ function AttendanceTab({ groupId }: { groupId: string }) {
                 return (
                   <div key={student.id} className="p-4">
                     <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                      <p className="font-medium text-slate-900 sm:w-40 sm:shrink-0">{student.name}</p>
+                      <p className="font-medium text-slate-900 dark:text-slate-100 sm:w-40 sm:shrink-0">{student.name}</p>
 
                       {/* Desktop: explicit status buttons */}
                       <div className="hidden flex-wrap gap-2 sm:flex">
@@ -435,7 +435,7 @@ function LessonsTab({ groupId }: { groupId: string }) {
         getRowKey={(l) => l.id}
         columns={[
           { header: "Date", render: (l) => new Date(l.date).toLocaleDateString() },
-          { header: "Title", render: (l) => <span className="font-medium text-slate-900">{l.title}</span> },
+          { header: "Title", render: (l) => <span className="font-medium text-slate-900 dark:text-slate-100">{l.title}</span> },
           { header: "Description", render: (l) => l.description ?? "-" },
         ]}
       />
@@ -470,7 +470,7 @@ function HomeworkTab({ groupId }: { groupId: string }) {
         getRowKey={(h) => h.id}
         onRowClick={(h) => setViewingId(h.id)}
         columns={[
-          { header: "Title", render: (h) => <span className="font-medium text-slate-900">{h.title}</span> },
+          { header: "Title", render: (h) => <span className="font-medium text-slate-900 dark:text-slate-100">{h.title}</span> },
           { header: "Due Date", render: (h) => new Date(h.dueDate).toLocaleDateString() },
           { header: "Status", render: (h) => <span className="capitalize">{h.status}</span> },
           {
@@ -511,7 +511,7 @@ export function GroupDetailPage() {
         Back to my groups
       </Link>
 
-      <h1 className="mb-1 text-2xl font-semibold text-slate-900">{group?.name ?? "Group"}</h1>
+      <h1 className="mb-1 text-2xl font-semibold text-slate-900 dark:text-slate-100">{group?.name ?? "Group"}</h1>
       <p className="mb-6 text-sm text-slate-500">{group?.course?.name}</p>
 
       <div className="mb-6 flex gap-1 border-b border-slate-200">

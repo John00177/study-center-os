@@ -18,7 +18,7 @@ export function KpiCard({ label, value, trend, colorClass, icon, sparkline }: Kp
         {icon}
       </div>
       <div className="mt-1.5 flex items-end justify-between gap-3">
-        <p className={`text-xl font-semibold ${colorClass ?? "text-slate-900"}`}>{value}</p>
+        <p className={`text-xl font-semibold ${colorClass ?? "text-slate-900 dark:text-slate-100"}`}>{value}</p>
         {sparkline}
       </div>
       {trend !== undefined && trend !== null && (

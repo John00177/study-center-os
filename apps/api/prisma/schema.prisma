@@ -699,8 +699,12 @@ model Charge {
   description    String?
   dueDate        DateTime     @map("due_date")
   status         ChargeStatus @default(pending)
-  createdAt      DateTime     @default(now()) @map("created_at")
-  updatedAt      DateTime     @updatedAt @map("updated_at")
+  // Overdue itself is computed on read (pending + past due), never stored —
+  // this only records that the one-time "payment is overdue" notification has
+  // already gone out, so the daily sweep doesn't re-notify the same charge.
+  overdueNotifiedAt DateTime? @map("overdue_notified_at")
+  createdAt         DateTime  @default(now()) @map("created_at")
+  updatedAt         DateTime  @updatedAt @map("updated_at")
 
   @@map("charges")
 }
@@ -956,17 +960,30 @@ model SupportTicket {
 // ---------------------------------------------------------------------------
 
 model Notification {
-  id         String   @id @default(cuid())
-  userId     String   @map("user_id")
+  id String @id @default(cuid())
+  // Holds a User.id when recipientType is "user", or a Student.id when it is
+  // "student" — students authenticate through their own portal session and
+  // have no User row, so there is no single FK that fits both.
+  userId        String @map("user_id")
+  recipientType String @default("user") @map("recipient_type") // "user" | "student"
+
   title      String
   message    String
-  type       String   @default("info") // "info" | "success" | "warning" | "error"
-  entityType String?  @map("entity_type") // "student" | "payment" | "attendance" | "salary" | "support_ticket"
-  entityId   String?  @map("entity_id")
-  read       Boolean  @default(false)
-  createdAt  DateTime @default(now()) @map("created_at")
+  type       String  @default("info") // "info" | "success" | "warning" | "error"
+  entityType String? @map("entity_type") // "student" | "payment" | "attendance" | "salary" | "support_ticket"
+  entityId   String? @map("entity_id")
+
+  // Set only for person-to-person sends (owner -> staff, reception -> teacher,
+  // teacher -> student). System/auto-triggered notifications leave these null.
+  // senderName is denormalized so the panel can show "From: X" without a join.
+  senderId   String? @map("sender_id")
+  senderName String? @map("sender_name")
+
+  read      Boolean  @default(false)
+  createdAt DateTime @default(now()) @map("created_at")
 
   @@index([userId, read])
+  @@index([recipientType, userId, read])
   @@index([createdAt])
   @@map("notifications")
 }

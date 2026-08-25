@@ -32,7 +32,7 @@ export function SalaryHistoryModal({ salary, onClose }: SalaryHistoryModalProps)
       >
         <div className="mb-4 rounded-lg bg-slate-50 p-3">
           <p className="text-xs text-slate-500">Total paid this year ({thisYear})</p>
-          <p className="text-lg font-semibold text-slate-900">{formatCurrency(totalPaidThisYear, salary?.currency ?? "UZS")}</p>
+          <p className="text-lg font-semibold text-slate-900 dark:text-slate-100">{formatCurrency(totalPaidThisYear, salary?.currency ?? "UZS")}</p>
         </div>
 
         <DataTable

@@ -171,7 +171,7 @@ export function SetSalaryModal({ open, onClose, editing }: SetSalaryModalProps) 
             onChange={(e) => setNotes(e.target.value)}
             rows={3}
             placeholder="Optional notes..."
-            className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm text-slate-900 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/30"
+            className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm text-slate-900 dark:text-slate-100 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/30"
           />
         </div>
 

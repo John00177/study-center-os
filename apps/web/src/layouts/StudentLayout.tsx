@@ -7,6 +7,7 @@ import { DailyBriefing } from "../components/DailyBriefing";
 import { FeedbackWidget } from "../components/feedback/FeedbackWidget";
 import { useTheme } from "../contexts/ThemeContext";
 import { resolveOrgDisplayName } from "../lib/theme";
+import { StudentNotificationBell } from "../components/notifications/StudentNotificationBell";
 
 const NAV_ITEMS = [
   { to: "/student", label: "Dashboard", icon: LayoutDashboard, end: true },
@@ -48,13 +49,16 @@ export function StudentLayout() {
             <p className="text-xs text-slate-500">{resolveOrgDisplayName(branding)}</p>
           </div>
         </div>
-        <button
-          onClick={handleLogout}
-          className="flex items-center gap-1 rounded-md px-2 py-1.5 text-sm text-slate-500 transition hover:bg-slate-100 hover:text-slate-900"
-        >
-          <LogOut size={16} />
-          Logout
-        </button>
+        <div className="flex items-center gap-2">
+          <StudentNotificationBell />
+          <button
+            onClick={handleLogout}
+            className="flex items-center gap-1 rounded-md px-2 py-1.5 text-sm text-slate-500 transition hover:bg-slate-100 hover:text-slate-900"
+          >
+            <LogOut size={16} />
+            Logout
+          </button>
+        </div>
       </header>
 
       <main className="flex-1 px-4 py-6 pb-20">

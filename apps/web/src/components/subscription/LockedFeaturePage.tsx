@@ -21,7 +21,7 @@ export function LockedFeaturePage({ featureName, requiredPlan, currentPlan }: Lo
       <div className="flex h-16 w-16 items-center justify-center rounded-full bg-amber-100">
         <Lock className="h-8 w-8 text-amber-500" />
       </div>
-      <h1 className="mt-5 text-xl font-semibold text-slate-900">Premium Feature</h1>
+      <h1 className="mt-5 text-xl font-semibold text-slate-900 dark:text-slate-100">Premium Feature</h1>
       <p className="mt-2 max-w-sm text-sm text-slate-500">
         {featureName ? `${featureName} is` : "This feature is"} available on the {label(requiredPlan)} plan and higher.
       </p>

@@ -38,7 +38,7 @@ export function MyStudentsModal({ open, onClose }: MyStudentsModalProps) {
         }
         getRowKey={(r) => `${r.groupId}-${r.student.id}`}
         columns={[
-          { header: "Student Name", render: (r) => <span className="font-medium text-slate-900">{r.student.name}</span> },
+          { header: "Student Name", render: (r) => <span className="font-medium text-slate-900 dark:text-slate-100">{r.student.name}</span> },
           { header: "Group/Class", render: (r) => r.groupName },
           { header: "Phone", render: (r) => r.student.phone ?? "-" },
           { header: "Email", render: (r) => r.student.email ?? "-" },

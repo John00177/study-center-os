@@ -267,7 +267,7 @@ function AddNoteModal({
           onChange={(e) => setNote(e.target.value)}
           rows={3}
           placeholder="Add a note..."
-          className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm text-slate-900 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+          className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm text-slate-900 dark:text-slate-100 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
         />
         <div className="flex justify-end gap-3 border-t border-slate-200 pt-4">
           <button
@@ -333,7 +333,7 @@ export function NewcomersPage() {
   return (
     <div>
       <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
-        <h1 className="text-2xl font-semibold text-slate-900">Newcomers</h1>
+        <h1 className="text-2xl font-semibold text-slate-900 dark:text-slate-100">Newcomers</h1>
         <button
           onClick={() => setRegisterOpen(true)}
           className="flex items-center gap-2 rounded-md bg-indigo-600 px-3 py-2 text-sm font-medium text-white hover:bg-indigo-700"
@@ -363,7 +363,7 @@ export function NewcomersPage() {
           placeholder="Search by name or phone..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="w-full max-w-xs rounded-md border border-slate-300 px-3 py-2 text-sm text-slate-900 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+          className="w-full max-w-xs rounded-md border border-slate-300 px-3 py-2 text-sm text-slate-900 dark:text-slate-100 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
         />
       </div>
 
@@ -373,7 +373,7 @@ export function NewcomersPage() {
         emptyMessage={showArchived ? "No archived students." : 'No newcomers yet. Click "Register New Student" to add one.'}
         getRowKey={(s) => s.id}
         columns={[
-          { header: "Name", render: (s) => <span className="font-medium text-slate-900">{s.name}</span> },
+          { header: "Name", render: (s) => <span className="font-medium text-slate-900 dark:text-slate-100">{s.name}</span> },
           { header: "Phone", render: (s) => s.phone ?? "-" },
           { header: "Interested Course", render: (s) => s.interestedCourse ?? "-" },
           { header: "Registered", render: (s) => new Date(s.registeredAt).toLocaleDateString() },

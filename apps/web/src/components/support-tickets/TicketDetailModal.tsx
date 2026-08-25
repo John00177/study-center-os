@@ -113,13 +113,13 @@ export function TicketDetailModal({
           <div className="grid grid-cols-2 gap-4 rounded-lg border border-slate-200 p-3">
             <div>
               <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">Submitted by</p>
-              <p className="text-slate-900">{ticket.submitterName}</p>
+              <p className="text-slate-900 dark:text-slate-100">{ticket.submitterName}</p>
               <p className="capitalize text-slate-500">{ticket.submitterType.replace("_", " ")}</p>
             </div>
             {showOrganization && (
               <div>
                 <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">Organization</p>
-                <p className="text-slate-900">{ticket.organizationName ?? "Platform"}</p>
+                <p className="text-slate-900 dark:text-slate-100">{ticket.organizationName ?? "Platform"}</p>
               </div>
             )}
             <div>

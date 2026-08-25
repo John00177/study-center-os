@@ -107,7 +107,7 @@ export function PlanAndBillingPage() {
 
   return (
     <div>
-      <h1 className="mb-6 text-2xl font-semibold text-slate-900">Plan & Billing</h1>
+      <h1 className="mb-6 text-2xl font-semibold text-slate-900 dark:text-slate-100">Plan & Billing</h1>
 
       {current && (
         <div className="mb-8 grid grid-cols-1 gap-6 lg:grid-cols-2">
@@ -118,7 +118,7 @@ export function PlanAndBillingPage() {
                 {current.subscription?.status ?? "no subscription"}
               </span>
             </div>
-            <p className="mt-2 text-3xl font-bold text-slate-900">{planLabel(current.plan.slug)}</p>
+            <p className="mt-2 text-3xl font-bold text-slate-900 dark:text-slate-100">{planLabel(current.plan.slug)}</p>
             <p className="mt-1 text-sm text-slate-500">
               {sortedPlans.find((p) => p.slug === current.plan.slug)
                 ? `${sortedPlans.find((p) => p.slug === current.plan.slug)!.price} ${sortedPlans.find((p) => p.slug === current.plan.slug)!.currency}/month`
@@ -190,8 +190,8 @@ export function PlanAndBillingPage() {
                   Current plan
                 </span>
               )}
-              <h3 className="text-lg font-semibold text-slate-900">{planLabel(plan.slug)}</h3>
-              <p className="mt-1 text-2xl font-bold text-slate-900">
+              <h3 className="text-lg font-semibold text-slate-900 dark:text-slate-100">{planLabel(plan.slug)}</h3>
+              <p className="mt-1 text-2xl font-bold text-slate-900 dark:text-slate-100">
                 {displayPrice} {plan.currency}
                 <span className="text-sm font-normal text-slate-500">/{annual ? "year" : "month"}</span>
               </p>

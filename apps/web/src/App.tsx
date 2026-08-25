@@ -393,7 +393,14 @@ export default function App() {
             </RequireNotOwner>
           }
         />
-        <Route path="calendar" element={<CalendarPage />} />
+        <Route
+          path="calendar"
+          element={
+            <RequireNotOwner>
+              <CalendarPage />
+            </RequireNotOwner>
+          }
+        />
         <Route
           path="attendance"
           element={

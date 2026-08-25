@@ -28,7 +28,7 @@ export function MyTicketsModal({ open, onClose, basePath }: MyTicketsModalProps)
             <li key={t.id} className="py-3">
               <div className="flex items-start justify-between gap-3">
                 <div className="min-w-0">
-                  <p className="truncate text-sm font-medium text-slate-900">
+                  <p className="truncate text-sm font-medium text-slate-900 dark:text-slate-100">
                     {TYPE_ICONS[t.type]} {t.title}
                   </p>
                   <p className="mt-0.5 text-xs text-slate-500">

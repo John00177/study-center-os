@@ -25,7 +25,7 @@ export function OrgSupportTicketsPage() {
 
   return (
     <div>
-      <h1 className="mb-6 text-2xl font-semibold text-slate-900">Support Tickets</h1>
+      <h1 className="mb-6 text-2xl font-semibold text-slate-900 dark:text-slate-100">Support Tickets</h1>
 
       <div className="mb-6 grid grid-cols-3 gap-4">
         <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
@@ -36,11 +36,11 @@ export function OrgSupportTicketsPage() {
         </div>
         <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
           <p className="text-xs uppercase tracking-wide text-slate-400">Today</p>
-          <p className="text-2xl font-semibold text-slate-900">{summary?.totalToday ?? "-"}</p>
+          <p className="text-2xl font-semibold text-slate-900 dark:text-slate-100">{summary?.totalToday ?? "-"}</p>
         </div>
         <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
           <p className="text-xs uppercase tracking-wide text-slate-400">This Week</p>
-          <p className="text-2xl font-semibold text-slate-900">{summary?.totalThisWeek ?? "-"}</p>
+          <p className="text-2xl font-semibold text-slate-900 dark:text-slate-100">{summary?.totalThisWeek ?? "-"}</p>
         </div>
       </div>
 
@@ -108,7 +108,7 @@ export function OrgSupportTicketsPage() {
             header: "Submitter",
             render: (t) => (
               <div>
-                <p className="font-medium text-slate-900">{t.submitterName}</p>
+                <p className="font-medium text-slate-900 dark:text-slate-100">{t.submitterName}</p>
                 <p className="text-xs capitalize text-slate-500">{t.submitterType.replace("_", " ")}</p>
               </div>
             ),

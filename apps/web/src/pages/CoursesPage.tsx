@@ -194,7 +194,7 @@ function CourseForm({
               min="0"
               value={form.monthlyFee}
               onChange={(e) => setForm((f) => ({ ...f, monthlyFee: e.target.value }))}
-              className={`w-full rounded-md border px-3 py-3 pr-16 text-lg font-semibold text-slate-900 focus:outline-none focus:ring-1 ${
+              className={`w-full rounded-md border px-3 py-3 pr-16 text-lg font-semibold text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-1 ${
                 errors.monthlyFee
                   ? "border-red-300 focus:border-red-500 focus:ring-red-500"
                   : "border-slate-300 focus:border-indigo-500 focus:ring-indigo-500"
@@ -237,7 +237,7 @@ function CourseForm({
             rows={3}
             value={form.description}
             onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))}
-            className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm text-slate-900 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+            className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm text-slate-900 dark:text-slate-100 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
           />
         </div>
 
@@ -305,7 +305,7 @@ function CourseDetailModal({
               <ul className="divide-y divide-slate-100 rounded-md border border-slate-200">
                 {course.groups.map((g) => (
                   <li key={g.id} className="flex items-center justify-between px-3 py-2 text-sm">
-                    <span className="font-medium text-slate-900">{g.name}</span>
+                    <span className="font-medium text-slate-900 dark:text-slate-100">{g.name}</span>
                     <span className="text-slate-500">{g.branchName ?? "-"}</span>
                   </li>
                 ))}
@@ -386,7 +386,7 @@ export function CoursesPage() {
   return (
     <div>
       <div className="mb-6 flex items-center justify-between">
-        <h1 className="text-2xl font-semibold text-slate-900">Courses</h1>
+        <h1 className="text-2xl font-semibold text-slate-900 dark:text-slate-100">Courses</h1>
         <button
           onClick={() => {
             setEditing(null);
@@ -433,14 +433,14 @@ export function CoursesPage() {
         getRowKey={(c) => c.id}
         onRowClick={(c) => setDetailId(c.id)}
         columns={[
-          { header: "Course Name", render: (c) => <span className="font-medium text-slate-900">{c.name}</span> },
+          { header: "Course Name", render: (c) => <span className="font-medium text-slate-900 dark:text-slate-100">{c.name}</span> },
           { header: "Category", render: (c) => <CategoryBadge category={c.category} /> },
           { header: "Level", render: (c) => c.level ?? "-" },
           { header: "Duration", render: (c) => c.duration ?? "-" },
           {
             header: "Monthly Fee",
             align: "right",
-            render: (c) => <span className="font-bold text-slate-900">{formatFee(c.monthlyFee)}</span>,
+            render: (c) => <span className="font-bold text-slate-900 dark:text-slate-100">{formatFee(c.monthlyFee)}</span>,
           },
           { header: "Groups", render: (c) => c.groupCount, align: "right" },
           { header: "Students", render: (c) => c.studentCount, align: "right" },

@@ -137,7 +137,7 @@ export function BrandingSettingsPage() {
   return (
     <div className="mx-auto max-w-3xl space-y-6">
       <div>
-        <h1 className="text-2xl font-bold tracking-tight text-slate-900">Branding</h1>
+        <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-slate-100">Branding</h1>
         <p className="text-sm text-slate-600">Make {branding?.name ?? "your study center"} feel like your own.</p>
       </div>
 
@@ -350,7 +350,7 @@ export function BrandingSettingsPage() {
         <div className="overflow-hidden rounded-lg border border-slate-200">
           <div className="flex items-center gap-2 border-b border-primary/10 bg-primary/5 px-4 py-3">
             <OrgLogo logoUrl={branding?.logoUrl} logoDarkUrl={logoDarkUrl || undefined} name={previewName} className="h-6 w-6" />
-            <span className="text-sm font-semibold text-slate-900">{previewName}</span>
+            <span className="text-sm font-semibold text-slate-900 dark:text-slate-100">{previewName}</span>
           </div>
           <div
             className="flex flex-col items-center gap-3 bg-slate-100 bg-cover bg-center p-6"
@@ -361,7 +361,7 @@ export function BrandingSettingsPage() {
               <div className="mb-3 flex justify-center">
                 <OrgLogo logoUrl={branding?.logoUrl} logoDarkUrl={logoDarkUrl || undefined} name={previewName} className="h-10 w-10" />
               </div>
-              <p className="text-center text-sm font-bold text-slate-900">Welcome to {previewName}</p>
+              <p className="text-center text-sm font-bold text-slate-900 dark:text-slate-100">Welcome to {previewName}</p>
               <button className="mt-3 w-full rounded-lg bg-primary py-2 text-sm font-medium text-white shadow-sm">Sign in</button>
             </div>
           </div>

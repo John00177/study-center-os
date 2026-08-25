@@ -55,7 +55,7 @@ const NAV_ITEMS: {
   { to: "/courses", label: "Courses", translationKey: "courses", icon: BookOpen, roles: ["admin"] },
   { to: "/groups", label: "Groups", translationKey: "groups", icon: UsersRound, roles: ["owner", "admin", "manager"] },
   { to: "/schedule", label: "Schedule", translationKey: "schedules", icon: CalendarDays, roles: ["admin", "manager"] },
-  { to: "/calendar", label: "Calendar", icon: Calendar, roles: ["owner", "admin", "manager"] },
+  { to: "/calendar", label: "Calendar", icon: Calendar, roles: ["admin", "manager"] },
   { to: "/attendance", label: "Attendance", translationKey: "attendance", icon: ClipboardCheck, roles: ["admin", "manager"] },
   { to: "/finance", label: "Finance", translationKey: "finance", icon: Banknote, roles: ["owner", "admin"] },
   {

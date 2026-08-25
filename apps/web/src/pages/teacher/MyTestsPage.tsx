@@ -58,7 +58,7 @@ function TestPreviewModal({ testId, onClose }: { testId: string | null; onClose:
           <div className="space-y-3">
             {test.questions?.map((q, i) => (
               <div key={q.id} className="rounded-lg border border-slate-200 p-3">
-                <p className="text-sm font-medium text-slate-900">
+                <p className="text-sm font-medium text-slate-900 dark:text-slate-100">
                   Question {i + 1}: {q.text}
                 </p>
                 <div className="mt-1 flex items-center gap-2">
@@ -120,7 +120,7 @@ function PublishModal({ test, onClose }: { test: TestDto | null; onClose: () => 
       {test && (
         <div className="space-y-4">
           <p className="text-sm text-slate-600">
-            Publish "<span className="font-medium text-slate-900">{test.title}</span>" to a group. Students will be able to take it immediately.
+            Publish "<span className="font-medium text-slate-900 dark:text-slate-100">{test.title}</span>" to a group. Students will be able to take it immediately.
           </p>
           <SelectField label="Group" required value={groupId} onChange={(e) => setGroupId(e.target.value)}>
             <option value="">Select group</option>
@@ -188,7 +188,7 @@ export function MyTestsPage() {
   return (
     <div>
       <div className="mb-6 flex items-center justify-between">
-        <h1 className="text-2xl font-semibold text-slate-900">My Tests</h1>
+        <h1 className="text-2xl font-semibold text-slate-900 dark:text-slate-100">My Tests</h1>
         <Link
           to="/teacher/ai-tests/generate"
           className="flex items-center gap-2 rounded-md bg-indigo-600 px-3 py-2 text-sm font-medium text-white hover:bg-indigo-700"
@@ -229,7 +229,7 @@ export function MyTestsPage() {
         getRowKey={(t) => t.id}
         onRowClick={(t) => setPreviewingId(t.id)}
         columns={[
-          { header: "Title", render: (t) => <span className="font-medium text-slate-900">{t.title}</span> },
+          { header: "Title", render: (t) => <span className="font-medium text-slate-900 dark:text-slate-100">{t.title}</span> },
           { header: "Topic", render: (t) => t.topic },
           { header: "Subject", render: (t) => <span className="inline-flex items-center rounded-full bg-indigo-50 px-2 py-0.5 text-xs font-medium text-indigo-700">{t.subject}</span> },
           { header: "Level", render: (t) => <span className="inline-flex items-center rounded-full bg-slate-100 px-2 py-0.5 text-xs font-medium text-slate-600">{t.level}</span> },

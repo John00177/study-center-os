@@ -135,7 +135,7 @@ export function FeedbackModal({ open, onClose, basePath, profile, onSubmitted }:
             placeholder="Describe the issue or idea in detail..."
             value={form.description}
             onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))}
-            className={`w-full rounded-lg border px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 ${
+            className={`w-full rounded-lg border px-3 py-2 text-sm text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 ${
               errors.description ? "border-red-300 focus:ring-red-500" : "border-slate-300 focus:ring-primary/30"
             }`}
           />

@@ -23,4 +23,16 @@ export class CreateNotificationDto {
   @IsOptional()
   @IsString()
   entityId?: string;
+
+  @IsOptional()
+  @IsIn(["user", "student"])
+  recipientType?: "user" | "student";
+
+  @IsOptional()
+  @IsString()
+  senderId?: string;
+
+  @IsOptional()
+  @IsString()
+  senderName?: string;
 }
