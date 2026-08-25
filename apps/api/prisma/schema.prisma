@@ -942,3 +942,25 @@ model SupportTicket {
   @@index([submitterType, submitterId])
   @@map("support_tickets")
 }
+
+// ---------------------------------------------------------------------------
+// In-app notifications (bell icon feed) — distinct from the mock push-token
+// delivery in NotificationsService (registerPushToken/sendToUser/notify),
+// which targets a device, not this persisted per-user list.
+// ---------------------------------------------------------------------------
+
+model Notification {
+  id         String   @id @default(cuid())
+  userId     String   @map("user_id")
+  title      String
+  message    String
+  type       String   @default("info") // "info" | "success" | "warning" | "error"
+  entityType String?  @map("entity_type") // "student" | "payment" | "attendance" | "salary" | "support_ticket"
+  entityId   String?  @map("entity_id")
+  read       Boolean  @default(false)
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  @@index([userId, read])
+  @@index([createdAt])
+  @@map("notifications")
+}

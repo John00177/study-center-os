@@ -1486,3 +1486,31 @@ export interface TicketSummaryDto {
   totalToday: number;
   totalThisWeek: number;
 }
+
+// ---- In-app notifications (bell icon feed) ----
+
+export type NotificationType = "info" | "success" | "warning" | "error";
+
+export interface NotificationDto {
+  id: string;
+  userId: string;
+  title: string;
+  message: string;
+  type: NotificationType;
+  entityType?: string | null;
+  entityId?: string | null;
+  read: boolean;
+  createdAt: string;
+}
+
+export interface NotificationListDto {
+  items: NotificationDto[];
+  total: number;
+  page: number;
+  limit: number;
+  hasMore: boolean;
+}
+
+export interface UnreadCountDto {
+  count: number;
+}

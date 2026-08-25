@@ -2,6 +2,7 @@ import { BadRequestException, Injectable, NotFoundException } from "@nestjs/comm
 import { Prisma } from "@prisma/client";
 import { PrismaService } from "../../prisma/prisma.service";
 import { AuditService } from "../audit/audit.service";
+import { NotificationsService } from "../notifications/notifications.service";
 import { SetSalaryDto } from "./dto/set-salary.dto";
 import { RecordSalaryPaymentDto } from "./dto/record-salary-payment.dto";
 
@@ -27,6 +28,7 @@ export class SalaryService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly auditService: AuditService,
+    private readonly notificationsService: NotificationsService,
   ) {}
 
   // ---- Setting salaries ----
@@ -287,6 +289,15 @@ export class SalaryService {
       entityType: "SalaryPayment",
       entityId: payment.id,
       afterValue: payment as unknown as Prisma.InputJsonValue,
+    });
+
+    const teacher = await this.prisma.teacher.findUnique({ where: { id: salary.teacherId }, select: { name: true } });
+    await this.notificationsService.notifyOrgStaff(organizationId, actorId, ["owner"], {
+      title: "Salary paid",
+      message: `Salary paid: ${payment.amount.toLocaleString("en-US")} ${payment.currency} to ${teacher?.name ?? "a teacher"}`,
+      type: "info",
+      entityType: "salary",
+      entityId: payment.id,
     });
 
     return payment;

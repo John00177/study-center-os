@@ -2,6 +2,7 @@ import { ForbiddenException, Injectable, NotFoundException } from "@nestjs/commo
 import { Prisma, TicketPriority, TicketStatus, TicketType } from "@prisma/client";
 import { PrismaService } from "../../prisma/prisma.service";
 import { AuditService } from "../audit/audit.service";
+import { NotificationsService } from "../notifications/notifications.service";
 import { CreateTicketDto } from "./dto/create-ticket.dto";
 import { UpdateTicketDto } from "./dto/update-ticket.dto";
 
@@ -27,6 +28,7 @@ export class SupportTicketsService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly auditService: AuditService,
+    private readonly notificationsService: NotificationsService,
   ) {}
 
   async createTicket(dto: CreateTicketDto, context: SubmitterContext) {
@@ -48,6 +50,17 @@ export class SupportTicketsService {
         submitterName: context.submitterName,
         organizationId: context.organizationId,
       },
+    });
+
+    const org = context.organizationId
+      ? await this.prisma.organization.findUnique({ where: { id: context.organizationId }, select: { name: true } })
+      : null;
+    await this.notificationsService.notifyPlatformAdmins({
+      title: "New feedback",
+      message: `New feedback from ${org?.name ?? context.submitterName}`,
+      type: "info",
+      entityType: "support_ticket",
+      entityId: ticket.id,
     });
 
     return ticket;

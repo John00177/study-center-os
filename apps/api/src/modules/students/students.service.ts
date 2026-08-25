@@ -3,6 +3,7 @@ import { Prisma } from "@prisma/client";
 import * as argon2 from "argon2";
 import { PrismaService } from "../../prisma/prisma.service";
 import { AuditService, redact } from "../audit/audit.service";
+import { NotificationsService } from "../notifications/notifications.service";
 import { SubscriptionLimitsService } from "../subscription/subscription-limits.service";
 import { generateTempPassword } from "../../common/utils/generate-temp-password";
 import { AddNoteDto } from "./dto/add-note.dto";
@@ -18,6 +19,7 @@ export class StudentsService {
     private readonly prisma: PrismaService,
     private readonly auditService: AuditService,
     private readonly limitsService: SubscriptionLimitsService,
+    private readonly notificationsService: NotificationsService,
   ) {}
 
   /**
@@ -139,6 +141,14 @@ export class StudentsService {
       entityType: "Student",
       entityId: student.id,
       afterValue: student as unknown as Prisma.InputJsonValue,
+    });
+
+    await this.notificationsService.notifyOrgStaff(organizationId, actorId, ["owner", "manager"], {
+      title: "New student registered",
+      message: `New student registered: ${student.name}`,
+      type: "success",
+      entityType: "student",
+      entityId: student.id,
     });
 
     return student;

@@ -4,6 +4,7 @@ import { useAuthStore } from "../stores/auth.store";
 import { api } from "../lib/api";
 import { usePendingApplications } from "../hooks/use-platform-admin";
 import { DailyBriefing } from "../components/DailyBriefing";
+import { NotificationBell } from "../components/notifications/NotificationBell";
 
 const NAV_ITEMS = [
   { to: "/admin", label: "Dashboard", icon: LayoutDashboard, end: true },
@@ -64,6 +65,7 @@ export function PlatformAdminLayout() {
           <span className="text-sm text-slate-400">Study Center OS — Platform</span>
           <div className="flex items-center gap-4">
             <span className="text-sm font-medium text-white">{user?.name}</span>
+            <NotificationBell variant="dark" />
             <button
               onClick={handleLogout}
               className="flex items-center gap-1 rounded-md px-2 py-1 text-sm text-slate-400 hover:bg-slate-800 hover:text-white"

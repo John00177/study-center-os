@@ -80,6 +80,17 @@ export class AttendanceService {
       }
     }
 
+    const absentCount = withStudents.filter((r) => r.status === "absent").length;
+    if (absentCount > 0) {
+      await this.notificationsService.notifyOrgStaff(organizationId, actorId, ["owner", "manager"], {
+        title: "Absences recorded",
+        message: `${absentCount} student${absentCount > 1 ? "s" : ""} absent in ${group.name} today`,
+        type: "warning",
+        entityType: "attendance",
+        entityId: dto.groupId,
+      });
+    }
+
     return withStudents;
   }
 

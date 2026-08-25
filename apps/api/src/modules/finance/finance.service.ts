@@ -2,6 +2,7 @@ import { Injectable, NotFoundException } from "@nestjs/common";
 import { Prisma } from "@prisma/client";
 import { PrismaService } from "../../prisma/prisma.service";
 import { AuditService } from "../audit/audit.service";
+import { NotificationsService } from "../notifications/notifications.service";
 import { CreateFinancialAccountDto } from "./dto/create-financial-account.dto";
 import { UpdateFinancialAccountDto } from "./dto/update-financial-account.dto";
 import { CreateChargeDto } from "./dto/create-charge.dto";
@@ -21,6 +22,7 @@ export class FinanceService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly auditService: AuditService,
+    private readonly notificationsService: NotificationsService,
   ) {}
 
   // ---- Financial accounts ----
@@ -301,7 +303,28 @@ export class FinanceService {
       afterValue: charge as unknown as Prisma.InputJsonValue,
     });
 
+    await this.notifyIfBalanceNegative(organizationId, actorId, dto.studentId);
+
     return charge;
+  }
+
+  /** Owner-facing heads-up when a student now owes more than they've paid, following a new charge. */
+  private async notifyIfBalanceNegative(organizationId: string, actorId: string, studentId: string) {
+    const [charges, payments, student] = await Promise.all([
+      this.prisma.charge.aggregate({ where: { organizationId, studentId }, _sum: { amount: true } }),
+      this.prisma.payment.aggregate({ where: { organizationId, studentId }, _sum: { amount: true } }),
+      this.prisma.student.findUnique({ where: { id: studentId }, select: { name: true } }),
+    ]);
+    const balance = (payments._sum.amount ?? 0) - (charges._sum.amount ?? 0);
+    if (balance >= 0) return;
+
+    await this.notificationsService.notifyOrgStaff(organizationId, actorId, ["owner"], {
+      title: "Negative student balance",
+      message: `Student ${student?.name ?? "Unknown"} has negative balance: ${Math.abs(balance).toLocaleString("en-US")} UZS`,
+      type: "warning",
+      entityType: "student",
+      entityId: studentId,
+    });
   }
 
   async updateCharge(organizationId: string, actorId: string, id: string, dto: UpdateChargeDto) {
@@ -438,6 +461,18 @@ export class FinanceService {
       entityType: "Payment",
       entityId: payment.id,
       afterValue: payment as unknown as Prisma.InputJsonValue,
+    });
+
+    const payingStudent = await this.prisma.student.findUnique({
+      where: { id: dto.studentId },
+      select: { name: true },
+    });
+    await this.notificationsService.notifyOrgStaff(organizationId, actorId, ["owner"], {
+      title: "Payment received",
+      message: `Payment received: ${payment.amount.toLocaleString("en-US")} ${payment.currency} from ${payingStudent?.name ?? "a student"}`,
+      type: "success",
+      entityType: "payment",
+      entityId: payment.id,
     });
 
     return payment;
