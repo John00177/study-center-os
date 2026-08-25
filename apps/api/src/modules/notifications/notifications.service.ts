@@ -271,7 +271,9 @@ export class NotificationsService {
   // Charge.overdueNotifiedAt keeps it to one notification per charge.
   // ---------------------------------------------------------------------
 
-  @Cron(CronExpression.EVERY_DAY_AT_9AM)
+  // Named explicitly: @nestjs/schedule falls back to crypto.randomUUID() for
+  // unnamed jobs, which is not a global before Node 19 (Railway runs 18).
+  @Cron(CronExpression.EVERY_DAY_AT_9AM, { name: "overdue-charge-sweep" })
   async sweepOverdueCharges() {
     const now = new Date();
     const charges = await this.prisma.charge.findMany({
