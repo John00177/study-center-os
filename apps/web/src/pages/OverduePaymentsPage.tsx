@@ -10,6 +10,7 @@ import { useCreatePayment, useFinancialAccounts } from "../hooks/use-finance";
 import { OverdueChargesFilters, useOverdueCharges, useSendReminder } from "../hooks/use-reminders";
 import { useCurrentSubscription } from "../hooks/use-subscription";
 import { LockedFeaturePage } from "../components/subscription/LockedFeaturePage";
+import { useTheme } from "../contexts/ThemeContext";
 import { parsePlanLockError } from "../lib/plan-lock";
 import { formatCurrency } from "../lib/format";
 import { useUserRole } from "../stores/auth.store";
@@ -25,6 +26,8 @@ export function OverduePaymentsPage() {
   // backend guard on POST /payments) — owner/admin get this page read-only,
   // minus the Mark Paid action, even though the route is shared.
   const canRecordPayments = role === "reception";
+  const { branding } = useTheme();
+  const hasBranches = (branding as { hasBranches?: boolean } | null)?.hasBranches ?? true;
   const [branchId, setBranchId] = useState("");
   const [minDaysOverdue, setMinDaysOverdue] = useState("");
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
@@ -127,16 +130,18 @@ export function OverduePaymentsPage() {
       )}
 
       <div className="mb-4 flex flex-wrap items-end gap-4">
-        <div className="w-48">
-          <SelectField label="Branch" value={branchId} onChange={(e) => setBranchId(e.target.value)}>
-            <option value="">All branches</option>
-            {branches?.map((b) => (
-              <option key={b.id} value={b.id}>
-                {b.name}
-              </option>
-            ))}
-          </SelectField>
-        </div>
+        {hasBranches && (
+          <div className="w-48">
+            <SelectField label="Branch" value={branchId} onChange={(e) => setBranchId(e.target.value)}>
+              <option value="">All branches</option>
+              {branches?.map((b) => (
+                <option key={b.id} value={b.id}>
+                  {b.name}
+                </option>
+              ))}
+            </SelectField>
+          </div>
+        )}
         <div className="w-48">
           <SelectField
             label="Days overdue"

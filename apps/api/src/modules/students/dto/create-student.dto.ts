@@ -1,23 +1,21 @@
-import { IsBoolean, IsDateString, IsEmail, IsIn, IsOptional, IsString } from "class-validator";
+import { IsBoolean, IsDateString, IsIn, IsOptional, IsString } from "class-validator";
 
 const GENDERS = ["male", "female"] as const;
-const LEAD_SOURCES = ["Google", "Instagram", "Referral", "Walk-in", "Other"] as const;
 
 export class CreateStudentDto {
   @IsString()
   name!: string;
 
   @IsOptional()
-  @IsEmail()
-  email?: string;
+  @IsString()
+  socialAccount?: string;
 
   @IsOptional()
   @IsString()
   phone?: string;
 
-  @IsOptional()
   @IsDateString()
-  dateOfBirth?: string | null;
+  dateOfBirth!: string;
 
   @IsOptional()
   @IsString()
@@ -31,13 +29,8 @@ export class CreateStudentDto {
   @IsString()
   interestedCourse?: string;
 
-  @IsOptional()
   @IsIn(GENDERS)
-  gender?: (typeof GENDERS)[number];
-
-  @IsOptional()
-  @IsIn(LEAD_SOURCES)
-  leadSource?: (typeof LEAD_SOURCES)[number];
+  gender!: (typeof GENDERS)[number];
 
   @IsOptional()
   @IsBoolean()

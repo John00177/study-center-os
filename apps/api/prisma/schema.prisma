@@ -59,6 +59,12 @@ model Organization {
   dateFormat String @default("DD.MM.YYYY") @map("date_format")
   timeFormat String @default("24h") @map("time_format")
 
+  // Single-branch orgs (the common case) don't want branch pickers cluttering
+  // every form — set by a platform admin (approval, or later from the org
+  // detail view). false means the UI collapses to the org's one implicit
+  // branch instead of asking the user to choose.
+  hasBranches Boolean @default(false) @map("has_branches")
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -367,7 +373,13 @@ model Student {
   id               String        @id @default(cuid())
   organizationId   String        @map("organization_id")
   name             String
+  // Login identifier for the student portal (see validateStudentCredentials)
+  // — kept even though the registration forms no longer collect it directly;
+  // socialAccount is what staff capture instead. Not shown/edited on the
+  // newcomer/student forms anymore.
   email            String?
+  // Telegram/WhatsApp handle — replaces email on the newcomer/student forms.
+  socialAccount    String?       @map("social_account")
   phone            String?
   dateOfBirth      DateTime?     @map("date_of_birth")
   address          String?
@@ -377,6 +389,8 @@ model Student {
   notes            String?
   interestedCourse String?       @map("interested_course")
   gender           String?
+  // Deprecated — no longer collected or shown on any form. Left in place
+  // (not dropped) for existing rows and audit-log history readability.
   leadSource       String?       @map("lead_source")
   medicalCard      Boolean?      @default(false) @map("medical_card")
   parentName       String?       @map("parent_name")
@@ -388,12 +402,8 @@ model Student {
   // recently (re)generated forces a change on next login for that side.
   mustChangePassword Boolean     @default(false) @map("must_change_password")
   tempPassword       String?     @map("temp_password")
-  // CRM pipeline stage, distinct from `status` (which governs enrollment
-  // mechanics like newcomer -> active conversion). One of "lead" | "trial" |
-  // "contract" | "paid" | "refusal" — see the CRM Pipeline board
-  // (CrmPipelinePage.tsx) and PATCH /students/:id/stage. "contract" and
-  // "paid" are also set automatically on enrollment conversion and first
-  // payment respectively — see students.service.ts / finance.service.ts.
+  // Deprecated — the CRM Pipeline board that drove this has been removed.
+  // Left in place (not dropped) rather than migrated away for existing rows.
   stage            String        @default("lead")
   registeredAt     DateTime      @default(now()) @map("registered_at")
   convertedAt      DateTime?     @map("converted_at")

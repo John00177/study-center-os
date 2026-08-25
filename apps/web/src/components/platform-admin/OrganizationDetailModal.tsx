@@ -1,6 +1,7 @@
 import { Modal } from "../Modal";
 import { DataTable } from "../DataTable";
-import { useOrganizationDetail } from "../../hooks/use-platform-admin";
+import { useToast } from "../Toast";
+import { useOrganizationDetail, useUpdateOrganizationSettings } from "../../hooks/use-platform-admin";
 import { formatCurrency } from "../../lib/format";
 
 interface OrganizationDetailModalProps {
@@ -11,6 +12,18 @@ interface OrganizationDetailModalProps {
 
 export function OrganizationDetailModal({ open, onClose, organizationId }: OrganizationDetailModalProps) {
   const { data, isLoading } = useOrganizationDetail(open ? organizationId : null);
+  const updateSettings = useUpdateOrganizationSettings();
+  const { showToast } = useToast();
+
+  async function toggleHasBranches(next: boolean) {
+    if (!organizationId) return;
+    try {
+      await updateSettings.mutateAsync({ id: organizationId, hasBranches: next });
+      showToast(next ? "Branches enabled for this study center." : "Branches disabled for this study center.");
+    } catch {
+      showToast("Failed to update branch setting.", "error");
+    }
+  }
 
   return (
     <Modal
@@ -42,6 +55,19 @@ export function OrganizationDetailModal({ open, onClose, organizationId }: Organ
             <div>
               <p className="text-xs font-medium uppercase text-slate-400">Created</p>
               <p className="text-slate-900">{new Date(data.organization.createdAt).toLocaleDateString()}</p>
+            </div>
+            <div>
+              <p className="text-xs font-medium uppercase text-slate-400">Branches</p>
+              <label className="mt-1 flex items-center gap-2 text-slate-900">
+                <input
+                  type="checkbox"
+                  checked={data.organization.hasBranches}
+                  disabled={updateSettings.isPending}
+                  onChange={(e) => toggleHasBranches(e.target.checked)}
+                  className="h-4 w-4 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500 disabled:opacity-60"
+                />
+                Has multiple branches
+              </label>
             </div>
           </div>
 

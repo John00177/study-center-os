@@ -26,18 +26,15 @@ import {
   useUpdateStudent,
 } from "../hooks/use-students";
 
-const LEAD_SOURCES = ["Google", "Instagram", "Referral", "Walk-in", "Other"] as const;
-
 interface FormState {
   name: string;
-  email: string;
+  socialAccount: string;
   phone: string;
   address: string;
   emergencyContact: string;
   gender: string;
   dateOfBirth: string;
   parentPhone: string;
-  leadSource: string;
   medicalCard: boolean;
   notes: string;
 }
@@ -45,14 +42,13 @@ interface FormState {
 function toFormState(student?: StudentDto | null): FormState {
   return {
     name: student?.name ?? "",
-    email: student?.email ?? "",
+    socialAccount: student?.socialAccount ?? "",
     phone: student?.phone ?? "",
     address: student?.address ?? "",
     emergencyContact: student?.emergencyContact ?? "",
     gender: student?.gender ?? "",
     dateOfBirth: student?.dateOfBirth ? student.dateOfBirth.slice(0, 10) : "",
     parentPhone: student?.parentPhone ?? "",
-    leadSource: student?.leadSource ?? "",
     medicalCard: student?.medicalCard ?? false,
     notes: student?.notes ?? "",
   };
@@ -86,21 +82,23 @@ export function StudentForm({
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
-    if (!form.name.trim()) {
-      setErrors({ name: "Name is required." });
+    const nextErrors: Record<string, string> = {};
+    if (!form.name.trim()) nextErrors.name = "Name is required.";
+    if (!form.gender) nextErrors.gender = "Gender is required.";
+    if (!form.dateOfBirth) nextErrors.dateOfBirth = "Birth date is required.";
+    if (Object.keys(nextErrors).length) {
+      setErrors(nextErrors);
       return;
     }
 
     const input: StudentInput = {
       name: form.name.trim(),
-      email: form.email.trim() || undefined,
+      socialAccount: form.socialAccount.trim() || undefined,
       phone: form.phone.trim() || undefined,
       address: form.address.trim() || undefined,
-      emergencyContact: form.emergencyContact.trim() || undefined,
-      gender: form.gender || undefined,
-      dateOfBirth: form.dateOfBirth || undefined,
+      gender: form.gender,
+      dateOfBirth: form.dateOfBirth,
       parentPhone: form.parentPhone.trim() || undefined,
-      leadSource: form.leadSource || undefined,
       medicalCard: form.medicalCard,
       notes: form.notes.trim() || undefined,
     };
@@ -131,10 +129,10 @@ export function StudentForm({
         />
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <TextField
-            label="Email"
-            type="email"
-            value={form.email}
-            onChange={(e) => setForm((f) => ({ ...f, email: e.target.value }))}
+            label="Social Account"
+            placeholder="Telegram/WhatsApp"
+            value={form.socialAccount}
+            onChange={(e) => setForm((f) => ({ ...f, socialAccount: e.target.value }))}
           />
           <TextField
             label="Phone"
@@ -147,49 +145,34 @@ export function StudentForm({
           value={form.address}
           onChange={(e) => setForm((f) => ({ ...f, address: e.target.value }))}
         />
-        <TextField
-          label="Emergency contact"
-          value={form.emergencyContact}
-          onChange={(e) => setForm((f) => ({ ...f, emergencyContact: e.target.value }))}
-        />
 
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <SelectField
             label="Gender"
+            required
             value={form.gender}
+            error={errors.gender}
             onChange={(e) => setForm((f) => ({ ...f, gender: e.target.value }))}
           >
-            <option value="">Not specified</option>
+            <option value="">Select gender</option>
             <option value="male">Male</option>
             <option value="female">Female</option>
           </SelectField>
           <TextField
             label="Birth Date"
             type="date"
+            required
             value={form.dateOfBirth}
+            error={errors.dateOfBirth}
             onChange={(e) => setForm((f) => ({ ...f, dateOfBirth: e.target.value }))}
           />
         </div>
 
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-          <TextField
-            label="Parent Phone"
-            value={form.parentPhone}
-            onChange={(e) => setForm((f) => ({ ...f, parentPhone: e.target.value }))}
-          />
-          <SelectField
-            label="Lead Source"
-            value={form.leadSource}
-            onChange={(e) => setForm((f) => ({ ...f, leadSource: e.target.value }))}
-          >
-            <option value="">Not specified</option>
-            {LEAD_SOURCES.map((source) => (
-              <option key={source} value={source}>
-                {source}
-              </option>
-            ))}
-          </SelectField>
-        </div>
+        <TextField
+          label="Parent Phone"
+          value={form.parentPhone}
+          onChange={(e) => setForm((f) => ({ ...f, parentPhone: e.target.value }))}
+        />
 
         <label className="flex items-center gap-2 text-sm text-slate-700">
           <input
@@ -542,15 +525,6 @@ function PasswordStatusBadge({ mustChangePassword }: { mustChangePassword: boole
   );
 }
 
-const STAGE_FILTER_OPTIONS = [
-  { value: "", label: "All" },
-  { value: "lead", label: "Lead" },
-  { value: "trial", label: "Trial" },
-  { value: "contract", label: "Contract" },
-  { value: "paid", label: "Paid" },
-  { value: "refusal", label: "Refusal" },
-];
-
 export function StudentsPage() {
   const navigate = useNavigate();
   const role = useUserRole();
@@ -559,9 +533,6 @@ export function StudentsPage() {
   const deleteStudent = useDeleteStudent();
   const resetPassword = useResetStudentPassword();
   const { showToast } = useToast();
-
-  const [stageFilter, setStageFilter] = useState("");
-  const filteredData = stageFilter ? data?.filter((s) => s.stage === stageFilter) : data;
 
   const [formOpen, setFormOpen] = useState(false);
   const [addDirectOpen, setAddDirectOpen] = useState(false);
@@ -618,18 +589,8 @@ export function StudentsPage() {
         </button>
       </div>
 
-      <div className="mb-4 w-48">
-        <SelectField label="Stage" value={stageFilter} onChange={(e) => setStageFilter(e.target.value)}>
-          {STAGE_FILTER_OPTIONS.map((option) => (
-            <option key={option.value} value={option.value}>
-              {option.label}
-            </option>
-          ))}
-        </SelectField>
-      </div>
-
       <DataTable
-        data={filteredData}
+        data={data}
         isLoading={isLoading}
         emptyMessage='No students yet. Click "Add Student" to add one.'
         getRowKey={(s) => s.id}

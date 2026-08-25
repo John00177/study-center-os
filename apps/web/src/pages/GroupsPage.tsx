@@ -15,6 +15,7 @@ import {
   useGroups,
   useUpdateGroup,
 } from "../hooks/use-groups";
+import { useTheme } from "../contexts/ThemeContext";
 import { useUserRole } from "../stores/auth.store";
 
 const STATUS_OPTIONS: GroupStatus[] = ["active", "inactive", "completed"];
@@ -67,6 +68,8 @@ function GroupForm({
   const isEditing = Boolean(group);
   const [form, setForm] = useState<FormState>(() => toFormState(group));
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const { branding } = useTheme();
+  const hasBranches = (branding as { hasBranches?: boolean } | null)?.hasBranches ?? true;
   const { data: branches } = useBranches();
   const { data: courses } = useCourses();
   const selectedCourse = courses?.find((c) => c.id === form.courseId);
@@ -82,11 +85,19 @@ function GroupForm({
     }
   }, [open, group]);
 
+  // Single-branch orgs never see the branch picker — silently use their one
+  // branch instead of asking them to pick from a list of one.
+  useEffect(() => {
+    if (!hasBranches && !form.branchId && branches && branches.length > 0) {
+      setForm((f) => ({ ...f, branchId: branches[0].id }));
+    }
+  }, [hasBranches, branches, form.branchId]);
+
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
     const nextErrors: Record<string, string> = {};
     if (!form.name.trim()) nextErrors.name = "Name is required.";
-    if (!form.branchId) nextErrors.branchId = "Branch is required.";
+    if (hasBranches && !form.branchId) nextErrors.branchId = "Branch is required.";
     if (!form.courseId) nextErrors.courseId = "Course is required.";
     if (Object.keys(nextErrors).length) {
       setErrors(nextErrors);
@@ -130,21 +141,23 @@ function GroupForm({
           onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
         />
 
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-          <SelectField
-            label="Branch"
-            required
-            value={form.branchId}
-            error={errors.branchId}
-            onChange={(e) => setForm((f) => ({ ...f, branchId: e.target.value }))}
-          >
-            <option value="">Select branch</option>
-            {branches?.map((b) => (
-              <option key={b.id} value={b.id}>
-                {b.name}
-              </option>
-            ))}
-          </SelectField>
+        <div className={`grid grid-cols-1 gap-4 ${hasBranches ? "sm:grid-cols-2" : ""}`}>
+          {hasBranches && (
+            <SelectField
+              label="Branch"
+              required
+              value={form.branchId}
+              error={errors.branchId}
+              onChange={(e) => setForm((f) => ({ ...f, branchId: e.target.value }))}
+            >
+              <option value="">Select branch</option>
+              {branches?.map((b) => (
+                <option key={b.id} value={b.id}>
+                  {b.name}
+                </option>
+              ))}
+            </SelectField>
+          )}
           <SelectField
             label="Course"
             required
@@ -280,6 +293,8 @@ export function GroupsPage() {
   // rather than let them hit a 403 toast.
   const role = useUserRole();
   const canManage = role !== "reception";
+  const { branding } = useTheme();
+  const hasBranches = (branding as { hasBranches?: boolean } | null)?.hasBranches ?? true;
 
   const [formOpen, setFormOpen] = useState(false);
   const [editing, setEditing] = useState<GroupDto | null>(null);
@@ -329,7 +344,7 @@ export function GroupsPage() {
         }
         columns={[
           { header: "Name", render: (g) => <span className="font-medium text-slate-900">{g.name}</span> },
-          { header: "Branch", render: (g) => g.branch?.name ?? "-" },
+          ...(hasBranches ? [{ header: "Branch", render: (g: GroupDto) => g.branch?.name ?? "-" }] : []),
           { header: "Course", render: (g) => g.course?.name ?? "-" },
           { header: "Schedule", render: (g) => formatGroupSchedule(g) },
           { header: "Teachers", render: (g) => g.teacherCount, align: "right" },

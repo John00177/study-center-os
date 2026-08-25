@@ -22,6 +22,7 @@ const FULL_BRANDING_SELECT = {
   dateFormat: true,
   timeFormat: true,
   customDomain: true,
+  hasBranches: true,
 };
 
 @Injectable()

@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Post, Query, Req, UseGuards } from "@nestjs/common";
+import { Body, Controller, Get, Param, Patch, Post, Query, Req, UseGuards } from "@nestjs/common";
 import { Request } from "express";
 import { AuthenticatedGuard } from "../auth/guards/authenticated.guard";
 import { PlatformAdminGuard } from "./platform-admin.guard";
@@ -8,6 +8,7 @@ import { PlatformRevenueQueryDto } from "./dto/platform-revenue-query.dto";
 import { SuspendOrganizationDto } from "./dto/suspend-organization.dto";
 import { ApproveApplicationDto } from "./dto/approve-application.dto";
 import { RejectApplicationDto } from "./dto/reject-application.dto";
+import { UpdateOrganizationSettingsDto } from "./dto/update-organization-settings.dto";
 
 @UseGuards(AuthenticatedGuard, PlatformAdminGuard)
 @Controller("platform")
@@ -32,6 +33,15 @@ export class PlatformAdminController {
   @Get("health")
   getPlatformHealth() {
     return this.platformAdminService.getPlatformHealth();
+  }
+
+  @Patch("organizations/:id/settings")
+  updateOrganizationSettings(
+    @Param("id") id: string,
+    @Body() dto: UpdateOrganizationSettingsDto,
+    @Req() req: Request,
+  ) {
+    return this.platformAdminService.updateOrganizationSettings(id, (req.user as Express.User).id, dto);
   }
 
   @Post("organizations/:id/suspend")

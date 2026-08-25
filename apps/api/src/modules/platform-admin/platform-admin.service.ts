@@ -5,6 +5,7 @@ import { OrganizationsQueryDto } from "./dto/organizations-query.dto";
 import { PlatformRevenueQueryDto } from "./dto/platform-revenue-query.dto";
 import { ApproveApplicationDto } from "./dto/approve-application.dto";
 import { RejectApplicationDto } from "./dto/reject-application.dto";
+import { UpdateOrganizationSettingsDto } from "./dto/update-organization-settings.dto";
 
 function monthsAgo(n: number, from = new Date()) {
   return new Date(Date.UTC(from.getUTCFullYear(), from.getUTCMonth() - n, 1));
@@ -275,7 +276,10 @@ export class PlatformAdminService {
     }
 
     const updated = await this.prisma.$transaction(async (tx) => {
-      const org = await tx.organization.update({ where: { id }, data: { status: "trial" } });
+      const org = await tx.organization.update({
+        where: { id },
+        data: { status: "trial", ...(dto.hasBranches !== undefined ? { hasBranches: dto.hasBranches } : {}) },
+      });
 
       if (dto.planId) {
         const now = new Date();
@@ -349,6 +353,28 @@ export class PlatformAdminService {
       entityType: "Organization",
       entityId: id,
       metadata: reason ? { reason } : undefined,
+    });
+
+    return organization;
+  }
+
+  /** Lets a platform admin flip hasBranches (and future org-level settings) for any org, not just at approval time. */
+  async updateOrganizationSettings(id: string, actorId: string, dto: UpdateOrganizationSettingsDto) {
+    const existing = await this.prisma.organization.findUnique({ where: { id } });
+    if (!existing) {
+      throw new NotFoundException("Organization not found");
+    }
+
+    const organization = await this.prisma.organization.update({ where: { id }, data: dto });
+
+    await this.auditService.record({
+      organizationId: id,
+      actorId,
+      action: "platform.organization_settings_updated",
+      entityType: "Organization",
+      entityId: id,
+      beforeValue: { hasBranches: existing.hasBranches },
+      afterValue: { hasBranches: organization.hasBranches },
     });
 
     return organization;

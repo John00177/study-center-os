@@ -10,7 +10,6 @@ import { ConvertToActiveDto } from "./dto/convert-to-active.dto";
 import { CreateStudentDto } from "./dto/create-student.dto";
 import { CreateStudentDirectDto } from "./dto/create-student-direct.dto";
 import { LinkParentDto } from "./dto/link-parent.dto";
-import { UpdateStageDto } from "./dto/update-stage.dto";
 import { UpdateStudentDto } from "./dto/update-student.dto";
 
 @Injectable()
@@ -219,28 +218,6 @@ export class StudentsService {
     };
   }
 
-  /** CRM pipeline board move — see CrmPipelinePage.tsx. */
-  async updateStage(organizationId: string, actorId: string, id: string, dto: UpdateStageDto) {
-    const existing = await this.prisma.student.findFirst({ where: { id, organizationId } });
-    if (!existing) {
-      throw new NotFoundException("Student not found");
-    }
-
-    const student = await this.prisma.student.update({ where: { id }, data: { stage: dto.stage } });
-
-    await this.auditService.record({
-      organizationId,
-      actorId,
-      action: "student.stage_changed",
-      entityType: "Student",
-      entityId: id,
-      beforeValue: { stage: existing.stage } as unknown as Prisma.InputJsonValue,
-      afterValue: { stage: student.stage } as unknown as Prisma.InputJsonValue,
-    });
-
-    return student;
-  }
-
   async getArchivedStudents(organizationId: string) {
     const students = await this.prisma.student.findMany({
       where: { organizationId, status: "archived" },
@@ -315,7 +292,13 @@ export class StudentsService {
       }),
       this.prisma.student.update({
         where: { id },
-        data: { status: "active", convertedAt: new Date(), stage: "contract" },
+        data: {
+          status: "active",
+          convertedAt: new Date(),
+          stage: "contract",
+          ...(dto.emergencyContact !== undefined ? { emergencyContact: dto.emergencyContact } : {}),
+          ...(dto.parentPhone !== undefined ? { parentPhone: dto.parentPhone } : {}),
+        },
       }),
       // Auto-charge on conversion — receptionists no longer register every
       // newly-converted student in finance by hand.

@@ -95,7 +95,7 @@ function ProfileTab({ detail }: { detail: StudentDetailDto }) {
           label="Birth Date"
           value={detail.dateOfBirth ? `${new Date(detail.dateOfBirth).toLocaleDateString()} (age ${ageFromBirthDate(detail.dateOfBirth)})` : null}
         />
-        <Field label="Lead Source" value={detail.leadSource} />
+        <Field label="Social Account" value={detail.socialAccount} />
         <Field
           label="Medical Card"
           value={

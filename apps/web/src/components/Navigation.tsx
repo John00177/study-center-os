@@ -11,7 +11,6 @@ import {
   ClipboardCheck,
   GraduationCap,
   History,
-  KanbanSquare,
   LayoutDashboard,
   Lock,
   MessageCircle,
@@ -24,6 +23,7 @@ import {
   Wallet,
 } from "lucide-react";
 import { useCurrentSubscription } from "../hooks/use-subscription";
+import { useTheme } from "../contexts/ThemeContext";
 
 // Reception no longer uses this shared admin navigation at all — they land
 // on their own /reception/* route tree (ReceptionLayout) with a separate,
@@ -31,9 +31,8 @@ import { useCurrentSubscription } from "../hooks/use-subscription";
 // in depth on top of the route guards.
 const NAV_ITEMS = [
   { to: "/", label: "Dashboard", icon: LayoutDashboard, end: true, roles: ["owner", "admin"] },
-  { to: "/crm/pipeline", label: "CRM Pipeline", icon: KanbanSquare, roles: ["owner", "admin"] },
   { to: "/analytics", label: "Analytics", icon: BarChart3, roles: ["owner", "admin"], requiredModule: "analytics" as PlanModule },
-  { to: "/branches", label: "Branches", icon: Building2, roles: ["owner", "admin"] },
+  { to: "/branches", label: "Branches", icon: Building2, roles: ["owner", "admin"], requiresBranches: true },
   { to: "/teachers", label: "Teachers", icon: GraduationCap, roles: ["owner", "admin"] },
   { to: "/teachers/salaries", label: "Teacher Salaries", icon: Wallet, roles: ["owner", "admin"] },
   { to: "/newcomers", label: "Newcomers", icon: UserPlus, roles: ["owner", "admin", "manager"] },
@@ -60,7 +59,13 @@ const NAV_ITEMS = [
 
 export function Navigation({ role }: { role?: string | null }) {
   const navigate = useNavigate();
-  const items = role ? NAV_ITEMS.filter((item) => item.roles.includes(role)) : NAV_ITEMS;
+  const { branding } = useTheme();
+  // Only the authenticated (full) branding shape carries hasBranches — this
+  // component is only ever rendered inside the authenticated staff shell.
+  const hasBranches = (branding as { hasBranches?: boolean } | null)?.hasBranches ?? true;
+  const items = NAV_ITEMS.filter(
+    (item) => (!role || item.roles.includes(role)) && (!item.requiresBranches || hasBranches),
+  );
   const { data: subscription } = useCurrentSubscription(role === "owner" || role === "admin");
 
   return (

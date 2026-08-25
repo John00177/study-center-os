@@ -38,6 +38,7 @@ export interface OrganizationDto {
   country?: string | null;
   city?: string | null;
   address?: string | null;
+  hasBranches: boolean;
   createdAt: string;
   updatedAt: string;
 }
@@ -65,6 +66,9 @@ export interface OrganizationFullBrandingDto extends OrganizationBrandingDto {
   dateFormat: string;
   timeFormat: string;
   customDomain: string | null;
+  // Single-branch orgs (the default) collapse branch pickers out of the UI —
+  // see Navigation.tsx, DashboardPage.tsx, GroupsPage.tsx, FinancePage.tsx.
+  hasBranches: boolean;
 }
 
 export interface UserDto {
@@ -165,7 +169,11 @@ export interface StudentDto {
   id: string;
   organizationId: string;
   name: string;
+  // Login identifier for the student portal — no longer collected on the
+  // newcomer/student forms (socialAccount replaces it there), but still set
+  // via the reception "direct" flow and used by validateStudentCredentials.
   email?: string | null;
+  socialAccount?: string | null;
   phone?: string | null;
   dateOfBirth?: string | null;
   address?: string | null;
@@ -174,6 +182,7 @@ export interface StudentDto {
   notes?: string | null;
   interestedCourse?: string | null;
   gender?: string | null;
+  // Deprecated — no longer collected or shown on any form.
   leadSource?: string | null;
   medicalCard?: boolean | null;
   parentName?: string | null;
@@ -739,6 +748,9 @@ export interface TodayReportDto {
   dismissedToday: number;
 }
 
+// Dashboard-only funnel aggregate now — the CRM Pipeline board that also
+// read this has been removed, but stage is still advanced automatically
+// (enrollment conversion, first payment), so this stays meaningful.
 export interface StageCountsDto {
   leads: number;
   trials: number;
@@ -746,10 +758,6 @@ export interface StageCountsDto {
   paid: number;
   refusals: number;
 }
-
-// CRM pipeline stage — see CrmPipelinePage.tsx and PATCH /students/:id/stage.
-export const STUDENT_STAGES = ["lead", "trial", "contract", "paid", "refusal"] as const;
-export type StudentStage = (typeof STUDENT_STAGES)[number];
 
 export type ReminderType = "sms" | "whatsapp" | "email" | "push";
 export type ReminderStatus = "pending" | "sent" | "delivered" | "failed";

@@ -11,7 +11,6 @@ import { ConvertToActiveDto } from "./dto/convert-to-active.dto";
 import { CreateStudentDto } from "./dto/create-student.dto";
 import { CreateStudentDirectDto } from "./dto/create-student-direct.dto";
 import { LinkParentDto } from "./dto/link-parent.dto";
-import { UpdateStageDto } from "./dto/update-stage.dto";
 import { UpdateStudentDto } from "./dto/update-student.dto";
 
 const RECEPTION_ROLES = ["owner", "admin", "manager", "reception"];
@@ -90,18 +89,6 @@ export class StudentsController {
   @Patch(":id")
   update(@Param("id") id: string, @Body() dto: UpdateStudentDto, @Req() req: Request) {
     return this.studentsService.update(
-      this.tenancyService.getOrganizationId(),
-      (req.user as Express.User).id,
-      id,
-      dto,
-    );
-  }
-
-  // CRM pipeline board move — see CrmPipelinePage.tsx.
-  @RequirePermission("owner", "admin", "manager")
-  @Patch(":id/stage")
-  updateStage(@Param("id") id: string, @Body() dto: UpdateStageDto, @Req() req: Request) {
-    return this.studentsService.updateStage(
       this.tenancyService.getOrganizationId(),
       (req.user as Express.User).id,
       id,

@@ -30,11 +30,17 @@ export function useActiveStudents() {
   });
 }
 
+export interface ConvertStudentInput {
+  id: string;
+  groupId: string;
+  emergencyContact?: string;
+  parentPhone?: string;
+}
+
 export function useConvertStudent() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: async ({ id, groupId }: { id: string; groupId: string }) =>
-      (await api.post(`/students/${id}/convert`, { groupId })).data,
+    mutationFn: async ({ id, ...rest }: ConvertStudentInput) => (await api.post(`/students/${id}/convert`, rest)).data,
     onSuccess: () => invalidateAllStudentQueries(queryClient),
   });
 }

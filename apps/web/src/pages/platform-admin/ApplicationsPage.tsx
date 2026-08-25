@@ -61,10 +61,11 @@ function ApproveApplicationModal({
   const { data: plans } = useSubscriptionPlans();
   const approve = useApproveApplication();
   const [planId, setPlanId] = useState("");
+  const [hasBranches, setHasBranches] = useState(false);
 
   async function handleConfirm() {
     if (!application) return;
-    await approve.mutateAsync({ id: application.id, planId: planId || undefined });
+    await approve.mutateAsync({ id: application.id, planId: planId || undefined, hasBranches });
     onApproved(application.name);
     onClose();
   }
@@ -84,6 +85,15 @@ function ApproveApplicationModal({
               </option>
             ))}
           </SelectField>
+          <label className="flex items-center gap-2 text-sm text-slate-700">
+            <input
+              type="checkbox"
+              checked={hasBranches}
+              onChange={(e) => setHasBranches(e.target.checked)}
+              className="h-4 w-4 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500"
+            />
+            This study center has multiple branches
+          </label>
           <div className="flex justify-end gap-3 border-t border-slate-200 pt-4">
             <button
               type="button"

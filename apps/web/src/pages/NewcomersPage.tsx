@@ -1,6 +1,6 @@
 import type { StudentDto } from "@crm/shared-types";
 import { Archive, Loader2, NotebookPen, Plus, UserPlus } from "lucide-react";
-import { FormEvent, useMemo, useState } from "react";
+import { FormEvent, useEffect, useMemo, useState } from "react";
 import { ConfirmDialog } from "../components/ConfirmDialog";
 import { DataTable } from "../components/DataTable";
 import { Modal } from "../components/Modal";
@@ -8,6 +8,7 @@ import { useToast } from "../components/Toast";
 import { SelectField, TextField } from "../components/form/Field";
 import { useGroups } from "../hooks/use-groups";
 import {
+  ConvertStudentInput,
   useArchivedStudents,
   useArchiveStudent,
   useAddStudentNote,
@@ -16,10 +17,12 @@ import {
 } from "../hooks/use-newcomers";
 import { StudentInput, useCreateStudent } from "../hooks/use-students";
 
+const EMPTY_REGISTER_FORM = { name: "", phone: "", socialAccount: "", gender: "", dateOfBirth: "", interestedCourse: "", notes: "" };
+
 function RegisterNewcomerModal({ open, onClose }: { open: boolean; onClose: () => void }) {
   const createStudent = useCreateStudent();
   const { showToast } = useToast();
-  const [form, setForm] = useState({ name: "", phone: "", email: "", interestedCourse: "", notes: "" });
+  const [form, setForm] = useState(EMPTY_REGISTER_FORM);
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   async function handleSubmit(e: FormEvent) {
@@ -27,6 +30,8 @@ function RegisterNewcomerModal({ open, onClose }: { open: boolean; onClose: () =
     const nextErrors: Record<string, string> = {};
     if (!form.name.trim()) nextErrors.name = "Name is required.";
     if (!form.phone.trim()) nextErrors.phone = "Phone is required.";
+    if (!form.gender) nextErrors.gender = "Gender is required.";
+    if (!form.dateOfBirth) nextErrors.dateOfBirth = "Birth date is required.";
     if (Object.keys(nextErrors).length) {
       setErrors(nextErrors);
       return;
@@ -35,7 +40,9 @@ function RegisterNewcomerModal({ open, onClose }: { open: boolean; onClose: () =
     const input: StudentInput = {
       name: form.name.trim(),
       phone: form.phone.trim(),
-      email: form.email.trim() || undefined,
+      socialAccount: form.socialAccount.trim() || undefined,
+      gender: form.gender,
+      dateOfBirth: form.dateOfBirth,
       interestedCourse: form.interestedCourse.trim() || undefined,
       notes: form.notes.trim() || undefined,
     };
@@ -43,7 +50,7 @@ function RegisterNewcomerModal({ open, onClose }: { open: boolean; onClose: () =
     try {
       await createStudent.mutateAsync(input);
       showToast("Newcomer registered.");
-      setForm({ name: "", phone: "", email: "", interestedCourse: "", notes: "" });
+      setForm(EMPTY_REGISTER_FORM);
       setErrors({});
       onClose();
     } catch {
@@ -69,11 +76,31 @@ function RegisterNewcomerModal({ open, onClose }: { open: boolean; onClose: () =
           onChange={(e) => setForm((f) => ({ ...f, phone: e.target.value }))}
         />
         <TextField
-          label="Email"
-          type="email"
-          value={form.email}
-          onChange={(e) => setForm((f) => ({ ...f, email: e.target.value }))}
+          label="Social Account (Telegram/WhatsApp)"
+          value={form.socialAccount}
+          onChange={(e) => setForm((f) => ({ ...f, socialAccount: e.target.value }))}
         />
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <SelectField
+            label="Gender"
+            required
+            value={form.gender}
+            error={errors.gender}
+            onChange={(e) => setForm((f) => ({ ...f, gender: e.target.value }))}
+          >
+            <option value="">Select gender</option>
+            <option value="male">Male</option>
+            <option value="female">Female</option>
+          </SelectField>
+          <TextField
+            label="Birth Date"
+            type="date"
+            required
+            value={form.dateOfBirth}
+            error={errors.dateOfBirth}
+            onChange={(e) => setForm((f) => ({ ...f, dateOfBirth: e.target.value }))}
+          />
+        </div>
         <TextField
           label="Interested course"
           value={form.interestedCourse}
@@ -121,7 +148,18 @@ function ConvertToGroupModal({
   const convertStudent = useConvertStudent();
   const { showToast } = useToast();
   const [groupId, setGroupId] = useState("");
+  const [emergencyContact, setEmergencyContact] = useState("");
+  const [parentPhone, setParentPhone] = useState("");
   const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (student) {
+      setGroupId("");
+      setEmergencyContact("");
+      setParentPhone("");
+      setError(null);
+    }
+  }, [student]);
 
   async function handleConfirm() {
     if (!student) return;
@@ -130,11 +168,15 @@ function ConvertToGroupModal({
       return;
     }
     try {
-      await convertStudent.mutateAsync({ id: student.id, groupId });
+      const input: ConvertStudentInput = {
+        id: student.id,
+        groupId,
+        emergencyContact: emergencyContact.trim() || undefined,
+        parentPhone: parentPhone.trim() || undefined,
+      };
+      await convertStudent.mutateAsync(input);
       const groupName = groups?.find((g) => g.id === groupId)?.name ?? "the group";
       showToast(`Student moved to ${groupName}`);
-      setGroupId("");
-      setError(null);
       onClose();
     } catch {
       showToast("Failed to add student to group.", "error");
@@ -152,6 +194,16 @@ function ConvertToGroupModal({
             </option>
           ))}
         </SelectField>
+        <TextField
+          label="Emergency Contact"
+          value={emergencyContact}
+          onChange={(e) => setEmergencyContact(e.target.value)}
+        />
+        <TextField
+          label="Parent Phone Number"
+          value={parentPhone}
+          onChange={(e) => setParentPhone(e.target.value)}
+        />
 
         <div className="flex justify-end gap-3 border-t border-slate-200 pt-4">
           <button

@@ -39,6 +39,7 @@ import { PaymentMethodBadge } from "../components/finance/PaymentMethodBadge";
 import { DataTable } from "../components/DataTable";
 import { TodaysClassesWidget } from "../components/calendar/TodaysClassesWidget";
 import { StaffSection } from "../components/dashboard/StaffSection";
+import { useTheme } from "../contexts/ThemeContext";
 import { getMondayIso } from "../lib/week";
 import { useUserRole } from "../stores/auth.store";
 
@@ -144,10 +145,13 @@ export function DashboardPage() {
   // those endpoints are explicitly exempted from the plan gate).
   const canSeeRevenue = canSeeFinance && (subscription?.allowedModules.includes("analytics") ?? false);
   const todayIso = new Date().toISOString().slice(0, 10);
+  const { branding } = useTheme();
+  const hasBranches = (branding as { hasBranches?: boolean } | null)?.hasBranches ?? true;
 
   const branches = useQuery({
     queryKey: ["branches"],
     queryFn: async () => (await api.get<BranchDto[]>("/branches")).data,
+    enabled: hasBranches,
   });
   const teachers = useQuery({
     queryKey: ["teachers"],
@@ -298,7 +302,7 @@ export function DashboardPage() {
       )}
 
       <div className="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <StatCard label="Branches" value={branches.data?.length} icon={Building2} />
+        {hasBranches && <StatCard label="Branches" value={branches.data?.length} icon={Building2} />}
         <StatCard label="Teachers" value={teachers.data?.length} icon={GraduationCap} />
         <StatCard label="Active Students" value={enrollment.data?.totalStudents} icon={Users} />
         <StatCard label="Groups" value={groups.data?.length} icon={UsersRound} />

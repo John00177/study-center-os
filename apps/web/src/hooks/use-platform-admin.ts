@@ -62,6 +62,15 @@ export function useActivateOrganization() {
   });
 }
 
+export function useUpdateOrganizationSettings() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async ({ id, hasBranches }: { id: string; hasBranches: boolean }) =>
+      (await api.patch(`/platform/organizations/${id}/settings`, { hasBranches })).data,
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["platform"] }),
+  });
+}
+
 export function useSubscriptionPlans() {
   return useQuery({
     queryKey: ["platform", "plans"],
@@ -79,8 +88,8 @@ export function usePendingApplications() {
 export function useApproveApplication() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: async ({ id, planId }: { id: string; planId?: string }) =>
-      (await api.post(`/platform/applications/${id}/approve`, { planId })).data,
+    mutationFn: async ({ id, planId, hasBranches }: { id: string; planId?: string; hasBranches?: boolean }) =>
+      (await api.post(`/platform/applications/${id}/approve`, { planId, hasBranches })).data,
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["platform"] }),
   });
 }

@@ -7,10 +7,23 @@ import type {
   StageCountsDto,
   StudentDetailDto,
   StudentDto,
-  StudentStage,
   TempPasswordDto,
 } from "@crm/shared-types";
 import { api } from "../lib/api";
+
+// The Newcomers page reads from ["newcomers"] (see use-newcomers.ts), a
+// separate query key from ["students"] — a create/update/delete here can
+// change which of those lists a student belongs in, so both (plus the
+// active/archived lists) need invalidating or the affected list silently
+// goes stale until a manual reload. This was the "student registration
+// looks broken" bug: creating a newcomer succeeded, but the Newcomers table
+// never refreshed to show it.
+function invalidateAllStudentQueries(queryClient: ReturnType<typeof useQueryClient>) {
+  queryClient.invalidateQueries({ queryKey: ["students"] });
+  queryClient.invalidateQueries({ queryKey: ["newcomers"] });
+  queryClient.invalidateQueries({ queryKey: ["active-students"] });
+  queryClient.invalidateQueries({ queryKey: ["archived-students"] });
+}
 
 export function useStudents() {
   return useQuery({
@@ -34,27 +47,18 @@ export function useStageCounts() {
   });
 }
 
-export function useUpdateStudentStage() {
-  const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: async ({ id, stage }: { id: string; stage: StudentStage }) =>
-      (await api.patch<StudentDto>(`/students/${id}/stage`, { stage })).data,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["students"] });
-    },
-  });
-}
-
 export interface StudentInput {
   name: string;
-  email?: string;
+  socialAccount?: string;
   phone?: string;
+  // Required by the newcomer/student forms (validated client-side there),
+  // but kept optional here since useUpdateStudent also powers partial saves
+  // (e.g. StudentProfilePage's Notes tab, which sends only name + notes).
   dateOfBirth?: string | null;
   address?: string;
   emergencyContact?: string;
   interestedCourse?: string;
   gender?: string;
-  leadSource?: string;
   medicalCard?: boolean;
   parentPhone?: string;
   notes?: string;
@@ -64,7 +68,7 @@ export function useCreateStudent() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async (input: StudentInput) => (await api.post<StudentDto>("/students", input)).data,
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["students"] }),
+    onSuccess: () => invalidateAllStudentQueries(queryClient),
   });
 }
 
@@ -73,7 +77,7 @@ export function useUpdateStudent() {
   return useMutation({
     mutationFn: async ({ id, ...input }: StudentInput & { id: string }) =>
       (await api.patch<StudentDto>(`/students/${id}`, input)).data,
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["students"] }),
+    onSuccess: () => invalidateAllStudentQueries(queryClient),
   });
 }
 
@@ -81,7 +85,7 @@ export function useDeleteStudent() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async (id: string) => (await api.delete(`/students/${id}`)).data,
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["students"] }),
+    onSuccess: () => invalidateAllStudentQueries(queryClient),
   });
 }
 
