@@ -25,28 +25,31 @@ import { resolveOrgDisplayName } from "../lib/theme";
 import { api } from "../lib/api";
 import { ThemeToggle } from "../components/ui/ThemeToggle";
 import { LanguageSwitcher } from "../components/ui/LanguageSwitcher";
+import { useTranslation } from "../hooks/use-translation";
+import type { TranslationKey } from "../i18n/translations";
 
 // Reception's own nav — deliberately separate from the shared admin
 // Navigation component (same pattern as TeacherLayout): a small, fixed list
 // rather than role-filtering a shared array, since reception's routes live
 // under their own /reception/* prefix.
-const NAV_ITEMS = [
-  { to: "/reception", label: "Dashboard", icon: LayoutDashboard, end: true },
-  { to: "/reception/newcomers", label: "Newcomers", icon: UserPlus },
-  { to: "/reception/students", label: "Students", icon: Users },
-  { to: "/reception/teachers", label: "Teachers", icon: GraduationCap },
-  { to: "/reception/courses", label: "Courses", icon: BookOpen },
-  { to: "/reception/groups", label: "Groups", icon: UsersRound },
-  { to: "/reception/schedule", label: "Schedules", icon: CalendarDays },
-  { to: "/reception/attendance", label: "Attendance", icon: ClipboardCheck },
-  { to: "/reception/finance", label: "Finance", icon: Banknote },
+const NAV_ITEMS: { to: string; label: string; translationKey?: TranslationKey; icon: typeof LayoutDashboard; end?: boolean }[] = [
+  { to: "/reception", label: "Dashboard", translationKey: "dashboard", icon: LayoutDashboard, end: true },
+  { to: "/reception/newcomers", label: "Newcomers", translationKey: "newcomers", icon: UserPlus },
+  { to: "/reception/students", label: "Students", translationKey: "students", icon: Users },
+  { to: "/reception/teachers", label: "Teachers", translationKey: "teachers", icon: GraduationCap },
+  { to: "/reception/courses", label: "Courses", translationKey: "courses", icon: BookOpen },
+  { to: "/reception/groups", label: "Groups", translationKey: "groups", icon: UsersRound },
+  { to: "/reception/schedule", label: "Schedules", translationKey: "schedules", icon: CalendarDays },
+  { to: "/reception/attendance", label: "Attendance", translationKey: "attendance", icon: ClipboardCheck },
+  { to: "/reception/finance", label: "Finance", translationKey: "finance", icon: Banknote },
   { to: "/reception/finance/overdue", label: "Overdue Payments", icon: BellRing },
 ];
 
 function ReceptionNav({ onNavigate }: { onNavigate?: () => void }) {
+  const { t } = useTranslation();
   return (
     <nav className="flex flex-col gap-1 p-3" onClick={onNavigate}>
-      {NAV_ITEMS.map(({ to, label, icon: Icon, end }) => (
+      {NAV_ITEMS.map(({ to, label, translationKey, icon: Icon, end }) => (
         <NavLink
           key={to}
           to={to}
@@ -60,7 +63,7 @@ function ReceptionNav({ onNavigate }: { onNavigate?: () => void }) {
           }
         >
           <Icon size={18} />
-          {label}
+          {translationKey ? t(translationKey) : label}
         </NavLink>
       ))}
     </nav>
@@ -72,6 +75,7 @@ export function ReceptionLayout() {
   const user = useAuthStore((state) => state.user);
   const logout = useAuthStore((state) => state.logout);
   const { branding } = useTheme();
+  const { t } = useTranslation();
   const [menuOpen, setMenuOpen] = useState(false);
 
   async function handleLogout() {
@@ -140,7 +144,7 @@ export function ReceptionLayout() {
               className="flex items-center gap-1 rounded-md px-2 py-1 text-sm text-slate-500 transition hover:bg-slate-100 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-700 dark:hover:text-slate-100"
             >
               <LogOut size={16} />
-              <span className="hidden sm:inline">Logout</span>
+              <span className="hidden sm:inline">{t("logout")}</span>
             </button>
           </div>
         </header>

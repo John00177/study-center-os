@@ -42,6 +42,7 @@ import { StaffSection } from "../components/dashboard/StaffSection";
 import { useTheme } from "../contexts/ThemeContext";
 import { getMondayIso } from "../lib/week";
 import { useUserRole } from "../stores/auth.store";
+import { useTranslation } from "../hooks/use-translation";
 
 interface StatCardProps {
   label: string;
@@ -137,6 +138,7 @@ function TodayStat({ label, value, icon }: { label: string; value: string | numb
 export function DashboardPage() {
   const navigate = useNavigate();
   const role = useUserRole();
+  const { t } = useTranslation();
   const canSeeFinance = role === "owner" || role === "admin";
   const { data: subscription } = useCurrentSubscription(canSeeFinance);
   // Revenue/Outstanding cards come from AnalyticsController, which is
@@ -198,7 +200,7 @@ export function DashboardPage() {
 
   return (
     <div>
-      <h1 className="mb-6 text-2xl font-semibold text-slate-900 dark:text-slate-100">Dashboard</h1>
+      <h1 className="mb-6 text-2xl font-semibold text-slate-900 dark:text-slate-100">{t("dashboard")}</h1>
 
       <SubscriptionLimitBanners enabled={canSeeFinance} />
 
@@ -210,12 +212,12 @@ export function DashboardPage() {
             borderColorClass="border-t-blue-500"
           />
           <KpiCard
-            label="Collected"
+            label={t("collected")}
             value={dashboardStats.data ? formatCurrency(dashboardStats.data.collectedThisMonth, "UZS") : "-"}
             borderColorClass="border-t-green-500"
           />
           <KpiCard
-            label="Debtors"
+            label={t("debtors")}
             value={dashboardStats.data ? String(dashboardStats.data.debtorsCount) : "-"}
             unit="students"
             borderColorClass="border-t-orange-500"
@@ -246,7 +248,7 @@ export function DashboardPage() {
           </h2>
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
             <TodayStat
-              label="Revenue today"
+              label={`${t("revenue")} ${t("today").toLowerCase()}`}
               value={todayReport.data ? formatCurrency(todayReport.data.revenueToday, "UZS") : "-"}
               icon={<Banknote size={18} />}
             />

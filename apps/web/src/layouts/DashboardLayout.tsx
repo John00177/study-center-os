@@ -12,6 +12,7 @@ import { resolveOrgDisplayName } from "../lib/theme";
 import { api } from "../lib/api";
 import { ThemeToggle } from "../components/ui/ThemeToggle";
 import { LanguageSwitcher } from "../components/ui/LanguageSwitcher";
+import { useTranslation } from "../hooks/use-translation";
 import { NotificationBell } from "../components/notifications/NotificationBell";
 
 export function DashboardLayout() {
@@ -20,6 +21,7 @@ export function DashboardLayout() {
   const logout = useAuthStore((state) => state.logout);
   const role = useUserRole();
   const { branding } = useTheme();
+  const { t } = useTranslation();
   const [menuOpen, setMenuOpen] = useState(false);
 
   async function handleLogout() {
@@ -91,7 +93,7 @@ export function DashboardLayout() {
               className="flex items-center gap-1 rounded-md px-2 py-1 text-sm text-slate-500 transition hover:bg-slate-100 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-700 dark:hover:text-slate-100"
             >
               <LogOut size={16} />
-              <span className="hidden sm:inline">Logout</span>
+              <span className="hidden sm:inline">{t("logout")}</span>
             </button>
           </div>
         </header>

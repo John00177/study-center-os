@@ -24,29 +24,40 @@ import {
 } from "lucide-react";
 import { useCurrentSubscription } from "../hooks/use-subscription";
 import { useTheme } from "../contexts/ThemeContext";
+import { useTranslation } from "../hooks/use-translation";
+import type { TranslationKey } from "../i18n/translations";
 
 // Reception no longer uses this shared admin navigation at all — they land
 // on their own /reception/* route tree (ReceptionLayout) with a separate,
 // smaller nav. Keeping "reception" out of every role list here is defense
 // in depth on top of the route guards.
-const NAV_ITEMS = [
-  { to: "/", label: "Dashboard", icon: LayoutDashboard, end: true, roles: ["owner", "admin"] },
+const NAV_ITEMS: {
+  to: string;
+  label: string;
+  translationKey?: TranslationKey;
+  icon: typeof LayoutDashboard;
+  end?: boolean;
+  roles: string[];
+  requiredModule?: PlanModule;
+  requiresBranches?: boolean;
+}[] = [
+  { to: "/", label: "Dashboard", translationKey: "dashboard", icon: LayoutDashboard, end: true, roles: ["owner", "admin"] },
   { to: "/analytics", label: "Analytics", icon: BarChart3, roles: ["owner", "admin"], requiredModule: "analytics" as PlanModule },
   { to: "/branches", label: "Branches", icon: Building2, roles: ["owner", "admin"], requiresBranches: true },
-  { to: "/teachers", label: "Teachers", icon: GraduationCap, roles: ["owner", "admin"] },
+  { to: "/teachers", label: "Teachers", translationKey: "teachers", icon: GraduationCap, roles: ["owner", "admin"] },
   { to: "/teachers/salaries", label: "Teacher Salaries", icon: Wallet, roles: ["owner", "admin"] },
   // Newcomers/Students/Courses/Attendance are receptionist-only on the
   // shared owner+admin nav — owner uses the reception role's dashboard for
   // these, so "owner" is deliberately absent from their roles lists here.
-  { to: "/newcomers", label: "Newcomers", icon: UserPlus, roles: ["admin", "manager"] },
-  { to: "/students", label: "Students", icon: Users, roles: ["admin", "manager"] },
+  { to: "/newcomers", label: "Newcomers", translationKey: "newcomers", icon: UserPlus, roles: ["admin", "manager"] },
+  { to: "/students", label: "Students", translationKey: "students", icon: Users, roles: ["admin", "manager"] },
   { to: "/parents", label: "Parents", icon: UserRound, roles: ["owner", "admin", "manager"] },
-  { to: "/courses", label: "Courses", icon: BookOpen, roles: ["admin"] },
-  { to: "/groups", label: "Groups", icon: UsersRound, roles: ["owner", "admin", "manager"] },
-  { to: "/schedule", label: "Schedule", icon: CalendarDays, roles: ["admin", "manager"] },
+  { to: "/courses", label: "Courses", translationKey: "courses", icon: BookOpen, roles: ["admin"] },
+  { to: "/groups", label: "Groups", translationKey: "groups", icon: UsersRound, roles: ["owner", "admin", "manager"] },
+  { to: "/schedule", label: "Schedule", translationKey: "schedules", icon: CalendarDays, roles: ["admin", "manager"] },
   { to: "/calendar", label: "Calendar", icon: Calendar, roles: ["owner", "admin", "manager"] },
-  { to: "/attendance", label: "Attendance", icon: ClipboardCheck, roles: ["admin", "manager"] },
-  { to: "/finance", label: "Finance", icon: Banknote, roles: ["owner", "admin"] },
+  { to: "/attendance", label: "Attendance", translationKey: "attendance", icon: ClipboardCheck, roles: ["admin", "manager"] },
+  { to: "/finance", label: "Finance", translationKey: "finance", icon: Banknote, roles: ["owner", "admin"] },
   {
     to: "/finance/overdue",
     label: "Overdue Payments",
@@ -63,6 +74,7 @@ const NAV_ITEMS = [
 export function Navigation({ role }: { role?: string | null }) {
   const navigate = useNavigate();
   const { branding } = useTheme();
+  const { t } = useTranslation();
   // Only the authenticated (full) branding shape carries hasBranches — this
   // component is only ever rendered inside the authenticated staff shell.
   const hasBranches = (branding as { hasBranches?: boolean } | null)?.hasBranches ?? true;
@@ -73,8 +85,9 @@ export function Navigation({ role }: { role?: string | null }) {
 
   return (
     <nav className="flex flex-col gap-1 p-3">
-      {items.map(({ to, label, icon: Icon, end, requiredModule }) => {
+      {items.map(({ to, label, translationKey, icon: Icon, end, requiredModule }) => {
         const locked = requiredModule && subscription && !subscription.allowedModules.includes(requiredModule);
+        const displayLabel = translationKey ? t(translationKey) : label;
 
         if (locked) {
           return (
@@ -86,7 +99,7 @@ export function Navigation({ role }: { role?: string | null }) {
             >
               <span className="flex items-center gap-3">
                 <Icon size={18} />
-                {label}
+                {displayLabel}
               </span>
               <Lock size={14} />
             </button>
@@ -107,7 +120,7 @@ export function Navigation({ role }: { role?: string | null }) {
             }
           >
             <Icon size={18} />
-            {label}
+            {displayLabel}
           </NavLink>
         );
       })}

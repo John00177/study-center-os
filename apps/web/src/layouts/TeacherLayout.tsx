@@ -13,6 +13,7 @@ import { useTheme } from "../contexts/ThemeContext";
 import { resolveOrgDisplayName } from "../lib/theme";
 import { ThemeToggle } from "../components/ui/ThemeToggle";
 import { LanguageSwitcher } from "../components/ui/LanguageSwitcher";
+import { useTranslation } from "../hooks/use-translation";
 
 const NAV_ITEMS = [
   { to: "/teacher", label: "Dashboard", icon: LayoutDashboard, end: true },
@@ -33,6 +34,7 @@ export function TeacherLayout() {
   const user = useAuthStore((state) => state.user);
   const logout = useAuthStore((state) => state.logout);
   const { branding } = useTheme();
+  const { t } = useTranslation();
   const { data: subscription } = useCurrentSubscription();
   useSyncOfflineQueue();
 
@@ -108,7 +110,7 @@ export function TeacherLayout() {
               className="flex items-center gap-1 rounded-md px-2 py-1 text-sm text-slate-500 transition hover:bg-slate-100 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-700 dark:hover:text-slate-100"
             >
               <LogOut size={16} />
-              <span className="hidden sm:inline">Logout</span>
+              <span className="hidden sm:inline">{t("logout")}</span>
             </button>
           </div>
         </header>
