@@ -137,7 +137,7 @@ export class PlatformAdminService {
         createdAt: s.createdAt,
       })),
       stats,
-      auditLog: auditLogs,
+      auditLog: auditLogs.map((a) => ({ ...a, actorName: userById.get(a.actorId)?.name ?? null })),
     };
   }
 

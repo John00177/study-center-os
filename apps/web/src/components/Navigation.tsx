@@ -10,6 +10,7 @@ import {
   CalendarDays,
   ClipboardCheck,
   GraduationCap,
+  History,
   LayoutDashboard,
   Lock,
   MessageCircle,
@@ -52,6 +53,7 @@ const NAV_ITEMS = [
   { to: "/settings/branding", label: "Branding", icon: Palette, roles: ["owner", "admin"] },
   { to: "/settings/plan", label: "Plan & Billing", icon: CreditCard, roles: ["owner", "admin"] },
   { to: "/support-tickets", label: "Support Tickets", icon: MessageCircle, roles: ["owner", "admin"] },
+  { to: "/audit-log", label: "Audit Log", icon: History, roles: ["owner", "admin"] },
 ];
 
 export function Navigation({ role }: { role?: string | null }) {

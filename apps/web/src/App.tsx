@@ -68,6 +68,7 @@ import { PlatformRevenuePage } from "./pages/platform-admin/PlatformRevenuePage"
 import { PlatformHealthPage } from "./pages/platform-admin/PlatformHealthPage";
 import { SupportTicketsPage as AdminSupportTicketsPage } from "./pages/platform-admin/SupportTicketsPage";
 import { OrgSupportTicketsPage } from "./pages/support-tickets/OrgSupportTicketsPage";
+import { AuditLogPage } from "./pages/audit/AuditLogPage";
 
 // Each portal is a dead end for the wrong role — a mismatched login doesn't
 // bounce sideways into some other dashboard, it goes back to /login (or
@@ -322,6 +323,14 @@ export default function App() {
           element={
             <RequireOwnerOrAdmin>
               <OrgSupportTicketsPage />
+            </RequireOwnerOrAdmin>
+          }
+        />
+        <Route
+          path="audit-log"
+          element={
+            <RequireOwnerOrAdmin>
+              <AuditLogPage />
             </RequireOwnerOrAdmin>
           }
         />

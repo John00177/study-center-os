@@ -103,6 +103,7 @@ export interface AuditLogDto {
   id: string;
   organizationId: string;
   actorId: string;
+  actorName: string | null;
   action: string;
   entityType: string;
   entityId: string;
@@ -110,6 +111,11 @@ export interface AuditLogDto {
   afterValue?: Record<string, unknown> | null;
   metadata?: Record<string, unknown> | null;
   createdAt: string;
+}
+
+export interface AuditLogListDto {
+  items: AuditLogDto[];
+  total: number;
 }
 
 export interface BranchDto {
