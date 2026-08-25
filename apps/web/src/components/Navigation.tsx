@@ -35,14 +35,17 @@ const NAV_ITEMS = [
   { to: "/branches", label: "Branches", icon: Building2, roles: ["owner", "admin"], requiresBranches: true },
   { to: "/teachers", label: "Teachers", icon: GraduationCap, roles: ["owner", "admin"] },
   { to: "/teachers/salaries", label: "Teacher Salaries", icon: Wallet, roles: ["owner", "admin"] },
-  { to: "/newcomers", label: "Newcomers", icon: UserPlus, roles: ["owner", "admin", "manager"] },
-  { to: "/students", label: "Students", icon: Users, roles: ["owner", "admin", "manager"] },
+  // Newcomers/Students/Courses/Attendance are receptionist-only on the
+  // shared owner+admin nav — owner uses the reception role's dashboard for
+  // these, so "owner" is deliberately absent from their roles lists here.
+  { to: "/newcomers", label: "Newcomers", icon: UserPlus, roles: ["admin", "manager"] },
+  { to: "/students", label: "Students", icon: Users, roles: ["admin", "manager"] },
   { to: "/parents", label: "Parents", icon: UserRound, roles: ["owner", "admin", "manager"] },
-  { to: "/courses", label: "Courses", icon: BookOpen, roles: ["owner", "admin"] },
+  { to: "/courses", label: "Courses", icon: BookOpen, roles: ["admin"] },
   { to: "/groups", label: "Groups", icon: UsersRound, roles: ["owner", "admin", "manager"] },
   { to: "/schedule", label: "Schedule", icon: CalendarDays, roles: ["owner", "admin", "manager"] },
   { to: "/calendar", label: "Calendar", icon: Calendar, roles: ["owner", "admin", "manager"] },
-  { to: "/attendance", label: "Attendance", icon: ClipboardCheck, roles: ["owner", "admin", "manager"] },
+  { to: "/attendance", label: "Attendance", icon: ClipboardCheck, roles: ["admin", "manager"] },
   { to: "/finance", label: "Finance", icon: Banknote, roles: ["owner", "admin"] },
   {
     to: "/finance/overdue",

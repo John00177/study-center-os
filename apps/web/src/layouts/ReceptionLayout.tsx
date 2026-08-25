@@ -5,6 +5,7 @@ import {
   BellRing,
   BookOpen,
   CalendarDays,
+  ClipboardCheck,
   GraduationCap,
   LayoutDashboard,
   LogOut,
@@ -35,6 +36,7 @@ const NAV_ITEMS = [
   { to: "/reception/courses", label: "Courses", icon: BookOpen },
   { to: "/reception/groups", label: "Groups", icon: UsersRound },
   { to: "/reception/schedule", label: "Schedules", icon: CalendarDays },
+  { to: "/reception/attendance", label: "Attendance", icon: ClipboardCheck },
   { to: "/reception/finance", label: "Finance", icon: Banknote },
   { to: "/reception/finance/overdue", label: "Overdue Payments", icon: BellRing },
 ];

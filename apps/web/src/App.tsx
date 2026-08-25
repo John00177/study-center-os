@@ -108,6 +108,18 @@ function RequireReceptionAccess({ children }: { children: ReactNode }) {
   return <>{children}</>;
 }
 
+// Newcomers/Students/Courses/Attendance are receptionist-only for the owner
+// role specifically (admin/manager keep access) — an owner who types the
+// URL directly gets bounced to the dashboard rather than 403'd, matching
+// how RequireAuth quietly redirects other role mismatches.
+function RequireNotOwner({ children }: { children: ReactNode }) {
+  const user = useAuthStore((state) => state.user);
+  if (user?.role === "owner") {
+    return <Navigate to="/" replace />;
+  }
+  return <>{children}</>;
+}
+
 function RequireOwnerOrAdmin({ children }: { children: ReactNode }) {
   const user = useAuthStore((state) => state.user);
   if (!user) {
@@ -344,15 +356,43 @@ export default function App() {
             </RequireOwnerOrAdmin>
           }
         />
-        <Route path="newcomers" element={<NewcomersPage />} />
-        <Route path="students" element={<StudentsPage />} />
+        <Route
+          path="newcomers"
+          element={
+            <RequireNotOwner>
+              <NewcomersPage />
+            </RequireNotOwner>
+          }
+        />
+        <Route
+          path="students"
+          element={
+            <RequireNotOwner>
+              <StudentsPage />
+            </RequireNotOwner>
+          }
+        />
         <Route path="students/:id/profile" element={<StudentDetailProfilePage />} />
         <Route path="parents" element={<ParentsPage />} />
-        <Route path="courses" element={<CoursesPage />} />
+        <Route
+          path="courses"
+          element={
+            <RequireNotOwner>
+              <CoursesPage />
+            </RequireNotOwner>
+          }
+        />
         <Route path="groups" element={<GroupsPage />} />
         <Route path="schedule" element={<SchedulePage />} />
         <Route path="calendar" element={<CalendarPage />} />
-        <Route path="attendance" element={<AttendancePage />} />
+        <Route
+          path="attendance"
+          element={
+            <RequireNotOwner>
+              <AttendancePage />
+            </RequireNotOwner>
+          }
+        />
         <Route path="finance" element={<FinancePage />} />
         <Route path="finance/overdue" element={<OverduePaymentsPage />} />
         <Route path="finance/reminders" element={<ReminderHistoryPage />} />
