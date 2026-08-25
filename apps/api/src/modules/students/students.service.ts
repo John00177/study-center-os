@@ -21,7 +21,23 @@ export class StudentsService {
     private readonly limitsService: SubscriptionLimitsService,
   ) {}
 
-  private async withEnrollmentStatus<T extends { id: string }>(organizationId: string, students: T[]) {
+  /**
+   * Strips the three secret-bearing fields before a Student row is ever
+   * returned to a client. tempPassword in particular is stored in plaintext
+   * (see the schema comment on Student.tempPassword) — it's meant to be
+   * surfaced only through the dedicated, narrowly-scoped getTempPassword
+   * endpoint below, never as a side effect of listing/reading students.
+   */
+  private omitSecrets<T extends { password: string | null; tempPassword: string | null; parentPassword: string | null }>(
+    student: T,
+  ): Omit<T, "password" | "tempPassword" | "parentPassword"> {
+    const { password, tempPassword, parentPassword, ...safe } = student;
+    return safe;
+  }
+
+  private async withEnrollmentStatus<
+    T extends { id: string; password: string | null; tempPassword: string | null; parentPassword: string | null },
+  >(organizationId: string, students: T[]) {
     const studentIds = students.map((s) => s.id);
     const activeMemberships = await this.prisma.groupMembership.groupBy({
       by: ["studentId"],
@@ -31,7 +47,7 @@ export class StudentsService {
     const activeCountByStudent = new Map(activeMemberships.map((row) => [row.studentId, row._count.studentId]));
 
     return students.map((student) => ({
-      ...student,
+      ...this.omitSecrets(student),
       activeGroupCount: activeCountByStudent.get(student.id) ?? 0,
       enrollmentStatus: (activeCountByStudent.get(student.id) ?? 0) > 0 ? "enrolled" : "not_enrolled",
     }));
@@ -71,7 +87,7 @@ export class StudentsService {
     if (!student) {
       throw new NotFoundException("Student not found");
     }
-    const { password, tempPassword, parentPassword, ...safeStudent } = student;
+    const safeStudent = this.omitSecrets(student);
 
     const memberships = await this.prisma.groupMembership.findMany({
       where: { organizationId, studentId: id, status: "active" },
@@ -179,10 +195,11 @@ export class StudentsService {
   }
 
   async getNewcomers(organizationId: string) {
-    return this.prisma.student.findMany({
+    const students = await this.prisma.student.findMany({
       where: { organizationId, status: "newcomer" },
       orderBy: { registeredAt: "desc" },
     });
+    return students.map((student) => this.omitSecrets(student));
   }
 
   async getStageCounts(organizationId: string) {
@@ -225,10 +242,11 @@ export class StudentsService {
   }
 
   async getArchivedStudents(organizationId: string) {
-    return this.prisma.student.findMany({
+    const students = await this.prisma.student.findMany({
       where: { organizationId, status: "archived" },
       orderBy: { updatedAt: "desc" },
     });
+    return students.map((student) => this.omitSecrets(student));
   }
 
   async getActiveStudents(organizationId: string) {
@@ -254,7 +272,7 @@ export class StudentsService {
     }
 
     return students.map((student) => ({
-      ...student,
+      ...this.omitSecrets(student),
       groupMemberships: (membershipsByStudent.get(student.id) ?? []).map((m) => ({
         ...m,
         group: groupById.get(m.groupId) ?? null,
