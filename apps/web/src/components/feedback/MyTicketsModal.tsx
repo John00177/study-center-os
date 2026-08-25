@@ -25,20 +25,30 @@ export function MyTicketsModal({ open, onClose, basePath }: MyTicketsModalProps)
       {!isLoading && tickets && tickets.length > 0 && (
         <ul className="divide-y divide-slate-100">
           {tickets.map((t) => (
-            <li key={t.id} className="flex items-start justify-between gap-3 py-3">
-              <div className="min-w-0">
-                <p className="truncate text-sm font-medium text-slate-900">
-                  {TYPE_ICONS[t.type]} {t.title}
-                </p>
-                <p className="mt-0.5 text-xs text-slate-500">
-                  {TYPE_LABELS[t.type]} &middot; {formatRelativeTime(t.createdAt)}
-                </p>
+            <li key={t.id} className="py-3">
+              <div className="flex items-start justify-between gap-3">
+                <div className="min-w-0">
+                  <p className="truncate text-sm font-medium text-slate-900">
+                    {TYPE_ICONS[t.type]} {t.title}
+                  </p>
+                  <p className="mt-0.5 text-xs text-slate-500">
+                    {TYPE_LABELS[t.type]} &middot; {formatRelativeTime(t.createdAt)}
+                  </p>
+                </div>
+                <span
+                  className={`shrink-0 rounded-full px-2 py-0.5 text-xs font-medium ${STATUS_BADGE_CLASSES[t.status]}`}
+                >
+                  {STATUS_LABELS[t.status]}
+                </span>
               </div>
-              <span
-                className={`shrink-0 rounded-full px-2 py-0.5 text-xs font-medium ${STATUS_BADGE_CLASSES[t.status]}`}
-              >
-                {STATUS_LABELS[t.status]}
-              </span>
+              {t.adminReply && (
+                <div className="mt-2 rounded-lg border border-primary/20 bg-primary/5 p-2.5">
+                  <p className="text-xs font-semibold uppercase tracking-wide text-primary">
+                    Admin Reply{t.repliedAt ? ` · ${formatRelativeTime(t.repliedAt)}` : ""}
+                  </p>
+                  <p className="mt-0.5 whitespace-pre-wrap text-sm text-slate-700">{t.adminReply}</p>
+                </div>
+              )}
             </li>
           ))}
         </ul>

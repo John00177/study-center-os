@@ -6,6 +6,7 @@ import { registerSW } from "virtual:pwa-register";
 import App from "./App";
 import { ToastProvider } from "./components/Toast";
 import { ThemeProvider } from "./contexts/ThemeContext";
+import { LanguageProvider } from "./contexts/LanguageContext";
 import "./index.css";
 
 if ("serviceWorker" in navigator) {
@@ -36,9 +37,11 @@ createRoot(document.getElementById("root")!).render(
     <QueryClientProvider client={queryClient}>
       <ToastProvider>
         <ThemeProvider>
-          <BrowserRouter>
-            <App />
-          </BrowserRouter>
+          <LanguageProvider>
+            <BrowserRouter>
+              <App />
+            </BrowserRouter>
+          </LanguageProvider>
         </ThemeProvider>
       </ToastProvider>
     </QueryClientProvider>

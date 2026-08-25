@@ -11,6 +11,8 @@ import { useSyncOfflineQueue } from "../hooks/use-offline-sync";
 import { useCurrentSubscription } from "../hooks/use-subscription";
 import { useTheme } from "../contexts/ThemeContext";
 import { resolveOrgDisplayName } from "../lib/theme";
+import { ThemeToggle } from "../components/ui/ThemeToggle";
+import { LanguageSwitcher } from "../components/ui/LanguageSwitcher";
 
 const NAV_ITEMS = [
   { to: "/teacher", label: "Dashboard", icon: LayoutDashboard, end: true },
@@ -43,11 +45,11 @@ export function TeacherLayout() {
   const orgName = resolveOrgDisplayName(branding);
 
   return (
-    <div className="flex min-h-screen bg-slate-50">
-      <aside className="hidden w-60 shrink-0 border-r border-slate-200 bg-white sm:block">
-        <div className="flex items-center gap-2 border-b border-slate-200 px-4 py-4">
+    <div className="flex min-h-screen bg-slate-50 dark:bg-slate-900">
+      <aside className="hidden w-60 shrink-0 border-r border-slate-200 bg-white sm:block dark:border-slate-700 dark:bg-slate-800">
+        <div className="flex items-center gap-2 border-b border-slate-200 px-4 py-4 dark:border-slate-700">
           <OrgLogo logoUrl={branding?.logoUrl} logoDarkUrl={branding?.logoDarkUrl} name={orgName} className="h-8 w-8" />
-          <span className="truncate text-lg font-semibold tracking-tight text-slate-900">{orgName}</span>
+          <span className="truncate text-lg font-semibold tracking-tight text-slate-900 dark:text-slate-100">{orgName}</span>
         </div>
         <nav className="flex flex-col gap-1 p-3">
           {NAV_ITEMS.map(({ to, label, icon: Icon, end, requiredModule }) => {
@@ -58,7 +60,7 @@ export function TeacherLayout() {
                   key={to}
                   onClick={() => navigate("/settings/plan")}
                   title="Upgrade to unlock"
-                  className="flex items-center justify-between gap-3 rounded-lg px-3 py-2 text-left text-sm font-medium text-slate-400 transition hover:bg-slate-100"
+                  className="flex items-center justify-between gap-3 rounded-lg px-3 py-2 text-left text-sm font-medium text-slate-400 transition hover:bg-slate-100 dark:text-slate-500 dark:hover:bg-slate-700"
                 >
                   <span className="flex items-center gap-3">
                     <Icon size={18} />
@@ -75,7 +77,9 @@ export function TeacherLayout() {
                 end={end}
                 className={({ isActive }) =>
                   `flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition ${
-                    isActive ? "bg-primary text-white shadow-sm" : "text-slate-600 hover:bg-primary/10 hover:text-slate-900"
+                    isActive
+                      ? "bg-primary text-white shadow-sm"
+                      : "text-slate-600 hover:bg-primary/10 hover:text-slate-900 dark:text-slate-300 dark:hover:text-slate-100"
                   }`
                 }
               >
@@ -89,17 +93,19 @@ export function TeacherLayout() {
 
       <div className="flex flex-1 flex-col">
         <OfflineBanner />
-        <header className="flex items-center justify-between border-b border-primary/10 bg-primary/5 px-4 py-3 sm:px-6">
+        <header className="flex items-center justify-between border-b border-primary/10 bg-primary/5 px-4 py-3 sm:px-6 dark:border-slate-700 dark:bg-slate-800">
           <div className="flex items-center gap-2 sm:hidden">
             <OrgLogo logoUrl={branding?.logoUrl} logoDarkUrl={branding?.logoDarkUrl} name={orgName} className="h-6 w-6" />
-            <span className="truncate text-sm font-semibold text-slate-900">{orgName}</span>
+            <span className="truncate text-sm font-semibold text-slate-900 dark:text-slate-100">{orgName}</span>
           </div>
-          <span className="hidden text-sm text-slate-500 sm:inline">{orgName}</span>
+          <span className="hidden text-sm text-slate-500 sm:inline dark:text-slate-400">{orgName}</span>
           <div className="flex items-center gap-4">
-            <span className="hidden text-sm font-medium text-slate-700 sm:inline">{user?.name}</span>
+            <span className="hidden text-sm font-medium text-slate-700 sm:inline dark:text-slate-300">{user?.name}</span>
+            <LanguageSwitcher />
+            <ThemeToggle />
             <button
               onClick={handleLogout}
-              className="flex items-center gap-1 rounded-md px-2 py-1 text-sm text-slate-500 transition hover:bg-slate-100 hover:text-slate-900"
+              className="flex items-center gap-1 rounded-md px-2 py-1 text-sm text-slate-500 transition hover:bg-slate-100 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-700 dark:hover:text-slate-100"
             >
               <LogOut size={16} />
               <span className="hidden sm:inline">Logout</span>
@@ -112,7 +118,7 @@ export function TeacherLayout() {
         </main>
       </div>
 
-      <nav className="fixed inset-x-0 bottom-0 z-40 flex border-t border-slate-200 bg-white sm:hidden">
+      <nav className="fixed inset-x-0 bottom-0 z-40 flex border-t border-slate-200 bg-white sm:hidden dark:border-slate-700 dark:bg-slate-800">
         {NAV_ITEMS.map(({ to, label, icon: Icon, end }) => (
           <NavLink
             key={to}
@@ -120,7 +126,7 @@ export function TeacherLayout() {
             end={end}
             className={({ isActive }) =>
               `flex flex-1 flex-col items-center gap-0.5 py-2 text-xs font-medium ${
-                isActive ? "text-primary" : "text-slate-500"
+                isActive ? "text-primary" : "text-slate-500 dark:text-slate-400"
               }`
             }
           >

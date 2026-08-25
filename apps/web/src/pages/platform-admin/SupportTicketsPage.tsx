@@ -236,6 +236,7 @@ export function SupportTicketsPage() {
         ticketId={viewingId}
         showInternalNotes
         showOrganization
+        canReply
       />
     </div>
   );

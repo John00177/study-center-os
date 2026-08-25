@@ -22,6 +22,8 @@ interface TicketDetailModalProps {
   showInternalNotes?: boolean;
   /** Platform admin sees which organization a ticket belongs to. */
   showOrganization?: boolean;
+  /** Platform admin can write a customer-facing reply; everyone else only reads it. */
+  canReply?: boolean;
 }
 
 const NEXT_STATUS_ACTIONS: { status: TicketStatus; label: string }[] = [
@@ -37,15 +39,18 @@ export function TicketDetailModal({
   ticketId,
   showInternalNotes = false,
   showOrganization = false,
+  canReply = false,
 }: TicketDetailModalProps) {
   const { data: ticket, isLoading } = useTicket(basePath, open ? ticketId : null);
   const updateTicket = useUpdateTicket(basePath);
   const { showToast } = useToast();
   const [notes, setNotes] = useState("");
+  const [reply, setReply] = useState("");
 
   useEffect(() => {
     setNotes(ticket?.internalNotes ?? "");
-  }, [ticket?.id, ticket?.internalNotes]);
+    setReply(ticket?.adminReply ?? "");
+  }, [ticket?.id, ticket?.internalNotes, ticket?.adminReply]);
 
   async function setStatus(status: TicketStatus) {
     if (!ticket) return;
@@ -64,6 +69,16 @@ export function TicketDetailModal({
       showToast("Internal notes saved.");
     } catch {
       showToast("Failed to save notes.", "error");
+    }
+  }
+
+  async function sendReply() {
+    if (!ticket || !reply.trim()) return;
+    try {
+      await updateTicket.mutateAsync({ id: ticket.id, adminReply: reply });
+      showToast("Reply sent.");
+    } catch {
+      showToast("Failed to send reply.", "error");
     }
   }
 
@@ -135,6 +150,37 @@ export function TicketDetailModal({
               {ticket.updatedAt !== ticket.createdAt && <li>Last updated {formatRelativeTime(ticket.updatedAt)}</li>}
             </ol>
           </div>
+
+          {!canReply && ticket.adminReply && (
+            <div className="rounded-lg border border-primary/20 bg-primary/5 p-3 dark:border-primary/30 dark:bg-primary/10">
+              <p className="mb-1 text-xs font-semibold uppercase tracking-wide text-primary">
+                Admin Reply{ticket.repliedAt ? ` · ${formatRelativeTime(ticket.repliedAt)}` : ""}
+              </p>
+              <p className="whitespace-pre-wrap text-slate-700 dark:text-slate-200">{ticket.adminReply}</p>
+            </div>
+          )}
+
+          {canReply && (
+            <div>
+              <p className="mb-1 text-xs font-semibold uppercase tracking-wide text-slate-400">
+                Reply to submitter{ticket.repliedAt ? ` (last sent ${formatRelativeTime(ticket.repliedAt)})` : ""}
+              </p>
+              <textarea
+                rows={3}
+                value={reply}
+                onChange={(e) => setReply(e.target.value)}
+                placeholder="Write a reply the submitter will see in their ticket..."
+                className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30"
+              />
+              <button
+                onClick={sendReply}
+                disabled={updateTicket.isPending || !reply.trim()}
+                className="mt-2 rounded-md bg-primary px-3 py-1.5 text-xs font-medium text-white hover:opacity-90 disabled:opacity-60"
+              >
+                Send Reply
+              </button>
+            </div>
+          )}
 
           {showInternalNotes && (
             <div>

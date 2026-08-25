@@ -35,11 +35,11 @@ function TeacherDetailModal({ teacherId, onClose }: { teacherId: string | null; 
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
             <div>
               <p className="text-xs font-medium uppercase tracking-wide text-slate-400">Email</p>
-              <p className="text-sm text-slate-900">{teacher.email ?? "-"}</p>
+              <p className="text-sm text-slate-900 dark:text-slate-100">{teacher.email ?? "-"}</p>
             </div>
             <div>
               <p className="text-xs font-medium uppercase tracking-wide text-slate-400">Phone</p>
-              <p className="text-sm text-slate-900">{teacher.phone ?? "-"}</p>
+              <p className="text-sm text-slate-900 dark:text-slate-100">{teacher.phone ?? "-"}</p>
             </div>
           </div>
 
@@ -48,10 +48,10 @@ function TeacherDetailModal({ teacherId, onClose }: { teacherId: string | null; 
               Assigned groups ({teacher.groups?.length ?? 0})
             </h3>
             {teacher.groups && teacher.groups.length > 0 ? (
-              <ul className="divide-y divide-slate-100 rounded-md border border-slate-200">
+              <ul className="divide-y divide-slate-100 rounded-md border border-slate-200 dark:divide-slate-700 dark:border-slate-700">
                 {teacher.groups.map((g) => (
                   <li key={g.id} className="flex items-center justify-between px-3 py-2 text-sm">
-                    <span className="font-medium text-slate-900">{g.name}</span>
+                    <span className="font-medium text-slate-900 dark:text-slate-100">{g.name}</span>
                     <span className="text-slate-500">
                       {g.courseName ?? "-"} · {g.branchName ?? "-"}
                     </span>
@@ -82,7 +82,7 @@ export function ReceptionTeachersPage() {
   return (
     <div>
       <div className="mb-6 flex items-center justify-between">
-        <h1 className="text-2xl font-semibold text-slate-900">Teachers</h1>
+        <h1 className="text-2xl font-semibold text-slate-900 dark:text-slate-100">Teachers</h1>
       </div>
 
       <div className="mb-4 w-64">
@@ -96,7 +96,7 @@ export function ReceptionTeachersPage() {
         getRowKey={(t) => t.id}
         onRowClick={(t) => setDetailId(t.id)}
         columns={[
-          { header: "Name", render: (t) => <span className="font-medium text-slate-900">{t.name}</span> },
+          { header: "Name", render: (t) => <span className="font-medium text-slate-900 dark:text-slate-100">{t.name}</span> },
           { header: "Specialization", render: (t) => t.specialization ?? "-" },
           { header: "Email", render: (t) => t.email ?? "-" },
           { header: "Phone", render: (t) => t.phone ?? "-" },

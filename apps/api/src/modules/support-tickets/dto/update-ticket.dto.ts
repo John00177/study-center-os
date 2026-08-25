@@ -16,4 +16,9 @@ export class UpdateTicketDto {
   @IsString()
   @MaxLength(4000)
   internalNotes?: string;
+
+  @IsOptional()
+  @IsString()
+  @MaxLength(4000)
+  adminReply?: string;
 }

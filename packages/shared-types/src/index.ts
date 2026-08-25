@@ -1455,6 +1455,8 @@ export interface SupportTicketDto {
   status: TicketStatus;
   priority: TicketPriority;
   internalNotes?: string | null;
+  adminReply?: string | null;
+  repliedAt?: string | null;
   submitterType: string;
   submitterId: string;
   submitterName: string;
@@ -1479,6 +1481,7 @@ export interface UpdateTicketInput {
   status?: TicketStatus;
   priority?: TicketPriority;
   internalNotes?: string;
+  adminReply?: string;
 }
 
 export interface TicketSummaryDto {

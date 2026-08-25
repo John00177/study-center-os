@@ -23,6 +23,8 @@ import { useAuthStore } from "../stores/auth.store";
 import { useTheme } from "../contexts/ThemeContext";
 import { resolveOrgDisplayName } from "../lib/theme";
 import { api } from "../lib/api";
+import { ThemeToggle } from "../components/ui/ThemeToggle";
+import { LanguageSwitcher } from "../components/ui/LanguageSwitcher";
 
 // Reception's own nav — deliberately separate from the shared admin
 // Navigation component (same pattern as TeacherLayout): a small, fixed list
@@ -51,7 +53,9 @@ function ReceptionNav({ onNavigate }: { onNavigate?: () => void }) {
           end={end}
           className={({ isActive }) =>
             `flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition ${
-              isActive ? "bg-primary text-white shadow-sm" : "text-slate-600 hover:bg-primary/10 hover:text-slate-900"
+              isActive
+                ? "bg-primary text-white shadow-sm"
+                : "text-slate-600 hover:bg-primary/10 hover:text-slate-900 dark:text-slate-300 dark:hover:text-slate-100"
             }`
           }
         >
@@ -79,11 +83,11 @@ export function ReceptionLayout() {
   const orgName = resolveOrgDisplayName(branding);
 
   return (
-    <div className="flex min-h-screen bg-slate-50">
-      <aside className="hidden w-60 shrink-0 border-r border-slate-200 bg-white sm:block">
-        <div className="flex items-center gap-2 border-b border-slate-200 px-4 py-4">
+    <div className="flex min-h-screen bg-slate-50 dark:bg-slate-900">
+      <aside className="hidden w-60 shrink-0 border-r border-slate-200 bg-white sm:block dark:border-slate-700 dark:bg-slate-800">
+        <div className="flex items-center gap-2 border-b border-slate-200 px-4 py-4 dark:border-slate-700">
           <OrgLogo logoUrl={branding?.logoUrl} logoDarkUrl={branding?.logoDarkUrl} name={orgName} className="h-8 w-8" />
-          <span className="truncate text-lg font-semibold tracking-tight text-slate-900">{orgName}</span>
+          <span className="truncate text-lg font-semibold tracking-tight text-slate-900 dark:text-slate-100">{orgName}</span>
         </div>
         <ReceptionNav />
       </aside>
@@ -91,16 +95,16 @@ export function ReceptionLayout() {
       {menuOpen && (
         <div className="fixed inset-0 z-50 sm:hidden">
           <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={() => setMenuOpen(false)} />
-          <aside className="animate-fade-in absolute inset-y-0 left-0 w-64 bg-white shadow-xl">
-            <div className="flex items-center justify-between border-b border-slate-200 px-4 py-4">
+          <aside className="animate-fade-in absolute inset-y-0 left-0 w-64 bg-white shadow-xl dark:bg-slate-800">
+            <div className="flex items-center justify-between border-b border-slate-200 px-4 py-4 dark:border-slate-700">
               <div className="flex items-center gap-2">
                 <OrgLogo logoUrl={branding?.logoUrl} logoDarkUrl={branding?.logoDarkUrl} name={orgName} className="h-7 w-7" />
-                <span className="truncate text-lg font-semibold tracking-tight text-slate-900">{orgName}</span>
+                <span className="truncate text-lg font-semibold tracking-tight text-slate-900 dark:text-slate-100">{orgName}</span>
               </div>
               <button
                 onClick={() => setMenuOpen(false)}
                 aria-label="Close menu"
-                className="rounded-md p-1 text-slate-400 hover:bg-slate-100"
+                className="rounded-md p-1 text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700"
               >
                 <X className="h-5 w-5" />
               </button>
@@ -112,26 +116,28 @@ export function ReceptionLayout() {
 
       <div className="flex flex-1 flex-col">
         <OfflineBanner />
-        <header className="flex items-center justify-between border-b border-primary/10 bg-primary/5 px-4 py-3 sm:px-6">
+        <header className="flex items-center justify-between border-b border-primary/10 bg-primary/5 px-4 py-3 sm:px-6 dark:border-slate-700 dark:bg-slate-800">
           <div className="flex items-center gap-3">
             <button
               onClick={() => setMenuOpen(true)}
               aria-label="Open menu"
-              className="rounded-md p-1.5 text-slate-500 hover:bg-slate-100 sm:hidden"
+              className="rounded-md p-1.5 text-slate-500 hover:bg-slate-100 sm:hidden dark:text-slate-400 dark:hover:bg-slate-700"
             >
               <Menu className="h-5 w-5" />
             </button>
             <div className="flex items-center gap-2 sm:hidden">
               <OrgLogo logoUrl={branding?.logoUrl} logoDarkUrl={branding?.logoDarkUrl} name={orgName} className="h-6 w-6" />
-              <span className="truncate text-sm font-semibold text-slate-900">{orgName}</span>
+              <span className="truncate text-sm font-semibold text-slate-900 dark:text-slate-100">{orgName}</span>
             </div>
-            <span className="hidden text-sm text-slate-500 sm:inline">{orgName}</span>
+            <span className="hidden text-sm text-slate-500 sm:inline dark:text-slate-400">{orgName}</span>
           </div>
           <div className="flex items-center gap-4">
-            <span className="hidden text-sm font-medium text-slate-700 sm:inline">{user?.name}</span>
+            <span className="hidden text-sm font-medium text-slate-700 sm:inline dark:text-slate-300">{user?.name}</span>
+            <LanguageSwitcher />
+            <ThemeToggle />
             <button
               onClick={handleLogout}
-              className="flex items-center gap-1 rounded-md px-2 py-1 text-sm text-slate-500 transition hover:bg-slate-100 hover:text-slate-900"
+              className="flex items-center gap-1 rounded-md px-2 py-1 text-sm text-slate-500 transition hover:bg-slate-100 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-700 dark:hover:text-slate-100"
             >
               <LogOut size={16} />
               <span className="hidden sm:inline">Logout</span>

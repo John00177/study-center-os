@@ -15,12 +15,12 @@ interface StatCardProps {
 
 function StatCard({ label, value, icon: Icon }: StatCardProps) {
   return (
-    <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+    <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-700 dark:bg-slate-800">
       <div className="flex items-center justify-between">
-        <span className="text-sm font-medium text-slate-500">{label}</span>
+        <span className="text-sm font-medium text-slate-500 dark:text-slate-400">{label}</span>
         <Icon size={18} />
       </div>
-      <p className="mt-3 text-3xl font-semibold text-slate-900">{value ?? "-"}</p>
+      <p className="mt-3 text-3xl font-semibold text-slate-900 dark:text-slate-100">{value ?? "-"}</p>
     </div>
   );
 }
@@ -45,7 +45,7 @@ export function ReceptionDashboardPage() {
 
   return (
     <div>
-      <h1 className="mb-6 text-2xl font-semibold text-slate-900">Reception Dashboard</h1>
+      <h1 className="mb-6 text-2xl font-semibold text-slate-900 dark:text-slate-100">Reception Dashboard</h1>
 
       <div className="mb-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <StatCard label="Newcomers" value={studentsLoading ? undefined : newcomers.length} icon={UserPlus} />
@@ -68,14 +68,14 @@ export function ReceptionDashboardPage() {
         </button>
         <button
           onClick={() => navigate("/reception/attendance")}
-          className="flex items-center gap-2 rounded-md border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50"
+          className="flex items-center gap-2 rounded-md border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 dark:border-slate-600 dark:text-slate-300 dark:hover:bg-slate-800"
         >
           <ClipboardCheck className="h-4 w-4" />
           Take Attendance
         </button>
         <button
           onClick={() => navigate("/reception/finance/overdue")}
-          className="flex items-center gap-2 rounded-md border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50"
+          className="flex items-center gap-2 rounded-md border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 dark:border-slate-600 dark:text-slate-300 dark:hover:bg-slate-800"
         >
           <Banknote className="h-4 w-4" />
           View Overdue
@@ -83,20 +83,20 @@ export function ReceptionDashboardPage() {
       </div>
 
       <div className="mb-8">
-        <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-slate-500">Recent Newcomers</h2>
-        <div className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
+        <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">Recent Newcomers</h2>
+        <div className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm dark:border-slate-700 dark:bg-slate-800">
           {recentNewcomers.length === 0 && (
-            <p className="p-4 text-sm text-slate-500">No newcomers registered yet.</p>
+            <p className="p-4 text-sm text-slate-500 dark:text-slate-400">No newcomers registered yet.</p>
           )}
           {recentNewcomers.length > 0 && (
-            <div className="divide-y divide-slate-100">
+            <div className="divide-y divide-slate-100 dark:divide-slate-700">
               {recentNewcomers.map((s) => (
                 <div key={s.id} className="flex items-center justify-between p-4">
                   <div>
-                    <p className="font-medium text-slate-900">{s.name}</p>
-                    <p className="text-xs text-slate-500">{s.phone ?? "No phone on file"}</p>
+                    <p className="font-medium text-slate-900 dark:text-slate-100">{s.name}</p>
+                    <p className="text-xs text-slate-500 dark:text-slate-400">{s.phone ?? "No phone on file"}</p>
                   </div>
-                  <span className="text-xs text-slate-400">{new Date(s.registeredAt).toLocaleDateString()}</span>
+                  <span className="text-xs text-slate-400 dark:text-slate-500">{new Date(s.registeredAt).toLocaleDateString()}</span>
                 </div>
               ))}
             </div>

@@ -15,6 +15,8 @@ export interface SubmitterContext {
   contactPhone?: string | null;
 }
 
+const STAFF_SUBMITTER_TYPES = ["owner", "admin", "reception", "teacher"];
+
 export interface TicketListFilters {
   status?: string;
   type?: string;
@@ -148,7 +150,24 @@ export class SupportTicketsService {
     if (!existing) {
       throw new NotFoundException("Ticket not found");
     }
-    const updated = await this.prisma.supportTicket.update({ where: { id }, data: dto });
+    const isNewReply = Boolean(dto.adminReply) && dto.adminReply !== existing.adminReply;
+    const updated = await this.prisma.supportTicket.update({
+      where: { id },
+      data: isNewReply ? { ...dto, repliedAt: new Date() } : dto,
+    });
+
+    // Only staff submitters are backed by a real User row (student/parent
+    // portals have their own separate auth and no Notification feed).
+    if (isNewReply && STAFF_SUBMITTER_TYPES.includes(existing.submitterType)) {
+      await this.notificationsService.create({
+        userId: existing.submitterId,
+        title: "Support ticket reply",
+        message: `You have a reply on "${existing.title}"`,
+        type: "info",
+        entityType: "support_ticket",
+        entityId: existing.id,
+      });
+    }
 
     // AuditLog.organizationId is a required FK, so platform-level tickets
     // (which have no organization) can't be audited into an org's log.
@@ -175,7 +194,9 @@ export class SupportTicketsService {
     if (!existing) {
       throw new NotFoundException("Ticket not found");
     }
-    const { internalNotes: _internalNotes, ...allowedDto } = dto;
+    // Org staff can move status/priority but never set internalNotes or
+    // adminReply — those are platform-admin-only fields (see updateTicketAsPlatformAdmin).
+    const { internalNotes: _internalNotes, adminReply: _adminReply, ...allowedDto } = dto;
     const updated = await this.prisma.supportTicket.update({ where: { id }, data: allowedDto });
 
     await this.auditService.record({

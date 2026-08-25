@@ -11,6 +11,7 @@ import { useTheme } from "../contexts/ThemeContext";
 import { resolveOrgDisplayName } from "../lib/theme";
 import { api } from "../lib/api";
 import { ThemeToggle } from "../components/ui/ThemeToggle";
+import { LanguageSwitcher } from "../components/ui/LanguageSwitcher";
 import { NotificationBell } from "../components/notifications/NotificationBell";
 
 export function DashboardLayout() {
@@ -83,6 +84,7 @@ export function DashboardLayout() {
           <div className="flex items-center gap-4">
             <span className="hidden text-sm font-medium text-slate-700 sm:inline dark:text-slate-300">{user?.name}</span>
             <NotificationBell />
+            <LanguageSwitcher />
             <ThemeToggle />
             <button
               onClick={handleLogout}

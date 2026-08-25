@@ -921,6 +921,12 @@ model SupportTicket {
   priority      TicketPriority @default(medium)
   internalNotes String?        @map("internal_notes")
 
+  // Platform admin's customer-facing reply — distinct from internalNotes
+  // (which is admin-only and stripped from every non-admin response). This
+  // one is deliberately never stripped, so the ticket opener sees it.
+  adminReply String?   @map("admin_reply")
+  repliedAt  DateTime? @map("replied_at")
+
   // Who submitted — a plain string pair rather than a real FK, since the
   // submitter can be any of six different identity shapes (User row for
   // staff, Student row for student/parent) with no single foreign key that
