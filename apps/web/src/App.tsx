@@ -343,7 +343,9 @@ export default function App() {
           path="audit-log"
           element={
             <RequireOwnerOrAdmin>
-              <AuditLogPage />
+              <RequireNotOwner>
+                <AuditLogPage />
+              </RequireNotOwner>
             </RequireOwnerOrAdmin>
           }
         />
@@ -383,7 +385,14 @@ export default function App() {
           }
         />
         <Route path="groups" element={<GroupsPage />} />
-        <Route path="schedule" element={<SchedulePage />} />
+        <Route
+          path="schedule"
+          element={
+            <RequireNotOwner>
+              <SchedulePage />
+            </RequireNotOwner>
+          }
+        />
         <Route path="calendar" element={<CalendarPage />} />
         <Route
           path="attendance"

@@ -43,7 +43,7 @@ const NAV_ITEMS = [
   { to: "/parents", label: "Parents", icon: UserRound, roles: ["owner", "admin", "manager"] },
   { to: "/courses", label: "Courses", icon: BookOpen, roles: ["admin"] },
   { to: "/groups", label: "Groups", icon: UsersRound, roles: ["owner", "admin", "manager"] },
-  { to: "/schedule", label: "Schedule", icon: CalendarDays, roles: ["owner", "admin", "manager"] },
+  { to: "/schedule", label: "Schedule", icon: CalendarDays, roles: ["admin", "manager"] },
   { to: "/calendar", label: "Calendar", icon: Calendar, roles: ["owner", "admin", "manager"] },
   { to: "/attendance", label: "Attendance", icon: ClipboardCheck, roles: ["admin", "manager"] },
   { to: "/finance", label: "Finance", icon: Banknote, roles: ["owner", "admin"] },
@@ -57,7 +57,7 @@ const NAV_ITEMS = [
   { to: "/settings/branding", label: "Branding", icon: Palette, roles: ["owner", "admin"] },
   { to: "/settings/plan", label: "Plan & Billing", icon: CreditCard, roles: ["owner", "admin"] },
   { to: "/support-tickets", label: "Support Tickets", icon: MessageCircle, roles: ["owner", "admin"] },
-  { to: "/audit-log", label: "Audit Log", icon: History, roles: ["owner", "admin"] },
+  { to: "/audit-log", label: "Audit Log", icon: History, roles: ["admin"] },
 ];
 
 export function Navigation({ role }: { role?: string | null }) {
