@@ -228,7 +228,8 @@ export function DashboardPage() {
         </div>
       )}
 
-      {canSeeFinance && (
+      {/* Lifecycle cards are hidden on the owner dashboard per cleanup request; admin keeps them. */}
+      {role === "admin" && (
         <div className="mb-6 grid grid-cols-3 gap-3 sm:grid-cols-5">
           <LifecycleCard label="Leads" value={stageCounts.data?.leads ?? 0} colorClass="text-slate-600 dark:text-slate-300" />
           <LifecycleCard label="Trial" value={stageCounts.data?.trials ?? 0} colorClass="text-blue-600 dark:text-blue-400" />
@@ -249,13 +250,18 @@ export function DashboardPage() {
               value={todayReport.data ? formatCurrency(todayReport.data.revenueToday, "UZS") : "-"}
               icon={<Banknote size={18} />}
             />
-            <TodayStat label="Checked in" value={todayReport.data?.checkedInToday ?? "-"} icon={<LogIn size={18} />} />
-            <TodayStat label="Lessons held" value={todayReport.data?.lessonsHeldToday ?? "-"} icon={<CalendarCheck2 size={18} />} />
-            <TodayStat label="New leads" value={todayReport.data?.newLeadsToday ?? "-"} icon={<UserPlus size={18} />} />
-            <TodayStat label="Trials" value={todayReport.data?.newTrialsToday ?? "-"} icon={<UserCheck size={18} />} />
-            <TodayStat label="Contracts" value={todayReport.data?.newContractsToday ?? "-"} icon={<FileSignature size={18} />} />
-            <TodayStat label="New payments" value={todayReport.data?.newPaymentsToday ?? "-"} icon={<HandCoins size={18} />} />
-            <TodayStat label="Dismissed" value={todayReport.data?.dismissedToday ?? "-"} icon={<UserMinus size={18} />} />
+            {/* Remaining Today's Report cards are admin-only; owner dashboard shows Revenue today only. */}
+            {role === "admin" && (
+              <>
+                <TodayStat label="Checked in" value={todayReport.data?.checkedInToday ?? "-"} icon={<LogIn size={18} />} />
+                <TodayStat label="Lessons held" value={todayReport.data?.lessonsHeldToday ?? "-"} icon={<CalendarCheck2 size={18} />} />
+                <TodayStat label="New leads" value={todayReport.data?.newLeadsToday ?? "-"} icon={<UserPlus size={18} />} />
+                <TodayStat label="Trials" value={todayReport.data?.newTrialsToday ?? "-"} icon={<UserCheck size={18} />} />
+                <TodayStat label="Contracts" value={todayReport.data?.newContractsToday ?? "-"} icon={<FileSignature size={18} />} />
+                <TodayStat label="New payments" value={todayReport.data?.newPaymentsToday ?? "-"} icon={<HandCoins size={18} />} />
+                <TodayStat label="Dismissed" value={todayReport.data?.dismissedToday ?? "-"} icon={<UserMinus size={18} />} />
+              </>
+            )}
           </div>
         </div>
       )}
@@ -334,23 +340,26 @@ export function DashboardPage() {
         )}
       </div>
 
-      <div className="mb-8">
-        <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">Quick Stats</h2>
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          <QuickStat label="Newcomers this week" value={String(quickStats.data?.newcomersThisWeek ?? "-")} icon={<UserPlus size={18} />} />
-          <QuickStat label="Conversions this week" value={String(quickStats.data?.conversionsThisWeek ?? "-")} icon={<UserCheck size={18} />} />
-          <QuickStat
-            label="Homework completion rate"
-            value={quickStats.data ? `${quickStats.data.homeworkCompletionRate.toFixed(0)}%` : "-"}
-            icon={<TrendingUp size={18} />}
-          />
-          <QuickStat
-            label="Today's attendance rate"
-            value={quickStats.data ? `${quickStats.data.todayAttendanceRate.toFixed(0)}%` : "-"}
-            icon={<ClipboardCheck size={18} />}
-          />
+      {/* Quick Stats is hidden on the owner dashboard per cleanup request; admin keeps it. */}
+      {role === "admin" && (
+        <div className="mb-8">
+          <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">Quick Stats</h2>
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            <QuickStat label="Newcomers this week" value={String(quickStats.data?.newcomersThisWeek ?? "-")} icon={<UserPlus size={18} />} />
+            <QuickStat label="Conversions this week" value={String(quickStats.data?.conversionsThisWeek ?? "-")} icon={<UserCheck size={18} />} />
+            <QuickStat
+              label="Homework completion rate"
+              value={quickStats.data ? `${quickStats.data.homeworkCompletionRate.toFixed(0)}%` : "-"}
+              icon={<TrendingUp size={18} />}
+            />
+            <QuickStat
+              label="Today's attendance rate"
+              value={quickStats.data ? `${quickStats.data.todayAttendanceRate.toFixed(0)}%` : "-"}
+              icon={<ClipboardCheck size={18} />}
+            />
+          </div>
         </div>
-      </div>
+      )}
 
       {canSeeFinance && (
         <div className="mb-8 rounded-xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-700 dark:bg-slate-800">
@@ -383,13 +392,16 @@ export function DashboardPage() {
           the rest of this dashboard but not staff administration. */}
       {role === "owner" && <StaffSection />}
 
-      <TodaysClassesWidget
-        dateLabel={todayLabel}
-        sessions={todaysSessions}
-        isLoading={calendar.isLoading}
-        showBranch
-        onSessionClick={() => navigate("/calendar")}
-      />
+      {/* Today's Classes is hidden on the owner dashboard per cleanup request; admin keeps it. */}
+      {role === "admin" && (
+        <TodaysClassesWidget
+          dateLabel={todayLabel}
+          sessions={todaysSessions}
+          isLoading={calendar.isLoading}
+          showBranch
+          onSessionClick={() => navigate("/calendar")}
+        />
+      )}
     </div>
   );
 }
