@@ -69,6 +69,7 @@ import { PlatformHealthPage } from "./pages/platform-admin/PlatformHealthPage";
 import { SupportTicketsPage as AdminSupportTicketsPage } from "./pages/platform-admin/SupportTicketsPage";
 import { OrgSupportTicketsPage } from "./pages/support-tickets/OrgSupportTicketsPage";
 import { AuditLogPage } from "./pages/audit/AuditLogPage";
+import { CrmPipelinePage } from "./pages/crm/CrmPipelinePage";
 
 // Each portal is a dead end for the wrong role — a mismatched login doesn't
 // bounce sideways into some other dashboard, it goes back to /login (or
@@ -293,6 +294,14 @@ export default function App() {
         }
       >
         <Route index element={<DashboardPage />} />
+        <Route
+          path="crm/pipeline"
+          element={
+            <RequireOwnerOrAdmin>
+              <CrmPipelinePage />
+            </RequireOwnerOrAdmin>
+          }
+        />
         <Route
           path="analytics"
           element={

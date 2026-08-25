@@ -539,6 +539,15 @@ function PasswordStatusBadge({ mustChangePassword }: { mustChangePassword: boole
   );
 }
 
+const STAGE_FILTER_OPTIONS = [
+  { value: "", label: "All" },
+  { value: "lead", label: "Lead" },
+  { value: "trial", label: "Trial" },
+  { value: "contract", label: "Contract" },
+  { value: "paid", label: "Paid" },
+  { value: "refusal", label: "Refusal" },
+];
+
 export function StudentsPage() {
   const role = useUserRole();
   const isReception = role === "reception";
@@ -546,6 +555,9 @@ export function StudentsPage() {
   const deleteStudent = useDeleteStudent();
   const resetPassword = useResetStudentPassword();
   const { showToast } = useToast();
+
+  const [stageFilter, setStageFilter] = useState("");
+  const filteredData = stageFilter ? data?.filter((s) => s.stage === stageFilter) : data;
 
   const [formOpen, setFormOpen] = useState(false);
   const [addDirectOpen, setAddDirectOpen] = useState(false);
@@ -602,8 +614,18 @@ export function StudentsPage() {
         </button>
       </div>
 
+      <div className="mb-4 w-48">
+        <SelectField label="Stage" value={stageFilter} onChange={(e) => setStageFilter(e.target.value)}>
+          {STAGE_FILTER_OPTIONS.map((option) => (
+            <option key={option.value} value={option.value}>
+              {option.label}
+            </option>
+          ))}
+        </SelectField>
+      </div>
+
       <DataTable
-        data={data}
+        data={filteredData}
         isLoading={isLoading}
         emptyMessage='No students yet. Click "Add Student" to add one.'
         getRowKey={(s) => s.id}

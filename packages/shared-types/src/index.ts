@@ -735,11 +735,14 @@ export interface TodayReportDto {
 export interface StageCountsDto {
   leads: number;
   trials: number;
-  active: number;
+  contracts: number;
   paid: number;
-  frozen: number;
-  debtors: number;
+  refusals: number;
 }
+
+// CRM pipeline stage — see CrmPipelinePage.tsx and PATCH /students/:id/stage.
+export const STUDENT_STAGES = ["lead", "trial", "contract", "paid", "refusal"] as const;
+export type StudentStage = (typeof STUDENT_STAGES)[number];
 
 export type ReminderType = "sms" | "whatsapp" | "email" | "push";
 export type ReminderStatus = "pending" | "sent" | "delivered" | "failed";

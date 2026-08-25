@@ -11,6 +11,7 @@ import {
   ClipboardCheck,
   GraduationCap,
   History,
+  KanbanSquare,
   LayoutDashboard,
   Lock,
   MessageCircle,
@@ -30,6 +31,7 @@ import { useCurrentSubscription } from "../hooks/use-subscription";
 // in depth on top of the route guards.
 const NAV_ITEMS = [
   { to: "/", label: "Dashboard", icon: LayoutDashboard, end: true, roles: ["owner", "admin"] },
+  { to: "/crm/pipeline", label: "CRM Pipeline", icon: KanbanSquare, roles: ["owner", "admin"] },
   { to: "/analytics", label: "Analytics", icon: BarChart3, roles: ["owner", "admin"], requiredModule: "analytics" as PlanModule },
   { to: "/branches", label: "Branches", icon: Building2, roles: ["owner", "admin"] },
   { to: "/teachers", label: "Teachers", icon: GraduationCap, roles: ["owner", "admin"] },

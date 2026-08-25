@@ -6,6 +6,7 @@ import type {
   LinkParentResultDto,
   StageCountsDto,
   StudentDto,
+  StudentStage,
   TempPasswordDto,
 } from "@crm/shared-types";
 import { api } from "../lib/api";
@@ -21,6 +22,17 @@ export function useStageCounts() {
   return useQuery({
     queryKey: ["students", "stage-counts"],
     queryFn: async () => (await api.get<StageCountsDto>("/students/stage-counts")).data,
+  });
+}
+
+export function useUpdateStudentStage() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async ({ id, stage }: { id: string; stage: StudentStage }) =>
+      (await api.patch<StudentDto>(`/students/${id}/stage`, { stage })).data,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["students"] });
+    },
   });
 }
 

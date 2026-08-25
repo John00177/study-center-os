@@ -225,13 +225,12 @@ export function DashboardPage() {
       )}
 
       {canSeeFinance && (
-        <div className="mb-6 grid grid-cols-3 gap-3 sm:grid-cols-6">
+        <div className="mb-6 grid grid-cols-3 gap-3 sm:grid-cols-5">
           <LifecycleCard label="Leads" value={stageCounts.data?.leads ?? 0} colorClass="text-slate-600 dark:text-slate-300" />
           <LifecycleCard label="Trial" value={stageCounts.data?.trials ?? 0} colorClass="text-blue-600 dark:text-blue-400" />
-          <LifecycleCard label="Active" value={stageCounts.data?.active ?? 0} colorClass="text-indigo-600 dark:text-indigo-400" />
+          <LifecycleCard label="Contract" value={stageCounts.data?.contracts ?? 0} colorClass="text-indigo-600 dark:text-indigo-400" />
           <LifecycleCard label="Paid" value={stageCounts.data?.paid ?? 0} colorClass="text-green-600 dark:text-green-400" />
-          <LifecycleCard label="Frozen" value={stageCounts.data?.frozen ?? 0} colorClass="text-cyan-600 dark:text-cyan-400" />
-          <LifecycleCard label="Debtor" value={stageCounts.data?.debtors ?? 0} colorClass="text-red-600 dark:text-red-400" />
+          <LifecycleCard label="Refusal" value={stageCounts.data?.refusals ?? 0} colorClass="text-red-600 dark:text-red-400" />
         </div>
       )}
 

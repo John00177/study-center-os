@@ -388,11 +388,12 @@ model Student {
   // recently (re)generated forces a change on next login for that side.
   mustChangePassword Boolean     @default(false) @map("must_change_password")
   tempPassword       String?     @map("temp_password")
-  // CRM funnel stage, distinct from `status` (which governs enrollment
-  // mechanics like newcomer -> active conversion). Manually meaningful for
-  // "trial"/"frozen"; "lead"/"active"/"paid" are also set automatically at
-  // creation, conversion, and payment time — see students.service.ts /
-  // finance.service.ts.
+  // CRM pipeline stage, distinct from `status` (which governs enrollment
+  // mechanics like newcomer -> active conversion). One of "lead" | "trial" |
+  // "contract" | "paid" | "refusal" — see the CRM Pipeline board
+  // (CrmPipelinePage.tsx) and PATCH /students/:id/stage. "contract" and
+  // "paid" are also set automatically on enrollment conversion and first
+  // payment respectively — see students.service.ts / finance.service.ts.
   stage            String        @default("lead")
   registeredAt     DateTime      @default(now()) @map("registered_at")
   convertedAt      DateTime?     @map("converted_at")

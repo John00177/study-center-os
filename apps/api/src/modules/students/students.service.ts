@@ -10,6 +10,7 @@ import { ConvertToActiveDto } from "./dto/convert-to-active.dto";
 import { CreateStudentDto } from "./dto/create-student.dto";
 import { CreateStudentDirectDto } from "./dto/create-student-direct.dto";
 import { LinkParentDto } from "./dto/link-parent.dto";
+import { UpdateStageDto } from "./dto/update-stage.dto";
 import { UpdateStudentDto } from "./dto/update-student.dto";
 
 @Injectable()
@@ -147,11 +148,32 @@ export class StudentsService {
     return {
       leads: byStage.get("lead") ?? 0,
       trials: byStage.get("trial") ?? 0,
-      active: byStage.get("active") ?? 0,
+      contracts: byStage.get("contract") ?? 0,
       paid: byStage.get("paid") ?? 0,
-      frozen: byStage.get("frozen") ?? 0,
-      debtors: byStage.get("debtor") ?? 0,
+      refusals: byStage.get("refusal") ?? 0,
     };
+  }
+
+  /** CRM pipeline board move — see CrmPipelinePage.tsx. */
+  async updateStage(organizationId: string, actorId: string, id: string, dto: UpdateStageDto) {
+    const existing = await this.prisma.student.findFirst({ where: { id, organizationId } });
+    if (!existing) {
+      throw new NotFoundException("Student not found");
+    }
+
+    const student = await this.prisma.student.update({ where: { id }, data: { stage: dto.stage } });
+
+    await this.auditService.record({
+      organizationId,
+      actorId,
+      action: "student.stage_changed",
+      entityType: "Student",
+      entityId: id,
+      beforeValue: { stage: existing.stage } as unknown as Prisma.InputJsonValue,
+      afterValue: { stage: student.stage } as unknown as Prisma.InputJsonValue,
+    });
+
+    return student;
   }
 
   async getArchivedStudents(organizationId: string) {
@@ -227,7 +249,7 @@ export class StudentsService {
       }),
       this.prisma.student.update({
         where: { id },
-        data: { status: "active", convertedAt: new Date(), stage: "active" },
+        data: { status: "active", convertedAt: new Date(), stage: "contract" },
       }),
       // Auto-charge on conversion — receptionists no longer register every
       // newly-converted student in finance by hand.
@@ -286,7 +308,7 @@ export class StudentsService {
           phone: dto.phone,
           password: passwordHash,
           status: "active",
-          stage: "active",
+          stage: "contract",
           mustChangePassword: true,
           tempPassword,
           parentName: dto.parentName,
