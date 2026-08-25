@@ -197,7 +197,7 @@ function StaffActions({ member, onResetPassword }: { member: StaffMemberDto; onR
       {member.roleSlug === "teacher" && (
         <button
           onClick={() => navigate("/teachers")}
-          className="rounded p-1.5 text-xs font-medium text-indigo-600 hover:bg-indigo-50"
+          className="rounded p-1.5 text-xs font-medium text-indigo-600 hover:bg-indigo-50 dark:text-indigo-400 dark:hover:bg-indigo-500/10"
         >
           Manage Access
         </button>

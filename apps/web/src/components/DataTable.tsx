@@ -92,7 +92,10 @@ export function DataTable<T>({
                   </td>
                 ))}
                 {renderActions && (
-                  <td className="px-4 py-3 text-right text-sm" onClick={(e) => e.stopPropagation()}>
+                  <td
+                    className="px-4 py-3 text-right text-sm text-slate-600 dark:text-slate-300"
+                    onClick={(e) => e.stopPropagation()}
+                  >
                     <div className="flex justify-end gap-1">{renderActions(row)}</div>
                   </td>
                 )}
