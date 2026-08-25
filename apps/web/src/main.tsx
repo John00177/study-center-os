@@ -34,16 +34,19 @@ const queryClient = new QueryClient({
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
-    <QueryClientProvider client={queryClient}>
-      <ToastProvider>
-        <ThemeProvider>
-          <LanguageProvider>
+    {/* LanguageProvider is outermost: ToastProvider and ThemeProvider both
+        render translated text now, so they must sit inside it. It has no
+        dependencies of its own (localStorage only), so it is safe here. */}
+    <LanguageProvider>
+      <QueryClientProvider client={queryClient}>
+        <ToastProvider>
+          <ThemeProvider>
             <BrowserRouter>
               <App />
             </BrowserRouter>
-          </LanguageProvider>
-        </ThemeProvider>
-      </ToastProvider>
-    </QueryClientProvider>
+          </ThemeProvider>
+        </ToastProvider>
+      </QueryClientProvider>
+    </LanguageProvider>
   </StrictMode>,
 );

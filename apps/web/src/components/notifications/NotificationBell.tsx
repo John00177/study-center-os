@@ -55,7 +55,7 @@ export function NotificationBell({
 
       <button
         onClick={() => setOpen((o) => !o)}
-        aria-label="Notifications"
+        aria-label={t("Notifications")}
         className={buttonClass}
       >
         <Bell className="h-5 w-5" />

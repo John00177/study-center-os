@@ -29,6 +29,7 @@ import { useSalaries, useSalaryAnalytics } from "../hooks/use-salary";
 import { useTheme } from "../contexts/ThemeContext";
 import { formatCurrency } from "../lib/format";
 import { useUserRole } from "../stores/auth.store";
+import { useTranslation } from "../hooks/use-translation";
 
 function defaultPeriod() {
   const now = new Date();
@@ -52,6 +53,7 @@ const CHARGE_STATUS_STYLES: Record<ChargeStatus, string> = {
 };
 
 function ChargeForm({ open, onClose }: { open: boolean; onClose: () => void }) {
+  const { t } = useTranslation();
   const { data: students } = useStudents();
   const { branding } = useTheme();
   const hasBranches = (branding as { hasBranches?: boolean } | null)?.hasBranches ?? true;
@@ -99,24 +101,24 @@ function ChargeForm({ open, onClose }: { open: boolean; onClose: () => void }) {
 
     try {
       await createCharge.mutateAsync(input);
-      showToast("Charge created.");
+      showToast(t("Charge created."));
       onClose();
     } catch {
-      showToast("Failed to create charge.", "error");
+      showToast(t("Failed to create charge."), "error");
     }
   }
 
   return (
-    <Modal open={open} onClose={onClose} title="New Charge">
+    <Modal open={open} onClose={onClose} title={t("New Charge")}>
       <form onSubmit={handleSubmit} className="space-y-4">
         <SelectField
-          label="Student"
+          label={t("Student")}
           required
           value={form.studentId}
           error={errors.studentId}
           onChange={(e) => setForm((f) => ({ ...f, studentId: e.target.value }))}
         >
-          <option value="">Select student</option>
+          <option value="">{t("Select student")}</option>
           {students?.map((s) => (
             <option key={s.id} value={s.id}>
               {s.name}
@@ -125,13 +127,13 @@ function ChargeForm({ open, onClose }: { open: boolean; onClose: () => void }) {
         </SelectField>
         {hasBranches && (
           <SelectField
-            label="Branch"
+            label={t("Branch")}
             required
             value={form.branchId}
             error={errors.branchId}
             onChange={(e) => setForm((f) => ({ ...f, branchId: e.target.value }))}
           >
-            <option value="">Select branch</option>
+            <option value="">{t("Select branch")}</option>
             {branches?.map((b) => (
               <option key={b.id} value={b.id}>
                 {b.name}
@@ -140,7 +142,7 @@ function ChargeForm({ open, onClose }: { open: boolean; onClose: () => void }) {
           </SelectField>
         )}
         <TextField
-          label="Amount (UZS)"
+          label={t("Amount (UZS)")}
           type="number"
           min="0"
           required
@@ -149,12 +151,12 @@ function ChargeForm({ open, onClose }: { open: boolean; onClose: () => void }) {
           onChange={(e) => setForm((f) => ({ ...f, amount: e.target.value }))}
         />
         <TextField
-          label="Description"
+          label={t("Description")}
           value={form.description}
           onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))}
         />
         <TextField
-          label="Due date"
+          label={t("Due date")}
           type="date"
           required
           value={form.dueDate}
@@ -169,7 +171,7 @@ function ChargeForm({ open, onClose }: { open: boolean; onClose: () => void }) {
             disabled={createCharge.isPending}
             className="rounded-md border border-slate-300 px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 disabled:opacity-60"
           >
-            Cancel
+            {t("Cancel")}
           </button>
           <button
             type="submit"
@@ -177,7 +179,7 @@ function ChargeForm({ open, onClose }: { open: boolean; onClose: () => void }) {
             className="flex items-center gap-2 rounded-md bg-indigo-600 px-3 py-2 text-sm font-medium text-white hover:bg-indigo-700 disabled:opacity-60"
           >
             {createCharge.isPending && <Loader2 className="h-4 w-4 animate-spin" />}
-            Create charge
+            {t("Create charge")}
           </button>
         </div>
       </form>
@@ -196,6 +198,7 @@ export function PaymentForm({
   onClose: () => void;
   presetStudentId?: string;
 }) {
+  const { t } = useTranslation();
   const { data: students } = useStudents();
   const { data: accounts } = useFinancialAccounts();
   const createPayment = useCreatePayment();
@@ -248,25 +251,25 @@ export function PaymentForm({
 
     try {
       await createPayment.mutateAsync(input);
-      showToast("Payment recorded.");
+      showToast(t("Payment recorded."));
       onClose();
     } catch {
-      showToast("Failed to record payment.", "error");
+      showToast(t("Failed to record payment."), "error");
     }
   }
 
   return (
-    <Modal open={open} onClose={onClose} title="New Payment">
+    <Modal open={open} onClose={onClose} title={t("New Payment")}>
       <form onSubmit={handleSubmit} className="space-y-4">
         <SelectField
-          label="Student"
+          label={t("Student")}
           required
           disabled={Boolean(presetStudentId)}
           value={form.studentId}
           error={errors.studentId}
           onChange={(e) => setForm((f) => ({ ...f, studentId: e.target.value }))}
         >
-          <option value="">Select student</option>
+          <option value="">{t("Select student")}</option>
           {students?.map((s) => (
             <option key={s.id} value={s.id}>
               {s.name}
@@ -274,13 +277,13 @@ export function PaymentForm({
           ))}
         </SelectField>
         <SelectField
-          label="Account"
+          label={t("Account")}
           required
           value={form.financialAccountId}
           error={errors.financialAccountId}
           onChange={(e) => setForm((f) => ({ ...f, financialAccountId: e.target.value }))}
         >
-          <option value="">Select account</option>
+          <option value="">{t("Select account")}</option>
           {accounts?.map((a) => (
             <option key={a.id} value={a.id}>
               {a.name}
@@ -288,7 +291,7 @@ export function PaymentForm({
           ))}
         </SelectField>
         <TextField
-          label="Amount (UZS)"
+          label={t("Amount (UZS)")}
           type="number"
           min="0"
           required
@@ -297,7 +300,7 @@ export function PaymentForm({
           onChange={(e) => setForm((f) => ({ ...f, amount: e.target.value }))}
         />
         <SelectField
-          label="Payment method"
+          label={t("Payment method")}
           value={form.paymentMethod}
           onChange={(e) => setForm((f) => ({ ...f, paymentMethod: e.target.value }))}
         >
@@ -309,13 +312,13 @@ export function PaymentForm({
         </SelectField>
         <div className="grid grid-cols-2 gap-4">
           <TextField
-            label="Period start"
+            label={t("Period start")}
             type="date"
             value={form.periodStartDate}
             onChange={(e) => setForm((f) => ({ ...f, periodStartDate: e.target.value }))}
           />
           <TextField
-            label="Period end"
+            label={t("Period end")}
             type="date"
             value={form.periodEndDate}
             onChange={(e) => setForm((f) => ({ ...f, periodEndDate: e.target.value }))}
@@ -329,7 +332,7 @@ export function PaymentForm({
             disabled={createPayment.isPending}
             className="rounded-md border border-slate-300 px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 disabled:opacity-60 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700"
           >
-            Cancel
+            {t("Cancel")}
           </button>
           <button
             type="submit"
@@ -337,7 +340,7 @@ export function PaymentForm({
             className="flex items-center gap-2 rounded-md bg-indigo-600 px-3 py-2 text-sm font-medium text-white hover:bg-indigo-700 disabled:opacity-60"
           >
             {createPayment.isPending && <Loader2 className="h-4 w-4 animate-spin" />}
-            Record payment
+            {t("Record payment")}
           </button>
         </div>
       </form>
@@ -368,6 +371,7 @@ function SummaryCard({
 }
 
 function StudentHistoryModal({ studentId, onClose }: { studentId: string | null; onClose: () => void }) {
+  const { t } = useTranslation();
   const { data: allCharges } = useCharges();
   const { data: allPayments } = usePayments();
   const charges = allCharges?.filter((c) => c.studentId === studentId) ?? [];
@@ -378,18 +382,18 @@ function StudentHistoryModal({ studentId, onClose }: { studentId: string | null;
     <Modal open={Boolean(studentId)} onClose={onClose} title={`Payment history — ${studentName}`} widthClassName="max-w-xl">
       <div className="space-y-6">
         <div>
-          <h3 className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-500">Charges</h3>
+          <h3 className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-500">{t("Charges")}</h3>
           <DataTable
             data={charges}
             isLoading={false}
-            emptyMessage="No charges."
+            emptyMessage={t("No charges.")}
             getRowKey={(c) => c.id}
             columns={[
-              { header: "Description", render: (c) => c.description ?? "-" },
-              { header: "Amount", render: (c) => formatCurrency(c.amount, c.currency) },
-              { header: "Due", render: (c) => new Date(c.dueDate).toLocaleDateString() },
+              { header: t("Description"), render: (c) => c.description ?? "-" },
+              { header: t("Amount"), render: (c) => formatCurrency(c.amount, c.currency) },
+              { header: t("Due"), render: (c) => new Date(c.dueDate).toLocaleDateString() },
               {
-                header: "Status",
+                header: t("Status"),
                 render: (c) => (
                   <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium capitalize ${CHARGE_STATUS_STYLES[c.status]}`}>
                     {c.status}
@@ -400,17 +404,17 @@ function StudentHistoryModal({ studentId, onClose }: { studentId: string | null;
           />
         </div>
         <div>
-          <h3 className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-500">Payments</h3>
+          <h3 className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-500">{t("Payments")}</h3>
           <DataTable
             data={payments}
             isLoading={false}
-            emptyMessage="No payments."
+            emptyMessage={t("No payments.")}
             getRowKey={(p) => p.id}
             columns={[
-              { header: "Amount", render: (p) => formatCurrency(p.amount, p.currency) },
-              { header: "Method", render: (p) => <PaymentMethodBadge method={p.paymentMethod} /> },
-              { header: "Period", render: (p) => formatPeriod(p.periodStartDate, p.periodEndDate) },
-              { header: "Date", render: (p) => new Date(p.createdAt).toLocaleDateString() },
+              { header: t("Amount"), render: (p) => formatCurrency(p.amount, p.currency) },
+              { header: t("Method"), render: (p) => <PaymentMethodBadge method={p.paymentMethod} /> },
+              { header: t("Period"), render: (p) => formatPeriod(p.periodStartDate, p.periodEndDate) },
+              { header: t("Date"), render: (p) => new Date(p.createdAt).toLocaleDateString() },
             ]}
           />
         </div>
@@ -420,6 +424,7 @@ function StudentHistoryModal({ studentId, onClose }: { studentId: string | null;
 }
 
 export function FinancePage() {
+  const { t } = useTranslation();
   const role = useUserRole();
   const isOwnerOrAdmin = role === "owner" || role === "admin";
   // Recording payments and creating charges is a receptionist-only action —
@@ -476,10 +481,10 @@ export function FinancePage() {
     if (!deletingCharge) return;
     try {
       await deleteCharge.mutateAsync(deletingCharge.id);
-      showToast("Charge deleted.");
+      showToast(t("Charge deleted."));
       setDeletingCharge(null);
     } catch {
-      showToast("Failed to delete charge.", "error");
+      showToast(t("Failed to delete charge."), "error");
     }
   }
 
@@ -487,10 +492,10 @@ export function FinancePage() {
     if (!deletingPayment) return;
     try {
       await deletePayment.mutateAsync(deletingPayment.id);
-      showToast("Payment deleted.");
+      showToast(t("Payment deleted."));
       setDeletingPayment(null);
     } catch {
-      showToast("Failed to delete payment.", "error");
+      showToast(t("Failed to delete payment."), "error");
     }
   }
 
@@ -498,7 +503,7 @@ export function FinancePage() {
     if (!markingPaid) return;
     const account = accounts?.[0];
     if (!account) {
-      showToast("No financial account available to record this payment.", "error");
+      showToast(t("No financial account available to record this payment."), "error");
       return;
     }
     try {
@@ -511,45 +516,45 @@ export function FinancePage() {
         paymentMethod: "cash",
         chargeId: markingPaid.id,
       });
-      showToast("Payment recorded.");
+      showToast(t("Payment recorded."));
       setMarkingPaid(null);
     } catch {
-      showToast("Failed to record payment.", "error");
+      showToast(t("Failed to record payment."), "error");
     }
   }
 
   return (
     <div>
-      <h1 className="mb-6 text-2xl font-semibold text-slate-900 dark:text-slate-100">Finance</h1>
+      <h1 className="mb-6 text-2xl font-semibold text-slate-900 dark:text-slate-100">{t("Finance")}</h1>
 
       <div className="mb-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <SummaryCard
-          label="Total Owed"
+          label={t("Total Owed")}
           value={summary ? formatCurrency(summary.totalAmountOwed, "UZS") : "-"}
           colorClass={summary && summary.totalAmountOwed > 0 ? "text-red-600" : "text-slate-900"}
           icon={<Wallet className="h-5 w-5 text-slate-400" />}
         />
         <SummaryCard
-          label="Overdue Payments"
+          label={t("Overdue Payments")}
           value={summary ? String(summary.totalOverdue) : "-"}
           colorClass="text-red-600"
           icon={<AlertTriangle className="h-5 w-5 text-red-400" />}
         />
         <SummaryCard
-          label="Collected This Month"
+          label={t("Collected This Month")}
           value={summary ? formatCurrency(summary.totalAmountCollected, "UZS") : "-"}
           colorClass="text-green-600"
           icon={<CheckCircle2 className="h-5 w-5 text-green-400" />}
         />
         <SummaryCard
-          label="Pending Payments"
+          label={t("Pending Payments")}
           value={summary ? String(summary.totalPending) : "-"}
           colorClass="text-yellow-600"
           icon={<Clock className="h-5 w-5 text-yellow-400" />}
         />
         {isOwnerOrAdmin && (
           <SummaryCard
-            label="Salary Expense (This Month)"
+            label={t("Salary Expense (This Month)")}
             value={salaryAnalytics ? formatCurrency(salaryAnalytics.totalSalaryExpense, "UZS") : "-"}
             colorClass="text-red-600"
             icon={<HandCoins className="h-5 w-5 text-red-400" />}
@@ -561,8 +566,8 @@ export function FinancePage() {
 
       {isOwnerOrAdmin && (
         <div className="mb-8">
-          <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">Account balances</h2>
-          {accountsLoading && <p className="text-sm text-slate-500">Loading...</p>}
+          <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">{t("Account balances")}</h2>
+          {accountsLoading && <p className="text-sm text-slate-500">{t("Loading...")}</p>}
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {accounts?.map((account) => (
               <div key={account.id} className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-700 dark:bg-slate-800">
@@ -574,7 +579,7 @@ export function FinancePage() {
               </div>
             ))}
             {!accountsLoading && accounts?.length === 0 && (
-              <p className="text-sm text-slate-500 dark:text-slate-400">No financial accounts yet.</p>
+              <p className="text-sm text-slate-500 dark:text-slate-400">{t("No financial accounts yet.")}</p>
             )}
           </div>
         </div>
@@ -583,21 +588,21 @@ export function FinancePage() {
       {isOwnerOrAdmin && (
         <div className="mb-8">
           <div className="mb-3 flex items-center justify-between">
-            <h2 className="text-sm font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">Teacher Salaries</h2>
+            <h2 className="text-sm font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">{t("Teacher Salaries")}</h2>
             <Link to="/teachers/salaries" className="text-xs font-medium text-indigo-600 hover:text-indigo-700">
-              View All
+              {t("View All")}
             </Link>
           </div>
           <DataTable
             data={salaries}
             isLoading={!salaries}
-            emptyMessage="No teacher salaries configured yet."
+            emptyMessage={t("No teacher salaries configured yet.")}
             getRowKey={(s) => s.id}
             columns={[
-              { header: "Teacher", render: (s) => s.teacherName },
-              { header: "Salary", render: (s) => formatCurrency(s.amount, s.currency) },
-              { header: "Status", render: (s) => <SalaryStatusBadge status={s.status} /> },
-              { header: "Payment Status", render: (s) => <PaymentStatusBadge status={s.thisMonthPaymentStatus} /> },
+              { header: t("Teacher"), render: (s) => s.teacherName },
+              { header: t("Salary"), render: (s) => formatCurrency(s.amount, s.currency) },
+              { header: t("Status"), render: (s) => <SalaryStatusBadge status={s.status} /> },
+              { header: t("Payment Status"), render: (s) => <PaymentStatusBadge status={s.thisMonthPaymentStatus} /> },
             ]}
           />
         </div>
@@ -605,34 +610,34 @@ export function FinancePage() {
 
       <div className="mb-8">
         <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
-          <h2 className="text-sm font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">Charges</h2>
+          <h2 className="text-sm font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">{t("Charges")}</h2>
           {canRecordPayments && (
             <button
               onClick={() => setChargeFormOpen(true)}
               className="flex items-center gap-2 rounded-md bg-indigo-600 px-3 py-2 text-sm font-medium text-white hover:bg-indigo-700"
             >
               <Plus className="h-4 w-4" />
-              New Charge
+              {t("New Charge")}
             </button>
           )}
         </div>
 
         <div className="mb-4 flex flex-wrap items-end gap-4">
           <div className="w-48">
-            <TextField label="Search student" value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Name..." />
+            <TextField label={t("Search student")} value={search} onChange={(e) => setSearch(e.target.value)} placeholder={t("Name...")} />
           </div>
           <div className="w-40">
-            <SelectField label="Status" value={statusFilter} onChange={(e) => setStatusFilter(e.target.value as ChargeStatus | "")}>
-              <option value="">All</option>
-              <option value="overdue">Overdue</option>
-              <option value="pending">Pending</option>
-              <option value="paid">Paid</option>
-              <option value="cancelled">Cancelled</option>
+            <SelectField label={t("Status")} value={statusFilter} onChange={(e) => setStatusFilter(e.target.value as ChargeStatus | "")}>
+              <option value="">{t("All")}</option>
+              <option value="overdue">{t("Overdue")}</option>
+              <option value="pending">{t("Pending")}</option>
+              <option value="paid">{t("Paid")}</option>
+              <option value="cancelled">{t("Cancelled")}</option>
             </SelectField>
           </div>
           <div className="w-48">
-            <SelectField label="Group" value={groupFilter} onChange={(e) => setGroupFilter(e.target.value)}>
-              <option value="">All groups</option>
+            <SelectField label={t("Group")} value={groupFilter} onChange={(e) => setGroupFilter(e.target.value)}>
+              <option value="">{t("All groups")}</option>
               {groups?.map((g) => (
                 <option key={g.id} value={g.id}>
                   {g.name}
@@ -641,11 +646,11 @@ export function FinancePage() {
             </SelectField>
           </div>
           <div className="w-40">
-            <SelectField label="Sort by" value={sortBy} onChange={(e) => setSortBy(e.target.value as ChargesSortBy)}>
-              <option value="urgency">Urgency</option>
-              <option value="dueDate">Due Date</option>
-              <option value="amount">Amount</option>
-              <option value="name">Name</option>
+            <SelectField label={t("Sort by")} value={sortBy} onChange={(e) => setSortBy(e.target.value as ChargesSortBy)}>
+              <option value="urgency">{t("Urgency")}</option>
+              <option value="dueDate">{t("Due Date")}</option>
+              <option value="amount">{t("Amount")}</option>
+              <option value="name">{t("Name")}</option>
             </SelectField>
           </div>
         </div>
@@ -656,27 +661,27 @@ export function FinancePage() {
               <thead className="bg-slate-50 dark:bg-slate-900/40">
                 <tr>
                   <th className="px-4 py-3 text-left text-xs font-medium uppercase text-slate-500 dark:text-slate-400">#</th>
-                  <th className="px-4 py-3 text-left text-xs font-medium uppercase text-slate-500 dark:text-slate-400">Student</th>
-                  <th className="px-4 py-3 text-left text-xs font-medium uppercase text-slate-500 dark:text-slate-400">Group/Course</th>
-                  <th className="px-4 py-3 text-left text-xs font-medium uppercase text-slate-500 dark:text-slate-400">Amount</th>
-                  <th className="px-4 py-3 text-left text-xs font-medium uppercase text-slate-500 dark:text-slate-400">Due Date</th>
-                  <th className="px-4 py-3 text-left text-xs font-medium uppercase text-slate-500 dark:text-slate-400">Days Left/Overdue</th>
-                  <th className="px-4 py-3 text-left text-xs font-medium uppercase text-slate-500 dark:text-slate-400">Status</th>
-                  <th className="px-4 py-3 text-right text-xs font-medium uppercase text-slate-500 dark:text-slate-400">Actions</th>
+                  <th className="px-4 py-3 text-left text-xs font-medium uppercase text-slate-500 dark:text-slate-400">{t("Student")}</th>
+                  <th className="px-4 py-3 text-left text-xs font-medium uppercase text-slate-500 dark:text-slate-400">{t("Group/Course")}</th>
+                  <th className="px-4 py-3 text-left text-xs font-medium uppercase text-slate-500 dark:text-slate-400">{t("Amount")}</th>
+                  <th className="px-4 py-3 text-left text-xs font-medium uppercase text-slate-500 dark:text-slate-400">{t("Due Date")}</th>
+                  <th className="px-4 py-3 text-left text-xs font-medium uppercase text-slate-500 dark:text-slate-400">{t("Days Left/Overdue")}</th>
+                  <th className="px-4 py-3 text-left text-xs font-medium uppercase text-slate-500 dark:text-slate-400">{t("Status")}</th>
+                  <th className="px-4 py-3 text-right text-xs font-medium uppercase text-slate-500 dark:text-slate-400">{t("Actions")}</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100 dark:divide-slate-700">
                 {chargesLoading && (
                   <tr>
                     <td colSpan={8} className="px-4 py-4 text-sm text-slate-500 dark:text-slate-400">
-                      Loading...
+                      {t("Loading...")}
                     </td>
                   </tr>
                 )}
                 {!chargesLoading && (!filteredCharges || filteredCharges.length === 0) && (
                   <tr>
                     <td colSpan={8} className="px-4 py-4 text-sm text-slate-500 dark:text-slate-400">
-                      No charges match these filters.
+                      {t("No charges match these filters.")}
                     </td>
                   </tr>
                 )}
@@ -720,20 +725,20 @@ export function FinancePage() {
                               onClick={() => setMarkingPaid(c)}
                               className="rounded-md bg-green-600 px-2.5 py-1.5 text-xs font-medium text-white hover:bg-green-700"
                             >
-                              Mark Paid
+                              {t("Mark Paid")}
                             </button>
                           )}
                           <button
                             onClick={() => setHistoryStudentId(c.studentId)}
                             className="rounded-md border border-slate-300 px-2.5 py-1.5 text-xs font-medium text-slate-700 hover:bg-slate-50"
                           >
-                            View History
+                            {t("View History")}
                           </button>
                           {isOwnerOrAdmin && (
                             <button
                               onClick={() => setDeletingCharge(c)}
                               className="rounded p-1.5 text-slate-400 hover:bg-red-50 hover:text-red-600"
-                              aria-label="Delete charge"
+                              aria-label={t("Delete charge")}
                             >
                               <Trash2 className="h-4 w-4" />
                             </button>
@@ -751,21 +756,21 @@ export function FinancePage() {
 
       <div>
         <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
-          <h2 className="text-sm font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">Payments</h2>
+          <h2 className="text-sm font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">{t("Payments")}</h2>
           {canRecordPayments && (
             <button
               onClick={() => setPaymentFormOpen(true)}
               className="flex items-center gap-2 rounded-md bg-indigo-600 px-3 py-2 text-sm font-medium text-white hover:bg-indigo-700"
             >
               <Plus className="h-4 w-4" />
-              New Payment
+              {t("New Payment")}
             </button>
           )}
         </div>
         <div className="mb-4 flex items-end gap-4">
           <div className="w-48">
             <TextField
-              label="Filter by period"
+              label={t("Filter by period")}
               type="month"
               value={periodMonthFilter}
               onChange={(e) => setPeriodMonthFilter(e.target.value)}
@@ -776,21 +781,21 @@ export function FinancePage() {
               onClick={() => setPeriodMonthFilter("")}
               className="mb-2 text-xs font-medium text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200"
             >
-              Clear
+              {t("Clear")}
             </button>
           )}
         </div>
         <DataTable
           data={payments}
           isLoading={paymentsLoading}
-          emptyMessage="No payments yet."
+          emptyMessage={t("No payments yet.")}
           getRowKey={(p) => p.id}
           columns={[
-            { header: "Student", render: (p) => p.student?.name ?? "-" },
-            { header: "Amount", render: (p) => formatCurrency(p.amount, p.currency) },
-            { header: "Method", render: (p) => <PaymentMethodBadge method={p.paymentMethod} /> },
-            { header: "Period", render: (p) => formatPeriod(p.periodStartDate, p.periodEndDate) },
-            { header: "Date", render: (p) => new Date(p.createdAt).toLocaleDateString() },
+            { header: t("Student"), render: (p) => p.student?.name ?? "-" },
+            { header: t("Amount"), render: (p) => formatCurrency(p.amount, p.currency) },
+            { header: t("Method"), render: (p) => <PaymentMethodBadge method={p.paymentMethod} /> },
+            { header: t("Period"), render: (p) => formatPeriod(p.periodStartDate, p.periodEndDate) },
+            { header: t("Date"), render: (p) => new Date(p.createdAt).toLocaleDateString() },
           ]}
           renderActions={
             isOwnerOrAdmin
@@ -798,7 +803,7 @@ export function FinancePage() {
                   <button
                     onClick={() => setDeletingPayment(p)}
                     className="rounded p-1.5 text-slate-400 hover:bg-red-50 hover:text-red-600"
-                    aria-label="Delete payment"
+                    aria-label={t("Delete payment")}
                   >
                     <Trash2 className="h-4 w-4" />
                   </button>
@@ -814,7 +819,7 @@ export function FinancePage() {
 
       <ConfirmDialog
         open={Boolean(markingPaid)}
-        title="Mark as paid"
+        title={t("Mark as paid")}
         message={
           markingPaid
             ? `Record a ${formatCurrency(markingPaid.amount, markingPaid.currency)} cash payment for ${markingPaid.student?.name ?? "this student"}?`
@@ -828,7 +833,7 @@ export function FinancePage() {
 
       <ConfirmDialog
         open={Boolean(deletingCharge)}
-        title="Delete charge"
+        title={t("Delete charge")}
         message="Are you sure you want to delete this charge? This cannot be undone."
         isConfirming={deleteCharge.isPending}
         onConfirm={confirmDeleteCharge}
@@ -836,7 +841,7 @@ export function FinancePage() {
       />
       <ConfirmDialog
         open={Boolean(deletingPayment)}
-        title="Delete payment"
+        title={t("Delete payment")}
         message="Are you sure you want to delete this payment? This cannot be undone."
         isConfirming={deletePayment.isPending}
         onConfirm={confirmDeletePayment}

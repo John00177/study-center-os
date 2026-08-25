@@ -27,6 +27,7 @@ import type {
 import { AnimatedStatCard } from "./AnimatedStatCard";
 import { CircularProgress } from "./CircularProgress";
 import type { DailyBriefingRole } from "../hooks/use-daily-briefing";
+import { useTranslation } from "../hooks/use-translation";
 
 export type BriefingData =
   | { role: "owner"; data: OwnerBriefingDto }
@@ -109,6 +110,7 @@ function statsFor(briefing: BriefingData): StatEntry[] {
 }
 
 export function DailyBriefingModal({ briefing, onDismiss, dashboardHref }: DailyBriefingModalProps) {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [visible, setVisible] = useState(false);
   const [dontShowAgain, setDontShowAgain] = useState(false);
@@ -156,7 +158,7 @@ export function DailyBriefingModal({ briefing, onDismiss, dashboardHref }: Daily
       <div
         role="dialog"
         aria-modal="true"
-        aria-label="Daily briefing"
+        aria-label={t("Daily briefing")}
         onClick={(e) => e.stopPropagation()}
         className={`w-full max-w-2xl rounded-2xl p-6 shadow-2xl transition-all duration-400 ease-out sm:p-8 ${
           visible ? "translate-y-0 scale-100 opacity-100" : "translate-y-2 scale-95 opacity-0"
@@ -186,7 +188,7 @@ export function DailyBriefingModal({ briefing, onDismiss, dashboardHref }: Daily
                 size={56}
                 strokeWidth={5}
                 colorClassName="text-primary"
-                label="attendance"
+                label={t("attendance")}
               />
             )}
             {nextClass && (
@@ -202,7 +204,7 @@ export function DailyBriefingModal({ briefing, onDismiss, dashboardHref }: Daily
 
         {teacherContacts && teacherContacts.length > 0 && (
           <div className={`mt-4 rounded-xl border p-4 ${isDark ? "border-slate-700 bg-slate-800" : "border-slate-200 bg-slate-50"}`}>
-            <p className="text-sm font-semibold">Teachers</p>
+            <p className="text-sm font-semibold">{t("Teachers")}</p>
             <ul className="mt-2 space-y-1">
               {teacherContacts.map((t) => (
                 <li key={t.name} className={`text-xs ${isDark ? "text-slate-400" : "text-slate-500"}`}>
@@ -218,7 +220,7 @@ export function DailyBriefingModal({ briefing, onDismiss, dashboardHref }: Daily
           <div className="mt-4 space-y-2">
             {actions.map((action) => (
               <button
-                key={action.label}
+                key={t(action.label)}
                 onClick={() => {
                   onDismiss(dontShowAgain);
                   navigate(action.href);
@@ -230,7 +232,7 @@ export function DailyBriefingModal({ briefing, onDismiss, dashboardHref }: Daily
                 }`}
               >
                 <span className={`flex items-center gap-2 font-medium ${action.urgent ? "text-red-600" : isDark ? "text-slate-100" : "text-slate-700"}`}>
-                  {action.label}
+                  {t(action.label)}
                 </span>
                 <ArrowRight size={16} className={action.urgent ? "text-red-500" : "text-slate-400"} />
               </button>
@@ -243,7 +245,7 @@ export function DailyBriefingModal({ briefing, onDismiss, dashboardHref }: Daily
             onClick={goToDashboard}
             className="w-full rounded-lg bg-primary py-3 text-sm font-semibold text-white shadow-sm transition hover:opacity-90"
           >
-            Go to Dashboard
+            {t("Go to Dashboard")}
           </button>
           <label className={`flex items-center justify-center gap-2 text-xs ${isDark ? "text-slate-400" : "text-slate-500"}`}>
             <input
@@ -252,7 +254,7 @@ export function DailyBriefingModal({ briefing, onDismiss, dashboardHref }: Daily
               onChange={(e) => setDontShowAgain(e.target.checked)}
               className="h-3.5 w-3.5 rounded border-slate-300 text-primary focus:ring-primary"
             />
-            Don&apos;t show again today
+            {t("Don't show again today")}
           </label>
         </div>
       </div>

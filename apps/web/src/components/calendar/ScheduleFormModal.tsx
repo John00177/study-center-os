@@ -9,6 +9,7 @@ import { useClassrooms } from "../../hooks/use-classrooms";
 import { useGroups } from "../../hooks/use-groups";
 import { ScheduleInput, useCreateSchedule, useSchedules, useUpdateSchedule } from "../../hooks/use-schedules";
 import { DAY_LABELS } from "../../lib/week";
+import { useTranslation } from "../../hooks/use-translation";
 
 interface ScheduleFormModalProps {
   open: boolean;
@@ -26,6 +27,7 @@ interface FormState {
 }
 
 export function ScheduleFormModal({ open, onClose, initialSlot, editSessionId }: ScheduleFormModalProps) {
+  const { t } = useTranslation();
   const isEditing = Boolean(editSessionId);
   const { data: groups } = useGroups();
   const { data: classrooms } = useClassrooms();
@@ -116,10 +118,10 @@ export function ScheduleFormModal({ open, onClose, initialSlot, editSessionId }:
 
       if (isEditing && editSessionId) {
         await updateSchedule.mutateAsync({ id: editSessionId, ...input });
-        showToast("Session updated.");
+        showToast(t("Session updated."));
       } else {
         await createSchedule.mutateAsync(input);
-        showToast("Session created.");
+        showToast(t("Session created."));
       }
       onClose();
     } catch (err) {
@@ -135,12 +137,12 @@ export function ScheduleFormModal({ open, onClose, initialSlot, editSessionId }:
     <Modal open={open} onClose={onClose} title={isEditing ? "Edit Session" : "New Session"}>
       <form onSubmit={handleSubmit} className="space-y-4">
         <SelectField
-          label="Group"
+          label={t("Group")}
           required
           value={form.groupId}
           onChange={(e) => setForm((f) => ({ ...f, groupId: e.target.value }))}
         >
-          <option value="">Select group</option>
+          <option value="">{t("Select group")}</option>
           {groups?.map((g) => (
             <option key={g.id} value={g.id}>
               {g.name}
@@ -149,7 +151,7 @@ export function ScheduleFormModal({ open, onClose, initialSlot, editSessionId }:
         </SelectField>
 
         <SelectField
-          label="Day of week"
+          label={t("Day of week")}
           value={form.dayOfWeek}
           onChange={(e) => setForm((f) => ({ ...f, dayOfWeek: Number(e.target.value) }))}
         >
@@ -162,14 +164,14 @@ export function ScheduleFormModal({ open, onClose, initialSlot, editSessionId }:
 
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <TextField
-            label="Start time"
+            label={t("Start time")}
             type="time"
             required
             value={form.startTime}
             onChange={(e) => setForm((f) => ({ ...f, startTime: e.target.value }))}
           />
           <TextField
-            label="End time"
+            label={t("End time")}
             type="time"
             required
             value={form.endTime}
@@ -178,11 +180,11 @@ export function ScheduleFormModal({ open, onClose, initialSlot, editSessionId }:
         </div>
 
         <SelectField
-          label="Classroom"
+          label={t("Classroom")}
           value={form.classroomId}
           onChange={(e) => setForm((f) => ({ ...f, classroomId: e.target.value }))}
         >
-          <option value="">No classroom</option>
+          <option value="">{t("No classroom")}</option>
           {classroomsForBranch?.map((c) => (
             <option key={c.id} value={c.id}>
               {c.name}
@@ -199,7 +201,7 @@ export function ScheduleFormModal({ open, onClose, initialSlot, editSessionId }:
             disabled={isSaving}
             className="rounded-md border border-slate-300 px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 disabled:opacity-60"
           >
-            Cancel
+            {t("Cancel")}
           </button>
           <button
             type="submit"

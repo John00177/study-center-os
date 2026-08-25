@@ -2,6 +2,7 @@ import { Modal } from "../Modal";
 import { useMyTickets } from "../../hooks/use-support-tickets";
 import { STATUS_BADGE_CLASSES, STATUS_LABELS, TYPE_ICONS, TYPE_LABELS, formatRelativeTime } from "../support-tickets/ticket-format";
 import { BrandedSpinner } from "../branding/BrandedSpinner";
+import { useTranslation } from "../../hooks/use-translation";
 
 interface MyTicketsModalProps {
   open: boolean;
@@ -10,10 +11,11 @@ interface MyTicketsModalProps {
 }
 
 export function MyTicketsModal({ open, onClose, basePath }: MyTicketsModalProps) {
+  const { t } = useTranslation();
   const { data: tickets, isLoading } = useMyTickets(basePath, open);
 
   return (
-    <Modal open={open} onClose={onClose} title="My Feedback" widthClassName="max-w-lg">
+    <Modal open={open} onClose={onClose} title={t("My Feedback")} widthClassName="max-w-lg">
       {isLoading && (
         <div className="flex items-center justify-center py-8">
           <BrandedSpinner className="h-5 w-5" />

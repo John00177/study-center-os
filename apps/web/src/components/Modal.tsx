@@ -1,5 +1,6 @@
 import { X } from "lucide-react";
 import { useEffect, type ReactNode } from "react";
+import { useTranslation } from "../hooks/use-translation";
 
 interface ModalProps {
   open: boolean;
@@ -10,6 +11,7 @@ interface ModalProps {
 }
 
 export function Modal({ open, onClose, title, children, widthClassName = "max-w-lg" }: ModalProps) {
+  const { t } = useTranslation();
   useEffect(() => {
     if (!open) return;
 
@@ -47,7 +49,7 @@ export function Modal({ open, onClose, title, children, widthClassName = "max-w-
           <button
             onClick={onClose}
             className="rounded-md p-1 text-slate-400 hover:bg-slate-100 hover:text-slate-600 dark:hover:bg-slate-700 dark:hover:text-slate-300"
-            aria-label="Close"
+            aria-label={t("Close")}
           >
             <X className="h-5 w-5" />
           </button>

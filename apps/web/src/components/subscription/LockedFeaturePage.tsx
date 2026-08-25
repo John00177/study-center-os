@@ -1,5 +1,6 @@
 import { Lock } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
+import { useTranslation } from "../../hooks/use-translation";
 
 interface LockedFeaturePageProps {
   featureName?: string;
@@ -14,6 +15,7 @@ function label(planSlug: string): string {
 }
 
 export function LockedFeaturePage({ featureName, requiredPlan, currentPlan }: LockedFeaturePageProps) {
+  const { t } = useTranslation();
   const navigate = useNavigate();
 
   return (
@@ -21,7 +23,7 @@ export function LockedFeaturePage({ featureName, requiredPlan, currentPlan }: Lo
       <div className="flex h-16 w-16 items-center justify-center rounded-full bg-amber-100">
         <Lock className="h-8 w-8 text-amber-500" />
       </div>
-      <h1 className="mt-5 text-xl font-semibold text-slate-900 dark:text-slate-100">Premium Feature</h1>
+      <h1 className="mt-5 text-xl font-semibold text-slate-900 dark:text-slate-100">{t("Premium Feature")}</h1>
       <p className="mt-2 max-w-sm text-sm text-slate-500">
         {featureName ? `${featureName} is` : "This feature is"} available on the {label(requiredPlan)} plan and higher.
       </p>
@@ -34,10 +36,10 @@ export function LockedFeaturePage({ featureName, requiredPlan, currentPlan }: Lo
         onClick={() => navigate("/settings/plan")}
         className="mt-6 rounded-md bg-indigo-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-700"
       >
-        Upgrade Now
+        {t("Upgrade Now")}
       </button>
       <Link to="/settings/plan" className="mt-3 text-xs font-medium text-indigo-600 hover:text-indigo-700">
-        Learn more
+        {t("Learn more")}
       </Link>
     </div>
   );

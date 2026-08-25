@@ -6,6 +6,7 @@ import { useToast } from "../components/Toast";
 import { SelectField, TextField } from "../components/form/Field";
 import { useAttendanceForGroupDate, useBulkMarkAttendance } from "../hooks/use-attendance";
 import { useGroupMemberships, useGroups } from "../hooks/use-groups";
+import { useTranslation } from "../hooks/use-translation";
 
 const STATUS_OPTIONS: { value: AttendanceStatus; label: string; activeClass: string }[] = [
   { value: "present", label: "Present", activeClass: "bg-green-600 text-white border-green-600" },
@@ -24,6 +25,7 @@ function todayIsoDate(): string {
 }
 
 export function AttendancePage() {
+  const { t } = useTranslation();
   const { data: groups } = useGroups();
   const [searchParams] = useSearchParams();
   const [groupId, setGroupId] = useState(() => searchParams.get("groupId") ?? "");
@@ -79,7 +81,7 @@ export function AttendancePage() {
   async function handleSave() {
     const unset = activeMembers.filter((m) => !entries[m.studentId]?.status);
     if (unset.length > 0) {
-      showToast("Mark a status for every student before saving.", "error");
+      showToast(t("Mark a status for every student before saving."), "error");
       return;
     }
 
@@ -91,34 +93,34 @@ export function AttendancePage() {
 
     try {
       await bulkMark.mutateAsync({ groupId, date, records });
-      showToast("Attendance saved.");
+      showToast(t("Attendance saved."));
     } catch {
-      showToast("Failed to save attendance.", "error");
+      showToast(t("Failed to save attendance."), "error");
     }
   }
 
   return (
     <div>
-      <h1 className="mb-6 text-2xl font-semibold text-slate-900 dark:text-slate-100">Attendance</h1>
+      <h1 className="mb-6 text-2xl font-semibold text-slate-900 dark:text-slate-100">{t("Attendance")}</h1>
 
       <div className="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-2 sm:max-w-lg">
-        <SelectField label="Group" value={groupId} onChange={(e) => setGroupId(e.target.value)}>
-          <option value="">Select group</option>
+        <SelectField label={t("Group")} value={groupId} onChange={(e) => setGroupId(e.target.value)}>
+          <option value="">{t("Select group")}</option>
           {groups?.map((g) => (
             <option key={g.id} value={g.id}>
               {g.name}
             </option>
           ))}
         </SelectField>
-        <TextField label="Date" type="date" value={date} onChange={(e) => setDate(e.target.value)} />
+        <TextField label={t("Date")} type="date" value={date} onChange={(e) => setDate(e.target.value)} />
       </div>
 
-      {!groupId && <p className="text-sm text-slate-500">Select a group to take attendance.</p>}
+      {!groupId && <p className="text-sm text-slate-500">{t("Select a group to take attendance.")}</p>}
 
-      {groupId && !isReady && <p className="text-sm text-slate-500">Loading...</p>}
+      {groupId && !isReady && <p className="text-sm text-slate-500">{t("Loading...")}</p>}
 
       {groupId && isReady && activeMembers.length === 0 && (
-        <p className="text-sm text-slate-500">This group has no active students enrolled.</p>
+        <p className="text-sm text-slate-500">{t("This group has no active students enrolled.")}</p>
       )}
 
       {groupId && isReady && activeMembers.length > 0 && (
@@ -132,7 +134,7 @@ export function AttendancePage() {
               className="flex items-center gap-2 rounded-md border border-slate-300 px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50"
             >
               <CheckCheck className="h-4 w-4" />
-              Mark All Present
+              {t("Mark All Present")}
             </button>
           </div>
 
@@ -158,7 +160,7 @@ export function AttendancePage() {
                                 : "border-slate-300 bg-white text-slate-600 hover:bg-slate-50"
                             }`}
                           >
-                            {opt.label}
+                            {t(opt.label)}
                           </button>
                         );
                       })}
@@ -166,7 +168,7 @@ export function AttendancePage() {
 
                     <input
                       type="text"
-                      placeholder="Notes (optional)"
+                      placeholder={t("Notes (optional)")}
                       value={entry.notes}
                       onChange={(e) => setNotes(member.studentId, e.target.value)}
                       className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm text-slate-900 dark:text-slate-100 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 sm:w-48"
@@ -184,7 +186,7 @@ export function AttendancePage() {
               className="flex items-center gap-2 rounded-md bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700 disabled:opacity-60"
             >
               {bulkMark.isPending && <Loader2 className="h-4 w-4 animate-spin" />}
-              Save attendance
+              {t("Save attendance")}
             </button>
           </div>
         </div>

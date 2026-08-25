@@ -233,11 +233,11 @@ export function DashboardPage() {
       {/* Lifecycle cards are hidden on the owner dashboard per cleanup request; admin keeps them. */}
       {role === "admin" && (
         <div className="mb-6 grid grid-cols-3 gap-3 sm:grid-cols-5">
-          <LifecycleCard label="Leads" value={stageCounts.data?.leads ?? 0} colorClass="text-slate-600 dark:text-slate-300" />
-          <LifecycleCard label="Trial" value={stageCounts.data?.trials ?? 0} colorClass="text-blue-600 dark:text-blue-400" />
-          <LifecycleCard label="Contract" value={stageCounts.data?.contracts ?? 0} colorClass="text-indigo-600 dark:text-indigo-400" />
-          <LifecycleCard label="Paid" value={stageCounts.data?.paid ?? 0} colorClass="text-green-600 dark:text-green-400" />
-          <LifecycleCard label="Refusal" value={stageCounts.data?.refusals ?? 0} colorClass="text-red-600 dark:text-red-400" />
+          <LifecycleCard label={t("Leads")} value={stageCounts.data?.leads ?? 0} colorClass="text-slate-600 dark:text-slate-300" />
+          <LifecycleCard label={t("Trial")} value={stageCounts.data?.trials ?? 0} colorClass="text-blue-600 dark:text-blue-400" />
+          <LifecycleCard label={t("Contract")} value={stageCounts.data?.contracts ?? 0} colorClass="text-indigo-600 dark:text-indigo-400" />
+          <LifecycleCard label={t("Paid")} value={stageCounts.data?.paid ?? 0} colorClass="text-green-600 dark:text-green-400" />
+          <LifecycleCard label={t("Refusal")} value={stageCounts.data?.refusals ?? 0} colorClass="text-red-600 dark:text-red-400" />
         </div>
       )}
 
@@ -255,13 +255,13 @@ export function DashboardPage() {
             {/* Remaining Today's Report cards are admin-only; owner dashboard shows Revenue today only. */}
             {role === "admin" && (
               <>
-                <TodayStat label="Checked in" value={todayReport.data?.checkedInToday ?? "-"} icon={<LogIn size={18} />} />
-                <TodayStat label="Lessons held" value={todayReport.data?.lessonsHeldToday ?? "-"} icon={<CalendarCheck2 size={18} />} />
-                <TodayStat label="New leads" value={todayReport.data?.newLeadsToday ?? "-"} icon={<UserPlus size={18} />} />
-                <TodayStat label="Trials" value={todayReport.data?.newTrialsToday ?? "-"} icon={<UserCheck size={18} />} />
-                <TodayStat label="Contracts" value={todayReport.data?.newContractsToday ?? "-"} icon={<FileSignature size={18} />} />
-                <TodayStat label="New payments" value={todayReport.data?.newPaymentsToday ?? "-"} icon={<HandCoins size={18} />} />
-                <TodayStat label="Dismissed" value={todayReport.data?.dismissedToday ?? "-"} icon={<UserMinus size={18} />} />
+                <TodayStat label={t("Checked in")} value={todayReport.data?.checkedInToday ?? "-"} icon={<LogIn size={18} />} />
+                <TodayStat label={t("Lessons held")} value={todayReport.data?.lessonsHeldToday ?? "-"} icon={<CalendarCheck2 size={18} />} />
+                <TodayStat label={t("New leads")} value={todayReport.data?.newLeadsToday ?? "-"} icon={<UserPlus size={18} />} />
+                <TodayStat label={t("Trials")} value={todayReport.data?.newTrialsToday ?? "-"} icon={<UserCheck size={18} />} />
+                <TodayStat label={t("Contracts")} value={todayReport.data?.newContractsToday ?? "-"} icon={<FileSignature size={18} />} />
+                <TodayStat label={t("New payments")} value={todayReport.data?.newPaymentsToday ?? "-"} icon={<HandCoins size={18} />} />
+                <TodayStat label={t("Dismissed")} value={todayReport.data?.dismissedToday ?? "-"} icon={<UserMinus size={18} />} />
               </>
             )}
           </div>
@@ -296,7 +296,7 @@ export function DashboardPage() {
             <DataTable
               data={last10Payments}
               isLoading={recentPayments.isLoading}
-              emptyMessage="No payments yet."
+              emptyMessage={t("No payments yet.")}
               getRowKey={(p) => p.id}
               columns={[
                 { header: t("student"), render: (p) => p.student?.name ?? "-" },
@@ -310,13 +310,13 @@ export function DashboardPage() {
       )}
 
       <div className="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        {hasBranches && <StatCard label="Branches" value={branches.data?.length} icon={Building2} />}
+        {hasBranches && <StatCard label={t("Branches")} value={branches.data?.length} icon={Building2} />}
         <StatCard label={t("teachers")} value={teachers.data?.length} icon={GraduationCap} />
         <StatCard label={t("activeStudents")} value={enrollment.data?.totalStudents} icon={Users} />
         <StatCard label={t("groups")} value={groups.data?.length} icon={UsersRound} />
         {canSeeRevenue && (
           <StatCard
-            label="Revenue (this month)"
+            label={t("Revenue (this month)")}
             value={formatCurrency(thisMonthRevenue, "UZS")}
             icon={Banknote}
             sparklineValues={last7DaysRevenue}
@@ -331,7 +331,7 @@ export function DashboardPage() {
         )}
         {canSeeFinance && (
           <StatCard
-            label="Monthly Salary Expense"
+            label={t("Monthly Salary Expense")}
             value={salaryAnalytics.data ? formatCurrency(thisMonthSalaryExpense, "UZS") : undefined}
             icon={HandCoins}
             valueColorClass="text-red-600"
@@ -345,17 +345,17 @@ export function DashboardPage() {
       {/* Quick Stats is hidden on the owner dashboard per cleanup request; admin keeps it. */}
       {role === "admin" && (
         <div className="mb-8">
-          <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">Quick Stats</h2>
+          <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">{t("Quick Stats")}</h2>
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            <QuickStat label="Newcomers this week" value={String(quickStats.data?.newcomersThisWeek ?? "-")} icon={<UserPlus size={18} />} />
-            <QuickStat label="Conversions this week" value={String(quickStats.data?.conversionsThisWeek ?? "-")} icon={<UserCheck size={18} />} />
+            <QuickStat label={t("Newcomers this week")} value={String(quickStats.data?.newcomersThisWeek ?? "-")} icon={<UserPlus size={18} />} />
+            <QuickStat label={t("Conversions this week")} value={String(quickStats.data?.conversionsThisWeek ?? "-")} icon={<UserCheck size={18} />} />
             <QuickStat
-              label="Homework completion rate"
+              label={t("Homework completion rate")}
               value={quickStats.data ? `${quickStats.data.homeworkCompletionRate.toFixed(0)}%` : "-"}
               icon={<TrendingUp size={18} />}
             />
             <QuickStat
-              label="Today's attendance rate"
+              label={t("Today's attendance rate")}
               value={quickStats.data ? `${quickStats.data.todayAttendanceRate.toFixed(0)}%` : "-"}
               icon={<ClipboardCheck size={18} />}
             />
@@ -374,17 +374,17 @@ export function DashboardPage() {
               </p>
             </div>
             <div>
-              <p className="text-xs text-slate-500 dark:text-slate-400">This month revenue</p>
+              <p className="text-xs text-slate-500 dark:text-slate-400">{t("This month revenue")}</p>
               <p className="mt-1 text-xl font-semibold text-slate-900 dark:text-slate-100">
                 {financeHealth.data ? formatCurrency(financeHealth.data.thisMonthRevenue, "UZS") : "-"}
               </p>
             </div>
             <div>
-              <p className="text-xs text-slate-500 dark:text-slate-400">Overdue amount</p>
+              <p className="text-xs text-slate-500 dark:text-slate-400">{t("Overdue amount")}</p>
               <p className="mt-1 text-xl font-semibold text-red-600 dark:text-red-400">
                 {financeHealth.data ? formatCurrency(financeHealth.data.overdueChargesAmount, "UZS") : "-"}
               </p>
-              <p className="text-xs text-slate-400 dark:text-slate-500">{financeHealth.data?.overdueChargesCount ?? 0} charges overdue</p>
+              <p className="text-xs text-slate-400 dark:text-slate-500">{financeHealth.data?.overdueChargesCount ?? 0} {t("charges overdue")}</p>
             </div>
           </div>
         </div>

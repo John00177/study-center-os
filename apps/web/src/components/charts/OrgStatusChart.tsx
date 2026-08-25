@@ -1,14 +1,16 @@
 import { Cell, Legend, Pie, PieChart, ResponsiveContainer, Tooltip } from "recharts";
+import { useTranslation } from "../../hooks/use-translation";
 
 interface OrgStatusChartProps {
   data: { name: string; value: number; color: string }[];
 }
 
 export function OrgStatusChart({ data }: OrgStatusChartProps) {
+  const { t } = useTranslation();
   const total = data.reduce((sum, d) => sum + d.value, 0);
 
   if (total === 0) {
-    return <div className="flex h-[200px] items-center justify-center text-xs text-slate-500">No data</div>;
+    return <div className="flex h-[200px] items-center justify-center text-xs text-slate-500">{t("No data")}</div>;
   }
 
   return (

@@ -2,18 +2,20 @@ import type { StudentScheduleSessionDto } from "@crm/shared-types";
 import { useState } from "react";
 import { Modal } from "../../components/Modal";
 import { useStudentPortalSchedule } from "../../hooks/use-student-portal";
+import { useTranslation } from "../../hooks/use-translation";
 
 export function StudentSchedulePage() {
+  const { t } = useTranslation();
   const { data, isLoading } = useStudentPortalSchedule();
   const [selected, setSelected] = useState<StudentScheduleSessionDto | null>(null);
 
   if (isLoading) {
-    return <p className="text-sm text-slate-500">Loading...</p>;
+    return <p className="text-sm text-slate-500">{t("Loading...")}</p>;
   }
 
   return (
     <div>
-      <h1 className="mb-4 text-xl font-semibold text-slate-900">My Schedule</h1>
+      <h1 className="mb-4 text-xl font-semibold text-slate-900">{t("My Schedule")}</h1>
 
       <div className="space-y-4">
         {(data ?? []).map((day) => (
@@ -26,7 +28,7 @@ export function StudentSchedulePage() {
               })}
             </p>
             {day.sessions.length === 0 && (
-              <p className="rounded-xl border border-slate-200 bg-white p-3 text-sm text-slate-400">No classes</p>
+              <p className="rounded-xl border border-slate-200 bg-white p-3 text-sm text-slate-400">{t("No classes")}</p>
             )}
             <div className="space-y-2">
               {day.sessions.map((session, i) => (
@@ -53,23 +55,23 @@ export function StudentSchedulePage() {
         {selected && (
           <div className="space-y-3 text-sm">
             <div>
-              <p className="text-xs font-medium uppercase text-slate-400">Time</p>
+              <p className="text-xs font-medium uppercase text-slate-400">{t("Time")}</p>
               <p className="text-slate-900">
                 {selected.startTime} - {selected.endTime}
               </p>
             </div>
             <div>
-              <p className="text-xs font-medium uppercase text-slate-400">Course</p>
+              <p className="text-xs font-medium uppercase text-slate-400">{t("Course")}</p>
               <p className="text-slate-900">{selected.courseName}</p>
             </div>
             <div>
-              <p className="text-xs font-medium uppercase text-slate-400">Teacher</p>
+              <p className="text-xs font-medium uppercase text-slate-400">{t("Teacher")}</p>
               <p className="text-slate-900">{selected.teacherName}</p>
               {selected.teacherPhone && <p className="text-slate-500">{selected.teacherPhone}</p>}
               {selected.teacherEmail && <p className="text-slate-500">{selected.teacherEmail}</p>}
             </div>
             <div>
-              <p className="text-xs font-medium uppercase text-slate-400">Location</p>
+              <p className="text-xs font-medium uppercase text-slate-400">{t("Location")}</p>
               <p className="text-slate-900">
                 {selected.classroomName ?? "Classroom TBD"} · {selected.branchName}
               </p>

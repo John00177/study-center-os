@@ -2,6 +2,7 @@ import type { StudentHomeworkDto, SubmissionStatus } from "@crm/shared-types";
 import { useState } from "react";
 import { Modal } from "../../components/Modal";
 import { useStudentPortalHomework } from "../../hooks/use-student-portal";
+import { useTranslation } from "../../hooks/use-translation";
 
 const STATUS_STYLES: Record<SubmissionStatus, string> = {
   pending: "bg-yellow-100 text-yellow-700",
@@ -11,20 +12,21 @@ const STATUS_STYLES: Record<SubmissionStatus, string> = {
 };
 
 export function StudentHomeworkPage() {
+  const { t } = useTranslation();
   const { data, isLoading } = useStudentPortalHomework();
   const [selected, setSelected] = useState<StudentHomeworkDto | null>(null);
 
   if (isLoading) {
-    return <p className="text-sm text-slate-500">Loading...</p>;
+    return <p className="text-sm text-slate-500">{t("Loading...")}</p>;
   }
 
   return (
     <div>
-      <h1 className="mb-4 text-xl font-semibold text-slate-900">My Homework</h1>
+      <h1 className="mb-4 text-xl font-semibold text-slate-900">{t("My Homework")}</h1>
 
       {(data ?? []).length === 0 && (
         <p className="rounded-xl border border-slate-200 bg-white p-4 text-sm text-slate-500">
-          No homework assigned yet.
+          {t("No homework assigned yet.")}
         </p>
       )}
 
@@ -57,23 +59,23 @@ export function StudentHomeworkPage() {
             </span>
             {selected.description && (
               <div>
-                <p className="text-xs font-medium uppercase text-slate-400">Description</p>
+                <p className="text-xs font-medium uppercase text-slate-400">{t("Description")}</p>
                 <p className="text-slate-900">{selected.description}</p>
               </div>
             )}
             <div>
-              <p className="text-xs font-medium uppercase text-slate-400">Due date</p>
+              <p className="text-xs font-medium uppercase text-slate-400">{t("Due date")}</p>
               <p className="text-slate-900">{selected.dueDate ? new Date(selected.dueDate).toLocaleDateString() : "-"}</p>
             </div>
             {selected.score !== null && selected.score !== undefined && (
               <div>
-                <p className="text-xs font-medium uppercase text-slate-400">Score</p>
+                <p className="text-xs font-medium uppercase text-slate-400">{t("Score")}</p>
                 <p className="text-slate-900">{selected.score} / 100</p>
               </div>
             )}
             {selected.feedback && (
               <div>
-                <p className="text-xs font-medium uppercase text-slate-400">Feedback</p>
+                <p className="text-xs font-medium uppercase text-slate-400">{t("Feedback")}</p>
                 <p className="text-slate-900">{selected.feedback}</p>
               </div>
             )}

@@ -15,6 +15,7 @@ import {
   useUpdateSchedule,
 } from "../hooks/use-schedules";
 import { useUserRole } from "../stores/auth.store";
+import { useTranslation } from "../hooks/use-translation";
 
 const DAY_LABELS = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 
@@ -43,6 +44,7 @@ function ScheduleForm({
   onClose: () => void;
   schedule?: ScheduleDto | null;
 }) {
+  const { t } = useTranslation();
   const isEditing = Boolean(schedule);
   const [form, setForm] = useState<FormState>(() => toFormState(schedule));
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -83,10 +85,10 @@ function ScheduleForm({
     try {
       if (isEditing && schedule) {
         await updateSchedule.mutateAsync({ id: schedule.id, ...input });
-        showToast("Schedule updated.");
+        showToast(t("Schedule updated."));
       } else {
         await createSchedule.mutateAsync(input);
-        showToast("Schedule created.");
+        showToast(t("Schedule created."));
       }
       onClose();
     } catch {
@@ -98,13 +100,13 @@ function ScheduleForm({
     <Modal open={open} onClose={onClose} title={isEditing ? "Edit Schedule" : "New Schedule"}>
       <form onSubmit={handleSubmit} className="space-y-4">
         <SelectField
-          label="Group"
+          label={t("Group")}
           required
           value={form.groupId}
           error={errors.groupId}
           onChange={(e) => setForm((f) => ({ ...f, groupId: e.target.value }))}
         >
-          <option value="">Select group</option>
+          <option value="">{t("Select group")}</option>
           {groups?.map((g) => (
             <option key={g.id} value={g.id}>
               {g.name}
@@ -113,7 +115,7 @@ function ScheduleForm({
         </SelectField>
 
         <SelectField
-          label="Day of week"
+          label={t("Day of week")}
           value={form.dayOfWeek}
           onChange={(e) => setForm((f) => ({ ...f, dayOfWeek: e.target.value }))}
         >
@@ -126,7 +128,7 @@ function ScheduleForm({
 
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <TextField
-            label="Start time"
+            label={t("Start time")}
             type="time"
             required
             value={form.startTime}
@@ -134,7 +136,7 @@ function ScheduleForm({
             onChange={(e) => setForm((f) => ({ ...f, startTime: e.target.value }))}
           />
           <TextField
-            label="End time"
+            label={t("End time")}
             type="time"
             required
             value={form.endTime}
@@ -150,7 +152,7 @@ function ScheduleForm({
             disabled={isSaving}
             className="rounded-md border border-slate-300 px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 disabled:opacity-60"
           >
-            Cancel
+            {t("Cancel")}
           </button>
           <button
             type="submit"
@@ -167,6 +169,7 @@ function ScheduleForm({
 }
 
 export function SchedulePage() {
+  const { t } = useTranslation();
   const { data, isLoading } = useSchedules();
   const deleteSchedule = useDeleteSchedule();
   const { showToast } = useToast();
@@ -183,17 +186,17 @@ export function SchedulePage() {
     if (!deleting) return;
     try {
       await deleteSchedule.mutateAsync(deleting.id);
-      showToast("Schedule entry deleted.");
+      showToast(t("Schedule entry deleted."));
       setDeleting(null);
     } catch {
-      showToast("Failed to delete schedule entry.", "error");
+      showToast(t("Failed to delete schedule entry."), "error");
     }
   }
 
   return (
     <div>
       <div className="mb-6 flex items-center justify-between">
-        <h1 className="text-2xl font-semibold text-slate-900 dark:text-slate-100">Schedule</h1>
+        <h1 className="text-2xl font-semibold text-slate-900 dark:text-slate-100">{t("Schedule")}</h1>
         {canManage && (
           <button
             onClick={() => {
@@ -203,7 +206,7 @@ export function SchedulePage() {
             className="flex items-center gap-2 rounded-md bg-indigo-600 px-3 py-2 text-sm font-medium text-white hover:bg-indigo-700"
           >
             <Plus className="h-4 w-4" />
-            New Schedule Entry
+            {t("New Schedule Entry")}
           </button>
         )}
       </div>
@@ -222,10 +225,10 @@ export function SchedulePage() {
             : undefined
         }
         columns={[
-          { header: "Day", render: (s) => DAY_LABELS[s.dayOfWeek] ?? s.dayOfWeek },
-          { header: "Time", render: (s) => `${s.startTime} - ${s.endTime}` },
-          { header: "Group", render: (s) => s.group?.name ?? "-" },
-          { header: "Classroom", render: (s) => s.classroom?.name ?? "-" },
+          { header: t("Day"), render: (s) => DAY_LABELS[s.dayOfWeek] ?? s.dayOfWeek },
+          { header: t("Time"), render: (s) => `${s.startTime} - ${s.endTime}` },
+          { header: t("Group"), render: (s) => s.group?.name ?? "-" },
+          { header: t("Classroom"), render: (s) => s.classroom?.name ?? "-" },
         ]}
         renderActions={
           canManage
@@ -237,14 +240,14 @@ export function SchedulePage() {
                       setFormOpen(true);
                     }}
                     className="rounded p-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-700"
-                    aria-label="Edit schedule entry"
+                    aria-label={t("Edit schedule entry")}
                   >
                     <Pencil className="h-4 w-4" />
                   </button>
                   <button
                     onClick={() => setDeleting(s)}
                     className="rounded p-1.5 text-slate-400 hover:bg-red-50 hover:text-red-600"
-                    aria-label="Delete schedule entry"
+                    aria-label={t("Delete schedule entry")}
                   >
                     <Trash2 className="h-4 w-4" />
                   </button>
@@ -258,7 +261,7 @@ export function SchedulePage() {
 
       <ConfirmDialog
         open={Boolean(deleting)}
-        title="Delete schedule entry"
+        title={t("Delete schedule entry")}
         message="Are you sure you want to delete this schedule entry? This cannot be undone."
         isConfirming={deleteSchedule.isPending}
         onConfirm={confirmDelete}

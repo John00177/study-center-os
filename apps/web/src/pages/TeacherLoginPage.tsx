@@ -4,8 +4,10 @@ import { RoleLoginCard } from "../components/auth/RoleLoginCard";
 import { useRoleLogin } from "../hooks/use-role-login";
 import { useTheme } from "../contexts/ThemeContext";
 import { resolveOrgDisplayName } from "../lib/theme";
+import { useTranslation } from "../hooks/use-translation";
 
 export function TeacherLoginPage() {
+  const { t } = useTranslation();
   const { branding } = useTheme();
   const { email, setEmail, password, setPassword, error, loading, handleSubmit } = useRoleLogin(
     "/auth/teacher-login",
@@ -14,8 +16,8 @@ export function TeacherLoginPage() {
 
   return (
     <RoleLoginCard
-      title="Teacher Portal"
-      subtitle="Access your classes and attendance"
+      title={t("Teacher Portal")}
+      subtitle={t("Access your classes and attendance")}
       icon={<GraduationCap className="h-8 w-8 text-primary" />}
       orgName={branding ? resolveOrgDisplayName(branding) : undefined}
       logoUrl={branding?.logoUrl}
@@ -28,7 +30,7 @@ export function TeacherLoginPage() {
       error={error}
       loading={loading}
       onSubmit={handleSubmit}
-      demoHint="Demo login: john@democenter.com / TeacherPass123!"
+      demoHint={t("Demo login: john@democenter.com / TeacherPass123!")}
       footer={
         <Link to="/login" className="font-medium text-primary hover:text-primary/80">
           ← Back to Owner Login

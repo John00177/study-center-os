@@ -3,6 +3,7 @@ import { Mail, Phone } from "lucide-react";
 import { useParentDashboard } from "../../hooks/use-parent-portal";
 import { useParentAuthStore } from "../../stores/parent-auth.store";
 import { formatCurrency } from "../../lib/format";
+import { useTranslation } from "../../hooks/use-translation";
 
 const STATUS_STYLES: Record<string, string> = {
   pending: "bg-yellow-100 text-yellow-700",
@@ -31,6 +32,7 @@ function avatarColorFor(name: string) {
 }
 
 export function ParentDashboardPage() {
+  const { t } = useTranslation();
   const parent = useParentAuthStore((state) => state.parent);
   const { data, isLoading } = useParentDashboard();
 
@@ -48,7 +50,7 @@ export function ParentDashboardPage() {
   const teachers = (data?.groups ?? []).filter((g) => g.teacher);
 
   if (isLoading) {
-    return <p className="text-sm text-slate-500">Loading...</p>;
+    return <p className="text-sm text-slate-500">{t("Loading...")}</p>;
   }
 
   return (
@@ -61,14 +63,14 @@ export function ParentDashboardPage() {
 
       <div>
         <div className="mb-2 flex items-center justify-between">
-          <h2 className="text-sm font-semibold uppercase tracking-wide text-slate-500">Today's Classes</h2>
+          <h2 className="text-sm font-semibold uppercase tracking-wide text-slate-500">{t("Today's Classes")}</h2>
           <Link to="/parent/schedule" className="text-xs font-medium text-indigo-600">
-            View schedule
+            {t("View schedule")}
           </Link>
         </div>
         {todaysClasses.length === 0 && (
           <p className="rounded-xl border border-slate-200 bg-white p-4 text-sm text-slate-500">
-            No classes scheduled today.
+            {t("No classes scheduled today.")}
           </p>
         )}
         <div className="space-y-2">
@@ -85,19 +87,19 @@ export function ParentDashboardPage() {
       </div>
 
       <div>
-        <h2 className="mb-2 text-sm font-semibold uppercase tracking-wide text-slate-500">Attendance Summary</h2>
+        <h2 className="mb-2 text-sm font-semibold uppercase tracking-wide text-slate-500">{t("Attendance Summary")}</h2>
         <div className="grid grid-cols-2 gap-3">
           <div className="rounded-xl border border-slate-200 bg-white p-4 text-center shadow-sm">
             <p className="text-2xl font-semibold text-green-600">{data?.attendanceSummary.present ?? 0}</p>
-            <p className="text-xs text-slate-500">Present</p>
+            <p className="text-xs text-slate-500">{t("Present")}</p>
           </div>
           <div className="rounded-xl border border-slate-200 bg-white p-4 text-center shadow-sm">
             <p className="text-2xl font-semibold text-red-600">{data?.attendanceSummary.absent ?? 0}</p>
-            <p className="text-xs text-slate-500">Absent</p>
+            <p className="text-xs text-slate-500">{t("Absent")}</p>
           </div>
           <div className="rounded-xl border border-slate-200 bg-white p-4 text-center shadow-sm">
             <p className="text-2xl font-semibold text-yellow-600">{data?.attendanceSummary.late ?? 0}</p>
-            <p className="text-xs text-slate-500">Late</p>
+            <p className="text-xs text-slate-500">{t("Late")}</p>
           </div>
           <div className="rounded-xl border border-slate-200 bg-white p-4 text-center shadow-sm">
             <p
@@ -111,21 +113,21 @@ export function ParentDashboardPage() {
                 ? `${data.attendanceSummary.rate}%`
                 : "-"}
             </p>
-            <p className="text-xs text-slate-500">Rate</p>
+            <p className="text-xs text-slate-500">{t("Rate")}</p>
           </div>
         </div>
       </div>
 
       <div>
         <div className="mb-2 flex items-center justify-between">
-          <h2 className="text-sm font-semibold uppercase tracking-wide text-slate-500">Recent Homework</h2>
+          <h2 className="text-sm font-semibold uppercase tracking-wide text-slate-500">{t("Recent Homework")}</h2>
           <Link to="/parent/homework" className="text-xs font-medium text-indigo-600">
-            View all
+            {t("View all")}
           </Link>
         </div>
         {recentHomework.length === 0 && (
           <p className="rounded-xl border border-slate-200 bg-white p-4 text-sm text-slate-500">
-            No homework assigned yet.
+            {t("No homework assigned yet.")}
           </p>
         )}
         <div className="space-y-2">
@@ -148,7 +150,7 @@ export function ParentDashboardPage() {
       </div>
 
       <div>
-        <h2 className="mb-2 text-sm font-semibold uppercase tracking-wide text-slate-500">Payment Status</h2>
+        <h2 className="mb-2 text-sm font-semibold uppercase tracking-wide text-slate-500">{t("Payment Status")}</h2>
         <Link
           to="/parent/payments"
           className={`block rounded-xl p-5 text-center shadow-sm ${balance > 0 ? "bg-red-50" : "bg-green-50"}`}
@@ -159,7 +161,7 @@ export function ParentDashboardPage() {
           {balance > 0 ? (
             <p className="mt-1 text-sm font-medium text-red-700">You owe {formatCurrency(balance, "UZS")}</p>
           ) : (
-            <p className="mt-1 text-sm font-medium text-green-700">All payments up to date</p>
+            <p className="mt-1 text-sm font-medium text-green-700">{t("All payments up to date")}</p>
           )}
           {nextCharge && (
             <p className="mt-1 text-xs text-slate-500">Next due: {new Date(nextCharge.dueDate).toLocaleDateString()}</p>
@@ -169,14 +171,14 @@ export function ParentDashboardPage() {
 
       <div>
         <div className="mb-2 flex items-center justify-between">
-          <h2 className="text-sm font-semibold uppercase tracking-wide text-slate-500">Quick Contact</h2>
+          <h2 className="text-sm font-semibold uppercase tracking-wide text-slate-500">{t("Quick Contact")}</h2>
           <Link to="/parent/teachers" className="text-xs font-medium text-indigo-600">
-            View All Teachers
+            {t("View All Teachers")}
           </Link>
         </div>
         {teachers.length === 0 && (
           <p className="rounded-xl border border-slate-200 bg-white p-4 text-sm text-slate-500">
-            No teachers assigned yet.
+            {t("No teachers assigned yet.")}
           </p>
         )}
         <div className="space-y-2">

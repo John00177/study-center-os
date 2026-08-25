@@ -1,5 +1,6 @@
 import type { CalendarSessionDto } from "@crm/shared-types";
 import { CalendarClock } from "lucide-react";
+import { useTranslation } from "../../hooks/use-translation";
 
 interface TodaysClassesWidgetProps {
   dateLabel: string;
@@ -16,6 +17,7 @@ export function TodaysClassesWidget({
   onSessionClick,
   showBranch = false,
 }: TodaysClassesWidgetProps) {
+  const { t } = useTranslation();
   return (
     <div className="rounded-xl border border-slate-200 bg-white shadow-sm">
       <div className="flex items-center gap-2 border-b border-slate-200 px-5 py-3">
@@ -24,9 +26,9 @@ export function TodaysClassesWidget({
       </div>
 
       <div className="divide-y divide-slate-100">
-        {isLoading && <p className="px-5 py-4 text-sm text-slate-500">Loading...</p>}
+        {isLoading && <p className="px-5 py-4 text-sm text-slate-500">{t("Loading...")}</p>}
         {!isLoading && (sessions?.length ?? 0) === 0 && (
-          <p className="px-5 py-4 text-sm text-slate-500">No classes scheduled for today.</p>
+          <p className="px-5 py-4 text-sm text-slate-500">{t("No classes scheduled for today.")}</p>
         )}
         {sessions?.map((session) => (
           <button

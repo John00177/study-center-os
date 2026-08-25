@@ -4,6 +4,7 @@ import { Check, Lock } from "lucide-react";
 import { ConfirmDialog } from "../components/ConfirmDialog";
 import { useToast } from "../components/Toast";
 import { useChangePlan, useCurrentSubscription, useSubscriptionPlans } from "../hooks/use-subscription";
+import { useTranslation } from "../hooks/use-translation";
 
 const PLAN_LABELS: Record<string, string> = { starter: "Starter", growth: "Growth", pro: "Pro" };
 
@@ -71,6 +72,7 @@ function UsageMeter({ label, current, limit, percentage }: { label: string; curr
 }
 
 export function PlanAndBillingPage() {
+  const { t } = useTranslation();
   const { data: current, isLoading: currentLoading } = useCurrentSubscription();
   const { data: plans, isLoading: plansLoading } = useSubscriptionPlans();
   const changePlan = useChangePlan();
@@ -97,23 +99,23 @@ export function PlanAndBillingPage() {
       showToast(`${isDowngrade ? "Switched to" : "Upgraded to"} ${planLabel(selectedPlan.slug)}! ${isDowngrade ? "" : "New features unlocked."}`);
       setSelectedPlan(null);
     } catch {
-      showToast("Failed to change plan.", "error");
+      showToast(t("Failed to change plan."), "error");
     }
   }
 
   if (currentLoading || plansLoading) {
-    return <p className="text-sm text-slate-500">Loading...</p>;
+    return <p className="text-sm text-slate-500">{t("Loading...")}</p>;
   }
 
   return (
     <div>
-      <h1 className="mb-6 text-2xl font-semibold text-slate-900 dark:text-slate-100">Plan & Billing</h1>
+      <h1 className="mb-6 text-2xl font-semibold text-slate-900 dark:text-slate-100">{t("Plan & Billing")}</h1>
 
       {current && (
         <div className="mb-8 grid grid-cols-1 gap-6 lg:grid-cols-2">
           <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
             <div className="flex items-center justify-between">
-              <h2 className="text-sm font-semibold uppercase tracking-wide text-slate-500">Current Plan</h2>
+              <h2 className="text-sm font-semibold uppercase tracking-wide text-slate-500">{t("Current Plan")}</h2>
               <span className="inline-flex items-center rounded-full bg-indigo-100 px-2.5 py-0.5 text-xs font-medium capitalize text-indigo-700">
                 {current.subscription?.status ?? "no subscription"}
               </span>
@@ -132,11 +134,11 @@ export function PlanAndBillingPage() {
           </div>
 
           <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
-            <h2 className="mb-4 text-sm font-semibold uppercase tracking-wide text-slate-500">Usage</h2>
+            <h2 className="mb-4 text-sm font-semibold uppercase tracking-wide text-slate-500">{t("Usage")}</h2>
             <div className="space-y-4">
-              <UsageMeter label="Branches" current={current.usage.branchCount} limit={current.limits.maxBranches} percentage={current.limits.maxBranches ? Math.round((current.usage.branchCount / current.limits.maxBranches) * 100) : 0} />
-              <UsageMeter label="Students" current={current.usage.studentCount} limit={current.limits.maxStudents} percentage={current.limits.maxStudents ? Math.round((current.usage.studentCount / current.limits.maxStudents) * 100) : 0} />
-              <UsageMeter label="Teachers" current={current.usage.teacherCount} limit={current.limits.maxTeachers} percentage={current.limits.maxTeachers ? Math.round((current.usage.teacherCount / current.limits.maxTeachers) * 100) : 0} />
+              <UsageMeter label={t("Branches")} current={current.usage.branchCount} limit={current.limits.maxBranches} percentage={current.limits.maxBranches ? Math.round((current.usage.branchCount / current.limits.maxBranches) * 100) : 0} />
+              <UsageMeter label={t("Students")} current={current.usage.studentCount} limit={current.limits.maxStudents} percentage={current.limits.maxStudents ? Math.round((current.usage.studentCount / current.limits.maxStudents) * 100) : 0} />
+              <UsageMeter label={t("Teachers")} current={current.usage.teacherCount} limit={current.limits.maxTeachers} percentage={current.limits.maxTeachers ? Math.round((current.usage.teacherCount / current.limits.maxTeachers) * 100) : 0} />
             </div>
           </div>
         </div>
@@ -144,7 +146,7 @@ export function PlanAndBillingPage() {
 
       {current && (
         <div className="mb-8 rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
-          <h2 className="mb-4 text-sm font-semibold uppercase tracking-wide text-slate-500">Features</h2>
+          <h2 className="mb-4 text-sm font-semibold uppercase tracking-wide text-slate-500">{t("Features")}</h2>
           <ul className="grid grid-cols-1 gap-3 sm:grid-cols-2">
             {ALL_MODULES.map((m) => {
               const unlocked = current.allowedModules.includes(m.key);
@@ -152,11 +154,11 @@ export function PlanAndBillingPage() {
                 <li key={m.key} className={`flex items-center justify-between rounded-lg border px-3 py-2 ${unlocked ? "border-slate-200" : "border-slate-100 bg-slate-50"}`}>
                   <span className={`flex items-center gap-2 text-sm ${unlocked ? "text-slate-800" : "text-slate-400"}`}>
                     {unlocked ? <Check className="h-4 w-4 text-green-500" /> : <Lock className="h-4 w-4 text-slate-300" />}
-                    {m.label}
+                    {t(m.label)}
                   </span>
                   {!unlocked && (
                     <a href="#plan-comparison" className="text-xs font-medium text-indigo-600 hover:text-indigo-700">
-                      Upgrade to unlock
+                      {t("Upgrade to unlock")}
                     </a>
                   )}
                 </li>
@@ -167,10 +169,10 @@ export function PlanAndBillingPage() {
       )}
 
       <div id="plan-comparison" className="mb-3 flex items-center justify-between">
-        <h2 className="text-sm font-semibold uppercase tracking-wide text-slate-500">Compare Plans</h2>
+        <h2 className="text-sm font-semibold uppercase tracking-wide text-slate-500">{t("Compare Plans")}</h2>
         <label className="flex items-center gap-2 text-sm text-slate-600">
           <input type="checkbox" checked={annual} onChange={(e) => setAnnual(e.target.checked)} className="h-4 w-4 rounded border-slate-300 text-primary focus:ring-primary" />
-          Pay annually, save 2 months
+          {t("Pay annually, save 2 months")}
         </label>
       </div>
 
@@ -187,7 +189,7 @@ export function PlanAndBillingPage() {
             >
               {isCurrent && (
                 <span className="mb-2 inline-flex items-center rounded-full bg-primary/10 px-2.5 py-0.5 text-xs font-medium text-primary">
-                  Current plan
+                  {t("Current plan")}
                 </span>
               )}
               <h3 className="text-lg font-semibold text-slate-900 dark:text-slate-100">{planLabel(plan.slug)}</h3>
@@ -203,7 +205,7 @@ export function PlanAndBillingPage() {
                 {ALL_MODULES.filter((m) => features?.modules.includes(m.key)).map((m) => (
                   <li key={m.key} className="flex items-center gap-1.5">
                     <Check className="h-3.5 w-3.5 text-green-500" />
-                    {m.label}
+                    {t(m.label)}
                   </li>
                 ))}
               </ul>

@@ -3,6 +3,7 @@ import type { ReactNode } from "react";
 import { useNavigate } from "react-router-dom";
 import { PlatformRevenueChart } from "../../components/charts/PlatformRevenueChart";
 import { OrgStatusChart } from "../../components/charts/OrgStatusChart";
+import { useTranslation } from "../../hooks/use-translation";
 import {
   useOrganizations,
   usePendingApplications,
@@ -27,6 +28,7 @@ function KpiCard({ label, value, icon }: { label: string; value: string; icon: R
 }
 
 export function PlatformAdminDashboardPage() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const { data: orgs } = useOrganizations();
   const { data: health } = usePlatformHealth();
@@ -49,7 +51,7 @@ export function PlatformAdminDashboardPage() {
 
   return (
     <div>
-      <h1 className="mb-6 text-2xl font-semibold text-white">Platform Dashboard</h1>
+      <h1 className="mb-6 text-2xl font-semibold text-white">{t("Platform Dashboard")}</h1>
 
       {pendingCount > 0 && (
         <button
@@ -67,36 +69,36 @@ export function PlatformAdminDashboardPage() {
       )}
 
       <div className="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <KpiCard label="Total Study Centers" value={String(health?.totalOrganizations ?? "-")} icon={<Building size={18} className="text-slate-400" />} />
-        <KpiCard label="Total Students" value={String(health?.totalActiveStudents ?? "-")} icon={<Users size={18} className="text-slate-400" />} />
-        <KpiCard label="Total Teachers" value={String(health?.totalActiveTeachers ?? "-")} icon={<GraduationCap size={18} className="text-slate-400" />} />
-        <KpiCard label="Monthly Revenue (USD)" value={formatUsd(thisMonthRevenue)} icon={<Banknote size={18} className="text-slate-400" />} />
+        <KpiCard label={t("Total Study Centers")} value={String(health?.totalOrganizations ?? "-")} icon={<Building size={18} className="text-slate-400" />} />
+        <KpiCard label={t("Total Students")} value={String(health?.totalActiveStudents ?? "-")} icon={<Users size={18} className="text-slate-400" />} />
+        <KpiCard label={t("Total Teachers")} value={String(health?.totalActiveTeachers ?? "-")} icon={<GraduationCap size={18} className="text-slate-400" />} />
+        <KpiCard label={t("Monthly Revenue (USD)")} value={formatUsd(thisMonthRevenue)} icon={<Banknote size={18} className="text-slate-400" />} />
       </div>
 
       <div className="mb-4 grid grid-cols-1 gap-4 lg:grid-cols-2">
         <div className="rounded-lg border border-slate-700 bg-slate-800 p-4">
-          <h3 className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-400">Monthly Revenue (12mo)</h3>
+          <h3 className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-400">{t("Monthly Revenue (12mo)")}</h3>
           <PlatformRevenueChart
             data={monthly.map((m) => ({ name: m.month.slice(2), value: m.amount }))}
             valueFormatter={formatUsd}
           />
         </div>
         <div className="rounded-lg border border-slate-700 bg-slate-800 p-4">
-          <h3 className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-400">Organizations by Status</h3>
+          <h3 className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-400">{t("Organizations by Status")}</h3>
           <OrgStatusChart data={statusCounts} />
         </div>
       </div>
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
         <div>
-          <h3 className="mb-3 text-sm font-semibold uppercase tracking-wide text-slate-400">Recent Signups</h3>
+          <h3 className="mb-3 text-sm font-semibold uppercase tracking-wide text-slate-400">{t("Recent Signups")}</h3>
           <div className="overflow-hidden rounded-xl border border-slate-800 bg-slate-900">
             <table className="min-w-full divide-y divide-slate-800">
               <thead>
                 <tr>
-                  <th className="px-4 py-2 text-left text-xs font-medium uppercase text-slate-500">Name</th>
-                  <th className="px-4 py-2 text-left text-xs font-medium uppercase text-slate-500">Plan</th>
-                  <th className="px-4 py-2 text-left text-xs font-medium uppercase text-slate-500">Signed Up</th>
+                  <th className="px-4 py-2 text-left text-xs font-medium uppercase text-slate-500">{t("Name")}</th>
+                  <th className="px-4 py-2 text-left text-xs font-medium uppercase text-slate-500">{t("Plan")}</th>
+                  <th className="px-4 py-2 text-left text-xs font-medium uppercase text-slate-500">{t("Signed Up")}</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-800">
@@ -113,13 +115,13 @@ export function PlatformAdminDashboardPage() {
         </div>
 
         <div>
-          <h3 className="mb-3 text-sm font-semibold uppercase tracking-wide text-slate-400">Top Revenue Centers</h3>
+          <h3 className="mb-3 text-sm font-semibold uppercase tracking-wide text-slate-400">{t("Top Revenue Centers")}</h3>
           <div className="overflow-hidden rounded-xl border border-slate-800 bg-slate-900">
             <table className="min-w-full divide-y divide-slate-800">
               <thead>
                 <tr>
-                  <th className="px-4 py-2 text-left text-xs font-medium uppercase text-slate-500">Name</th>
-                  <th className="px-4 py-2 text-right text-xs font-medium uppercase text-slate-500">Revenue</th>
+                  <th className="px-4 py-2 text-left text-xs font-medium uppercase text-slate-500">{t("Name")}</th>
+                  <th className="px-4 py-2 text-right text-xs font-medium uppercase text-slate-500">{t("Revenue")}</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-800">

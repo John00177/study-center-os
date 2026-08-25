@@ -16,10 +16,12 @@ import {
   useNewcomers,
 } from "../hooks/use-newcomers";
 import { StudentInput, useCreateStudent } from "../hooks/use-students";
+import { useTranslation } from "../hooks/use-translation";
 
 const EMPTY_REGISTER_FORM = { name: "", phone: "", socialAccount: "", gender: "", dateOfBirth: "", interestedCourse: "", notes: "" };
 
 function RegisterNewcomerModal({ open, onClose }: { open: boolean; onClose: () => void }) {
+  const { t } = useTranslation();
   const createStudent = useCreateStudent();
   const { showToast } = useToast();
   const [form, setForm] = useState(EMPTY_REGISTER_FORM);
@@ -49,51 +51,51 @@ function RegisterNewcomerModal({ open, onClose }: { open: boolean; onClose: () =
 
     try {
       await createStudent.mutateAsync(input);
-      showToast("Newcomer registered.");
+      showToast(t("Newcomer registered."));
       setForm(EMPTY_REGISTER_FORM);
       setErrors({});
       onClose();
     } catch {
-      showToast("Failed to register newcomer.", "error");
+      showToast(t("Failed to register newcomer."), "error");
     }
   }
 
   return (
-    <Modal open={open} onClose={onClose} title="Register New Student">
+    <Modal open={open} onClose={onClose} title={t("Register New Student")}>
       <form onSubmit={handleSubmit} className="space-y-4">
         <TextField
-          label="Name"
+          label={t("Name")}
           required
           value={form.name}
           error={errors.name}
           onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
         />
         <TextField
-          label="Phone"
+          label={t("Phone")}
           required
           value={form.phone}
           error={errors.phone}
           onChange={(e) => setForm((f) => ({ ...f, phone: e.target.value }))}
         />
         <TextField
-          label="Social Account (Telegram/WhatsApp)"
+          label={t("Social Account (Telegram/WhatsApp)")}
           value={form.socialAccount}
           onChange={(e) => setForm((f) => ({ ...f, socialAccount: e.target.value }))}
         />
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <SelectField
-            label="Gender"
+            label={t("Gender")}
             required
             value={form.gender}
             error={errors.gender}
             onChange={(e) => setForm((f) => ({ ...f, gender: e.target.value }))}
           >
-            <option value="">Select gender</option>
-            <option value="male">Male</option>
-            <option value="female">Female</option>
+            <option value="">{t("Select gender")}</option>
+            <option value="male">{t("Male")}</option>
+            <option value="female">{t("Female")}</option>
           </SelectField>
           <TextField
-            label="Birth Date"
+            label={t("Birth Date")}
             type="date"
             required
             value={form.dateOfBirth}
@@ -102,12 +104,12 @@ function RegisterNewcomerModal({ open, onClose }: { open: boolean; onClose: () =
           />
         </div>
         <TextField
-          label="Interested course"
+          label={t("Interested course")}
           value={form.interestedCourse}
           onChange={(e) => setForm((f) => ({ ...f, interestedCourse: e.target.value }))}
         />
         <TextField
-          label="Notes"
+          label={t("Notes")}
           value={form.notes}
           onChange={(e) => setForm((f) => ({ ...f, notes: e.target.value }))}
         />
@@ -119,7 +121,7 @@ function RegisterNewcomerModal({ open, onClose }: { open: boolean; onClose: () =
             disabled={createStudent.isPending}
             className="rounded-md border border-slate-300 px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 disabled:opacity-60"
           >
-            Cancel
+            {t("Cancel")}
           </button>
           <button
             type="submit"
@@ -127,7 +129,7 @@ function RegisterNewcomerModal({ open, onClose }: { open: boolean; onClose: () =
             className="flex items-center gap-2 rounded-md bg-indigo-600 px-3 py-2 text-sm font-medium text-white hover:bg-indigo-700 disabled:opacity-60"
           >
             {createStudent.isPending && <Loader2 className="h-4 w-4 animate-spin" />}
-            Register
+            {t("Register")}
           </button>
         </div>
       </form>
@@ -144,6 +146,7 @@ function ConvertToGroupModal({
   onClose: () => void;
   student: StudentDto | null;
 }) {
+  const { t } = useTranslation();
   const { data: groups } = useGroups();
   const convertStudent = useConvertStudent();
   const { showToast } = useToast();
@@ -179,15 +182,15 @@ function ConvertToGroupModal({
       showToast(`Student moved to ${groupName}`);
       onClose();
     } catch {
-      showToast("Failed to add student to group.", "error");
+      showToast(t("Failed to add student to group."), "error");
     }
   }
 
   return (
     <Modal open={open} onClose={onClose} title={student ? `Add ${student.name} to a Group` : "Add to Group"}>
       <div className="space-y-4">
-        <SelectField label="Group" required value={groupId} error={error ?? undefined} onChange={(e) => setGroupId(e.target.value)}>
-          <option value="">Select group</option>
+        <SelectField label={t("Group")} required value={groupId} error={error ?? undefined} onChange={(e) => setGroupId(e.target.value)}>
+          <option value="">{t("Select group")}</option>
           {groups?.map((g) => (
             <option key={g.id} value={g.id}>
               {g.name}
@@ -195,12 +198,12 @@ function ConvertToGroupModal({
           ))}
         </SelectField>
         <TextField
-          label="Emergency Contact"
+          label={t("Emergency Contact")}
           value={emergencyContact}
           onChange={(e) => setEmergencyContact(e.target.value)}
         />
         <TextField
-          label="Parent Phone Number"
+          label={t("Parent Phone Number")}
           value={parentPhone}
           onChange={(e) => setParentPhone(e.target.value)}
         />
@@ -212,7 +215,7 @@ function ConvertToGroupModal({
             disabled={convertStudent.isPending}
             className="rounded-md border border-slate-300 px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 disabled:opacity-60"
           >
-            Cancel
+            {t("Cancel")}
           </button>
           <button
             type="button"
@@ -221,7 +224,7 @@ function ConvertToGroupModal({
             className="flex items-center gap-2 rounded-md bg-indigo-600 px-3 py-2 text-sm font-medium text-white hover:bg-indigo-700 disabled:opacity-60"
           >
             {convertStudent.isPending && <Loader2 className="h-4 w-4 animate-spin" />}
-            Confirm
+            {t("Confirm")}
           </button>
         </div>
       </div>
@@ -238,6 +241,7 @@ function AddNoteModal({
   onClose: () => void;
   student: StudentDto | null;
 }) {
+  const { t } = useTranslation();
   const addNote = useAddStudentNote();
   const { showToast } = useToast();
   const [note, setNote] = useState("");
@@ -246,11 +250,11 @@ function AddNoteModal({
     if (!student || !note.trim()) return;
     try {
       await addNote.mutateAsync({ id: student.id, note: note.trim() });
-      showToast("Note added.");
+      showToast(t("Note added."));
       setNote("");
       onClose();
     } catch {
-      showToast("Failed to add note.", "error");
+      showToast(t("Failed to add note."), "error");
     }
   }
 
@@ -266,7 +270,7 @@ function AddNoteModal({
           value={note}
           onChange={(e) => setNote(e.target.value)}
           rows={3}
-          placeholder="Add a note..."
+          placeholder={t("Add a note...")}
           className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm text-slate-900 dark:text-slate-100 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
         />
         <div className="flex justify-end gap-3 border-t border-slate-200 pt-4">
@@ -276,7 +280,7 @@ function AddNoteModal({
             disabled={addNote.isPending}
             className="rounded-md border border-slate-300 px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 disabled:opacity-60"
           >
-            Cancel
+            {t("Cancel")}
           </button>
           <button
             type="button"
@@ -285,7 +289,7 @@ function AddNoteModal({
             className="flex items-center gap-2 rounded-md bg-indigo-600 px-3 py-2 text-sm font-medium text-white hover:bg-indigo-700 disabled:opacity-60"
           >
             {addNote.isPending && <Loader2 className="h-4 w-4 animate-spin" />}
-            Save note
+            {t("Save note")}
           </button>
         </div>
       </div>
@@ -294,6 +298,7 @@ function AddNoteModal({
 }
 
 export function NewcomersPage() {
+  const { t } = useTranslation();
   const [showArchived, setShowArchived] = useState(false);
   const [search, setSearch] = useState("");
 
@@ -323,23 +328,23 @@ export function NewcomersPage() {
     if (!archivingStudent) return;
     try {
       await archiveStudent.mutateAsync(archivingStudent.id);
-      showToast("Student archived.");
+      showToast(t("Student archived."));
       setArchivingStudent(null);
     } catch {
-      showToast("Failed to archive student.", "error");
+      showToast(t("Failed to archive student."), "error");
     }
   }
 
   return (
     <div>
       <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
-        <h1 className="text-2xl font-semibold text-slate-900 dark:text-slate-100">Newcomers</h1>
+        <h1 className="text-2xl font-semibold text-slate-900 dark:text-slate-100">{t("Newcomers")}</h1>
         <button
           onClick={() => setRegisterOpen(true)}
           className="flex items-center gap-2 rounded-md bg-indigo-600 px-3 py-2 text-sm font-medium text-white hover:bg-indigo-700"
         >
           <Plus className="h-4 w-4" />
-          Register New Student
+          {t("Register New Student")}
         </button>
       </div>
 
@@ -349,18 +354,18 @@ export function NewcomersPage() {
             onClick={() => setShowArchived(false)}
             className={`rounded px-3 py-1.5 font-medium ${!showArchived ? "bg-indigo-600 text-white" : "text-slate-600 hover:bg-slate-50"}`}
           >
-            All
+            {t("All")}
           </button>
           <button
             onClick={() => setShowArchived(true)}
             className={`rounded px-3 py-1.5 font-medium ${showArchived ? "bg-indigo-600 text-white" : "text-slate-600 hover:bg-slate-50"}`}
           >
-            Archived
+            {t("Archived")}
           </button>
         </div>
         <input
           type="text"
-          placeholder="Search by name or phone..."
+          placeholder={t("Search by name or phone...")}
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           className="w-full max-w-xs rounded-md border border-slate-300 px-3 py-2 text-sm text-slate-900 dark:text-slate-100 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
@@ -373,11 +378,11 @@ export function NewcomersPage() {
         emptyMessage={showArchived ? "No archived students." : 'No newcomers yet. Click "Register New Student" to add one.'}
         getRowKey={(s) => s.id}
         columns={[
-          { header: "Name", render: (s) => <span className="font-medium text-slate-900 dark:text-slate-100">{s.name}</span> },
-          { header: "Phone", render: (s) => s.phone ?? "-" },
-          { header: "Interested Course", render: (s) => s.interestedCourse ?? "-" },
-          { header: "Registered", render: (s) => new Date(s.registeredAt).toLocaleDateString() },
-          { header: "Status", render: (s) => <span className="capitalize">{s.status}</span> },
+          { header: t("Name"), render: (s) => <span className="font-medium text-slate-900 dark:text-slate-100">{s.name}</span> },
+          { header: t("Phone"), render: (s) => s.phone ?? "-" },
+          { header: t("Interested Course"), render: (s) => s.interestedCourse ?? "-" },
+          { header: t("Registered"), render: (s) => new Date(s.registeredAt).toLocaleDateString() },
+          { header: t("Status"), render: (s) => <span className="capitalize">{s.status}</span> },
         ]}
         renderActions={(s) => (
           <>
@@ -385,8 +390,8 @@ export function NewcomersPage() {
               <button
                 onClick={() => setConvertingStudent(s)}
                 className="rounded p-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-700"
-                aria-label="Add to group"
-                title="Add to group"
+                aria-label={t("Add to group")}
+                title={t("Add to group")}
               >
                 <UserPlus className="h-4 w-4" />
               </button>
@@ -394,8 +399,8 @@ export function NewcomersPage() {
             <button
               onClick={() => setNotingStudent(s)}
               className="rounded p-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-700"
-              aria-label="Add note"
-              title="Add note"
+              aria-label={t("Add note")}
+              title={t("Add note")}
             >
               <NotebookPen className="h-4 w-4" />
             </button>
@@ -403,8 +408,8 @@ export function NewcomersPage() {
               <button
                 onClick={() => setArchivingStudent(s)}
                 className="rounded p-1.5 text-slate-400 hover:bg-red-50 hover:text-red-600"
-                aria-label="Archive"
-                title="Archive"
+                aria-label={t("Archive")}
+                title={t("Archive")}
               >
                 <Archive className="h-4 w-4" />
               </button>
@@ -423,9 +428,9 @@ export function NewcomersPage() {
 
       <ConfirmDialog
         open={Boolean(archivingStudent)}
-        title="Archive student"
+        title={t("Archive student")}
         message={`Are you sure you want to archive ${archivingStudent?.name}? They will be removed from the newcomers list.`}
-        confirmLabel="Archive"
+        confirmLabel={t("Archive")}
         isConfirming={archiveStudent.isPending}
         onConfirm={confirmArchive}
         onCancel={() => setArchivingStudent(null)}

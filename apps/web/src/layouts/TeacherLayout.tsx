@@ -62,12 +62,12 @@ export function TeacherLayout() {
                 <button
                   key={to}
                   onClick={() => navigate("/settings/plan")}
-                  title="Upgrade to unlock"
+                  title={t("Upgrade to unlock")}
                   className="flex items-center justify-between gap-3 rounded-lg px-3 py-2 text-left text-sm font-medium text-slate-400 transition hover:bg-slate-100 dark:text-slate-500 dark:hover:bg-slate-700"
                 >
                   <span className="flex items-center gap-3">
                     <Icon size={18} />
-                    {label}
+                    {t(label)}
                   </span>
                   <Lock size={14} />
                 </button>
@@ -87,7 +87,7 @@ export function TeacherLayout() {
                 }
               >
                 <Icon size={18} />
-                {label}
+                {t(label)}
               </NavLink>
             );
           })}
@@ -135,7 +135,7 @@ export function TeacherLayout() {
             }
           >
             <Icon size={22} className="min-h-[24px] min-w-[24px]" />
-            {label}
+            {t(label)}
           </NavLink>
         ))}
       </nav>

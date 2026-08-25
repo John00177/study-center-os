@@ -2,6 +2,7 @@ import type { NotificationDto, NotificationType } from "@crm/shared-types";
 import { AlertTriangle, CheckCircle2, Info, XCircle } from "lucide-react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "../../hooks/use-translation";
 import {
   useDismissAllNotifications,
   useMarkAllNotificationsRead,
@@ -143,6 +144,7 @@ function NotificationRow({
 }
 
 export function NotificationPanel({ onClose, forceDark = false }: { onClose: () => void; forceDark?: boolean }) {
+  const { t } = useTranslation();
   const [page, setPage] = useState(1);
   const { data, isLoading } = useNotifications(page);
   const markAllAsRead = useMarkAllNotificationsRead();
@@ -154,22 +156,22 @@ export function NotificationPanel({ onClose, forceDark = false }: { onClose: () 
   return (
     <div className={`absolute right-0 z-50 mt-2 w-80 max-h-96 overflow-y-auto rounded-lg border shadow-lg ${palette.panel}`}>
       <div className={`sticky top-0 flex items-center justify-between border-b px-3 py-2 ${palette.header}`}>
-        <h3 className={`text-sm font-semibold ${palette.headerText}`}>Notifications</h3>
+        <h3 className={`text-sm font-semibold ${palette.headerText}`}>{t("Notifications")}</h3>
         {items.some((n) => !n.read) && (
           <button
             onClick={() => markAllAsRead.mutate()}
             disabled={markAllAsRead.isPending}
             className={`text-xs font-medium disabled:opacity-60 ${palette.link}`}
           >
-            Mark all as read
+            {t("Mark all as read")}
           </button>
         )}
       </div>
 
-      {isLoading && <p className={`px-3 py-6 text-center text-sm ${palette.muted}`}>Loading...</p>}
+      {isLoading && <p className={`px-3 py-6 text-center text-sm ${palette.muted}`}>{t("Loading...")}</p>}
 
       {!isLoading && items.length === 0 && (
-        <p className={`px-3 py-6 text-center text-sm ${palette.muted}`}>No notifications</p>
+        <p className={`px-3 py-6 text-center text-sm ${palette.muted}`}>{t("No notifications")}</p>
       )}
 
       {!isLoading && items.length > 0 && (
@@ -191,7 +193,7 @@ export function NotificationPanel({ onClose, forceDark = false }: { onClose: () 
           onClick={() => setPage((p) => p + 1)}
           className={`w-full border-t py-2 text-xs font-medium ${palette.footerBorder} ${palette.link} ${palette.footerHover}`}
         >
-          Load more
+          {t("Load more")}
         </button>
       )}
 
@@ -202,7 +204,7 @@ export function NotificationPanel({ onClose, forceDark = false }: { onClose: () 
             disabled={dismissAll.isPending}
             className={`w-full py-2 text-xs font-medium disabled:opacity-60 hover:text-red-600 ${palette.muted} ${palette.footerHover}`}
           >
-            Dismiss all
+            {t("Dismiss all")}
           </button>
         </div>
       )}

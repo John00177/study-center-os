@@ -9,6 +9,7 @@ import { ConfirmDialog } from "../ConfirmDialog";
 import { useToast } from "../Toast";
 import { TextField } from "../form/Field";
 import { TempPasswordReveal } from "../auth/TempPasswordReveal";
+import { useTranslation } from "../../hooks/use-translation";
 import {
   useActivateStaffMember,
   useCreateReceptionist,
@@ -39,6 +40,7 @@ function errorMessage(err: unknown, fallback: string): string {
 const EMPTY_FORM = { name: "", email: "", phone: "" };
 
 function AddReceptionistModal({ open, onClose }: { open: boolean; onClose: () => void }) {
+  const { t } = useTranslation();
   const createReceptionist = useCreateReceptionist();
   const { showToast } = useToast();
   const [form, setForm] = useState(EMPTY_FORM);
@@ -82,10 +84,10 @@ function AddReceptionistModal({ open, onClose }: { open: boolean; onClose: () =>
           reset();
           onClose();
         }}
-        title="Receptionist Created"
+        title={t("Receptionist Created")}
       >
         <TempPasswordReveal
-          label="Temporary password"
+          label={t("Temporary password")}
           password={tempPassword}
           onDone={() => {
             showToast(`Receptionist created! Temporary password: ${tempPassword}`);
@@ -104,18 +106,18 @@ function AddReceptionistModal({ open, onClose }: { open: boolean; onClose: () =>
         reset();
         onClose();
       }}
-      title="Add New Receptionist"
+      title={t("Add New Receptionist")}
     >
       <form onSubmit={handleSubmit} className="space-y-4">
         <TextField
-          label="Full Name"
+          label={t("Full Name")}
           required
           value={form.name}
           error={errors.name}
           onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
         />
         <TextField
-          label="Email"
+          label={t("Email")}
           type="email"
           required
           value={form.email}
@@ -123,14 +125,14 @@ function AddReceptionistModal({ open, onClose }: { open: boolean; onClose: () =>
           onChange={(e) => setForm((f) => ({ ...f, email: e.target.value }))}
         />
         <TextField
-          label="Phone"
+          label={t("Phone")}
           required
           value={form.phone}
           error={errors.phone}
           onChange={(e) => setForm((f) => ({ ...f, phone: e.target.value }))}
         />
 
-        <p className="text-xs text-slate-500">A secure temporary password is generated automatically.</p>
+        <p className="text-xs text-slate-500">{t("A secure temporary password is generated automatically.")}</p>
 
         <div className="flex justify-end gap-3 border-t border-slate-200 pt-4">
           <button
@@ -139,7 +141,7 @@ function AddReceptionistModal({ open, onClose }: { open: boolean; onClose: () =>
             disabled={createReceptionist.isPending}
             className="rounded-md border border-slate-300 px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 disabled:opacity-60"
           >
-            Cancel
+            {t("Cancel")}
           </button>
           <button
             type="submit"
@@ -147,7 +149,7 @@ function AddReceptionistModal({ open, onClose }: { open: boolean; onClose: () =>
             className="flex items-center gap-2 rounded-md bg-indigo-600 px-3 py-2 text-sm font-medium text-white hover:bg-indigo-700 disabled:opacity-60"
           >
             {createReceptionist.isPending && <Loader2 className="h-4 w-4 animate-spin" />}
-            Create Receptionist
+            {t("Create Receptionist")}
           </button>
         </div>
       </form>
@@ -156,6 +158,7 @@ function AddReceptionistModal({ open, onClose }: { open: boolean; onClose: () =>
 }
 
 function StaffActions({ member, onResetPassword }: { member: StaffMemberDto; onResetPassword: (member: StaffMemberDto) => void }) {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const suspend = useSuspendStaffMember();
   const activate = useActivateStaffMember();
@@ -172,7 +175,7 @@ function StaffActions({ member, onResetPassword }: { member: StaffMemberDto; onR
         showToast(`${member.name} suspended.`);
       }
     } catch {
-      showToast("Failed to update staff status.", "error");
+      showToast(t("Failed to update staff status."), "error");
     }
   }
 
@@ -181,8 +184,8 @@ function StaffActions({ member, onResetPassword }: { member: StaffMemberDto; onR
       <button
         onClick={() => onResetPassword(member)}
         className="rounded p-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-700"
-        aria-label="Reset password"
-        title="Reset password"
+        aria-label={t("Reset password")}
+        title={t("Reset password")}
       >
         <RotateCcw className="h-4 w-4" />
       </button>
@@ -199,7 +202,7 @@ function StaffActions({ member, onResetPassword }: { member: StaffMemberDto; onR
           onClick={() => navigate("/teachers")}
           className="rounded p-1.5 text-xs font-medium text-indigo-600 hover:bg-indigo-50 dark:text-indigo-400 dark:hover:bg-indigo-500/10"
         >
-          Manage Access
+          {t("Manage Access")}
         </button>
       )}
     </div>
@@ -207,6 +210,7 @@ function StaffActions({ member, onResetPassword }: { member: StaffMemberDto; onR
 }
 
 export function StaffSection() {
+  const { t } = useTranslation();
   const { data: staff, isLoading } = useStaffList();
   const resetPassword = useResetStaffPassword();
   const { showToast } = useToast();
@@ -221,7 +225,7 @@ export function StaffSection() {
       setResettingFor(null);
       setResetResult(result.tempPassword);
     } catch {
-      showToast("Failed to reset password.", "error");
+      showToast(t("Failed to reset password."), "error");
     }
   }
 
@@ -229,27 +233,27 @@ export function StaffSection() {
     <div className="mb-8">
       <div className="mb-3 flex items-center justify-between">
         <h2 className="text-sm font-semibold uppercase tracking-wide text-slate-500">
-          Staff Members ({staff?.length ?? 0})
+          {t("Staff Members")} ({staff?.length ?? 0})
         </h2>
         <button
           onClick={() => setAddOpen(true)}
           className="flex items-center gap-2 rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-indigo-700"
         >
           <Plus className="h-4 w-4" />
-          Add Receptionist
+          {t("Add Receptionist")}
         </button>
       </div>
       <DataTable
         data={staff}
         isLoading={isLoading}
-        emptyMessage="No staff members yet."
+        emptyMessage={t("No staff members yet.")}
         getRowKey={(m) => m.userId}
         columns={[
-          { header: "Name", render: (m) => <span className="font-medium text-slate-900 dark:text-slate-100">{m.name}</span> },
-          { header: "Role", render: (m) => <span className="capitalize">{m.roleName}</span> },
-          { header: "Branch", render: (m) => m.branchName ?? "—" },
+          { header: t("Name"), render: (m) => <span className="font-medium text-slate-900 dark:text-slate-100">{m.name}</span> },
+          { header: t("Role"), render: (m) => <span className="capitalize">{m.roleName}</span> },
+          { header: t("Branch"), render: (m) => m.branchName ?? "—" },
           {
-            header: "Status",
+            header: t("Status"),
             render: (m) => (
               <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium capitalize ${STATUS_STYLES[m.status]}`}>
                 {m.status}
@@ -257,18 +261,18 @@ export function StaffSection() {
             ),
           },
           {
-            header: "Password",
+            header: t("Password"),
             render: (m) =>
               m.mustChangePassword ? (
                 <span className="inline-flex items-center rounded-full bg-yellow-100 px-2 py-0.5 text-xs font-medium text-yellow-700">
-                  Not Changed
+                  {t("Not Changed")}
                 </span>
               ) : (
-                <span className="text-xs text-slate-400">Changed</span>
+                <span className="text-xs text-slate-400">{t("Changed")}</span>
               ),
           },
           {
-            header: "Dashboard Access",
+            header: t("Dashboard Access"),
             render: (m) => (m.dashboardAccessStatus ? DASHBOARD_ACCESS_LABEL[m.dashboardAccessStatus] : "—"),
           },
         ]}
@@ -279,7 +283,7 @@ export function StaffSection() {
 
       <ConfirmDialog
         open={Boolean(resettingFor)}
-        title="Reset password"
+        title={t("Reset password")}
         message={`Generate a new temporary password for ${resettingFor?.name}? They will need to set a new password on next login.`}
         confirmLabel={resetPassword.isPending ? "Resetting..." : "Reset Password"}
         isConfirming={resetPassword.isPending}
@@ -287,9 +291,9 @@ export function StaffSection() {
         onCancel={() => setResettingFor(null)}
       />
 
-      <Modal open={Boolean(resetResult)} onClose={() => setResetResult(null)} title="Password Reset">
+      <Modal open={Boolean(resetResult)} onClose={() => setResetResult(null)} title={t("Password Reset")}>
         {resetResult && (
-          <TempPasswordReveal label="New temporary password" password={resetResult} onDone={() => setResetResult(null)} />
+          <TempPasswordReveal label={t("New temporary password")} password={resetResult} onDone={() => setResetResult(null)} />
         )}
       </Modal>
     </div>

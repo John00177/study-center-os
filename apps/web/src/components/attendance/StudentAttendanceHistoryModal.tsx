@@ -3,6 +3,7 @@ import { DataTable } from "../DataTable";
 import { Modal } from "../Modal";
 import { useStudentAttendanceHistory } from "../../hooks/use-attendance";
 import { AttendanceStatusBadge } from "./AttendanceStatusBadge";
+import { useTranslation } from "../../hooks/use-translation";
 
 interface StudentAttendanceHistoryModalProps {
   open: boolean;
@@ -15,6 +16,7 @@ export function StudentAttendanceHistoryModal({
   onClose,
   student,
 }: StudentAttendanceHistoryModalProps) {
+  const { t } = useTranslation();
   const { data, isLoading } = useStudentAttendanceHistory(open ? student?.id ?? null : null);
 
   return (
@@ -27,13 +29,13 @@ export function StudentAttendanceHistoryModal({
       <DataTable
         data={data}
         isLoading={isLoading}
-        emptyMessage="No attendance records yet."
+        emptyMessage={t("No attendance records yet.")}
         getRowKey={(a) => a.id}
         columns={[
-          { header: "Date", render: (a) => new Date(a.date).toLocaleDateString() },
-          { header: "Group", render: (a) => a.group?.name ?? "-" },
-          { header: "Status", render: (a) => <AttendanceStatusBadge status={a.status} /> },
-          { header: "Notes", render: (a) => a.notes ?? "-" },
+          { header: t("Date"), render: (a) => new Date(a.date).toLocaleDateString() },
+          { header: t("Group"), render: (a) => a.group?.name ?? "-" },
+          { header: t("Status"), render: (a) => <AttendanceStatusBadge status={a.status} /> },
+          { header: t("Notes"), render: (a) => a.notes ?? "-" },
         ]}
       />
     </Modal>

@@ -10,6 +10,7 @@ import { useClassrooms } from "../hooks/use-classrooms";
 import { useTeachers } from "../hooks/use-teachers";
 import { useUserRole } from "../stores/auth.store";
 import { addDaysIso, DAY_LABELS_SHORT, formatDayHeader, formatWeekRange, getMondayIso } from "../lib/week";
+import { useTranslation } from "../hooks/use-translation";
 
 const CALENDAR_START_HOUR = 8;
 const CALENDAR_END_HOUR = 22;
@@ -40,6 +41,7 @@ interface CreateSlot {
 }
 
 export function CalendarPage() {
+  const { t } = useTranslation();
   const role = useUserRole();
   const isTeacher = role === "teacher";
 
@@ -87,7 +89,7 @@ export function CalendarPage() {
   return (
     <div>
       <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
-        <h1 className="text-2xl font-semibold text-slate-900 dark:text-slate-100">Calendar</h1>
+        <h1 className="text-2xl font-semibold text-slate-900 dark:text-slate-100">{t("Calendar")}</h1>
         <button
           onClick={() =>
             setCreateSlot({ dayOfWeek: mobileDayIndex === 6 ? 0 : mobileDayIndex + 1, startTime: "09:00", endTime: "10:00" })
@@ -95,7 +97,7 @@ export function CalendarPage() {
           className="flex items-center gap-2 rounded-md bg-indigo-600 px-3 py-2 text-sm font-medium text-white hover:bg-indigo-700"
         >
           <Plus className="h-4 w-4" />
-          New Session
+          {t("New Session")}
         </button>
       </div>
 
@@ -104,7 +106,7 @@ export function CalendarPage() {
           <button
             onClick={() => setWeekStart((w) => addDaysIso(w, -7))}
             className="flex items-center gap-1 rounded-md border border-slate-300 px-2 py-1.5 text-sm text-slate-600 hover:bg-slate-50"
-            aria-label="Previous week"
+            aria-label={t("Previous week")}
           >
             <ChevronLeft className="h-4 w-4" />
           </button>
@@ -114,7 +116,7 @@ export function CalendarPage() {
           <button
             onClick={() => setWeekStart((w) => addDaysIso(w, 7))}
             className="flex items-center gap-1 rounded-md border border-slate-300 px-2 py-1.5 text-sm text-slate-600 hover:bg-slate-50"
-            aria-label="Next week"
+            aria-label={t("Next week")}
           >
             <ChevronRight className="h-4 w-4" />
           </button>
@@ -122,7 +124,7 @@ export function CalendarPage() {
             onClick={() => setWeekStart(getMondayIso(new Date()))}
             className="rounded-md border border-slate-300 px-2 py-1.5 text-sm text-slate-600 hover:bg-slate-50"
           >
-            Today
+            {t("Today")}
           </button>
         </div>
 
@@ -132,7 +134,7 @@ export function CalendarPage() {
             onChange={(e) => setBranchId(e.target.value)}
             className="rounded-md border border-slate-300 px-2 py-1.5 text-sm text-slate-700"
           >
-            <option value="">All branches</option>
+            <option value="">{t("All branches")}</option>
             {branches?.map((b) => (
               <option key={b.id} value={b.id}>
                 {b.name}
@@ -145,7 +147,7 @@ export function CalendarPage() {
               onChange={(e) => setTeacherId(e.target.value)}
               className="rounded-md border border-slate-300 px-2 py-1.5 text-sm text-slate-700"
             >
-              <option value="">All teachers</option>
+              <option value="">{t("All teachers")}</option>
               {teachers?.map((t) => (
                 <option key={t.id} value={t.id}>
                   {t.name}
@@ -158,7 +160,7 @@ export function CalendarPage() {
             onChange={(e) => setClassroomId(e.target.value)}
             className="rounded-md border border-slate-300 px-2 py-1.5 text-sm text-slate-700"
           >
-            <option value="">All classrooms</option>
+            <option value="">{t("All classrooms")}</option>
             {classrooms?.map((c) => (
               <option key={c.id} value={c.id}>
                 {c.name}
@@ -168,7 +170,7 @@ export function CalendarPage() {
         </div>
       </div>
 
-      {isLoading && <p className="text-sm text-slate-500">Loading...</p>}
+      {isLoading && <p className="text-sm text-slate-500">{t("Loading...")}</p>}
 
       {/* Desktop / tablet grid */}
       {!isLoading && (
@@ -244,7 +246,7 @@ export function CalendarPage() {
 
           <div className="space-y-2">
             {(days[mobileDayIndex]?.sessions.length ?? 0) === 0 && (
-              <p className="text-sm text-slate-500">No sessions this day.</p>
+              <p className="text-sm text-slate-500">{t("No sessions this day.")}</p>
             )}
             {days[mobileDayIndex]?.sessions.map((session) => (
               <SessionBlock

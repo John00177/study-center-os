@@ -4,8 +4,10 @@ import { RoleLoginCard } from "../components/auth/RoleLoginCard";
 import { useRoleLogin } from "../hooks/use-role-login";
 import { useTheme } from "../contexts/ThemeContext";
 import { resolveOrgDisplayName } from "../lib/theme";
+import { useTranslation } from "../hooks/use-translation";
 
 export function ReceptionLoginPage() {
+  const { t } = useTranslation();
   const { branding } = useTheme();
   const { email, setEmail, password, setPassword, error, loading, handleSubmit } = useRoleLogin(
     "/auth/reception-login",
@@ -14,8 +16,8 @@ export function ReceptionLoginPage() {
 
   return (
     <RoleLoginCard
-      title="Reception Portal"
-      subtitle="Manage newcomers and payments"
+      title={t("Reception Portal")}
+      subtitle={t("Manage newcomers and payments")}
       icon={<UserRound className="h-8 w-8 text-primary" />}
       orgName={branding ? resolveOrgDisplayName(branding) : undefined}
       logoUrl={branding?.logoUrl}
@@ -28,7 +30,7 @@ export function ReceptionLoginPage() {
       error={error}
       loading={loading}
       onSubmit={handleSubmit}
-      demoHint="Demo login: reception@democenter.com / ReceptionPass123!"
+      demoHint={t("Demo login: reception@democenter.com / ReceptionPass123!")}
       footer={
         <Link to="/login" className="font-medium text-primary hover:text-primary/80">
           ← Back to Owner Login

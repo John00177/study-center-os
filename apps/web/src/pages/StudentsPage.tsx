@@ -14,6 +14,7 @@ import { TempPasswordReveal } from "../components/auth/TempPasswordReveal";
 import { errorMessage } from "../lib/plan-lock";
 import { useGroups } from "../hooks/use-groups";
 import { useUserRole } from "../stores/auth.store";
+import { useTranslation } from "../hooks/use-translation";
 import {
   StudentInput,
   useCreateStudent,
@@ -65,6 +66,7 @@ export function StudentForm({
   onClose: () => void;
   student?: StudentDto | null;
 }) {
+  const { t } = useTranslation();
   const isEditing = Boolean(student);
   const [form, setForm] = useState<FormState>(() => toFormState(student));
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -106,10 +108,10 @@ export function StudentForm({
     try {
       if (isEditing && student) {
         await updateStudent.mutateAsync({ id: student.id, ...input });
-        showToast("Student updated.");
+        showToast(t("Student updated."));
       } else {
         await createStudent.mutateAsync(input);
-        showToast("Student created.");
+        showToast(t("Student created."));
       }
       onClose();
     } catch (err) {
@@ -121,7 +123,7 @@ export function StudentForm({
     <Modal open={open} onClose={onClose} title={isEditing ? "Edit Student" : "New Student"}>
       <form onSubmit={handleSubmit} className="space-y-4">
         <TextField
-          label="Name"
+          label={t("Name")}
           required
           value={form.name}
           error={errors.name}
@@ -129,37 +131,37 @@ export function StudentForm({
         />
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <TextField
-            label="Social Account"
-            placeholder="Telegram/WhatsApp"
+            label={t("Social Account")}
+            placeholder={t("Telegram/WhatsApp")}
             value={form.socialAccount}
             onChange={(e) => setForm((f) => ({ ...f, socialAccount: e.target.value }))}
           />
           <TextField
-            label="Phone"
+            label={t("Phone")}
             value={form.phone}
             onChange={(e) => setForm((f) => ({ ...f, phone: e.target.value }))}
           />
         </div>
         <TextField
-          label="Address"
+          label={t("Address")}
           value={form.address}
           onChange={(e) => setForm((f) => ({ ...f, address: e.target.value }))}
         />
 
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <SelectField
-            label="Gender"
+            label={t("Gender")}
             required
             value={form.gender}
             error={errors.gender}
             onChange={(e) => setForm((f) => ({ ...f, gender: e.target.value }))}
           >
-            <option value="">Select gender</option>
-            <option value="male">Male</option>
-            <option value="female">Female</option>
+            <option value="">{t("Select gender")}</option>
+            <option value="male">{t("Male")}</option>
+            <option value="female">{t("Female")}</option>
           </SelectField>
           <TextField
-            label="Birth Date"
+            label={t("Birth Date")}
             type="date"
             required
             value={form.dateOfBirth}
@@ -169,7 +171,7 @@ export function StudentForm({
         </div>
 
         <TextField
-          label="Parent Phone"
+          label={t("Parent Phone")}
           value={form.parentPhone}
           onChange={(e) => setForm((f) => ({ ...f, parentPhone: e.target.value }))}
         />
@@ -181,11 +183,11 @@ export function StudentForm({
             onChange={(e) => setForm((f) => ({ ...f, medicalCard: e.target.checked }))}
             className="h-4 w-4 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500"
           />
-          Has medical card
+          {t("Has medical card")}
         </label>
 
         <div>
-          <label className="mb-1 block text-sm font-medium text-slate-700">Note</label>
+          <label className="mb-1 block text-sm font-medium text-slate-700">{t("Note")}</label>
           <textarea
             rows={2}
             value={form.notes}
@@ -201,7 +203,7 @@ export function StudentForm({
             disabled={isSaving}
             className="rounded-md border border-slate-300 px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 disabled:opacity-60"
           >
-            Cancel
+            {t("Cancel")}
           </button>
           <button
             type="submit"
@@ -228,6 +230,7 @@ const EMPTY_DIRECT_FORM = {
 };
 
 function AddStudentDirectModal({ open, onClose }: { open: boolean; onClose: () => void }) {
+  const { t } = useTranslation();
   const { data: groups } = useGroups();
   const createStudentDirect = useCreateStudentDirect();
   const { showToast } = useToast();
@@ -275,10 +278,10 @@ function AddStudentDirectModal({ open, onClose }: { open: boolean; onClose: () =
           reset();
           onClose();
         }}
-        title="Student Created"
+        title={t("Student Created")}
       >
         <TempPasswordReveal
-          label="Temporary password"
+          label={t("Temporary password")}
           password={tempPassword}
           onDone={() => {
             showToast(`Student created! Temporary password: ${tempPassword}`);
@@ -297,11 +300,11 @@ function AddStudentDirectModal({ open, onClose }: { open: boolean; onClose: () =
         reset();
         onClose();
       }}
-      title="Add New Student"
+      title={t("Add New Student")}
     >
       <form onSubmit={handleSubmit} className="space-y-4">
         <TextField
-          label="Full Name"
+          label={t("Full Name")}
           required
           value={form.name}
           error={errors.name}
@@ -309,21 +312,21 @@ function AddStudentDirectModal({ open, onClose }: { open: boolean; onClose: () =
         />
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <TextField
-            label="Phone"
+            label={t("Phone")}
             required
             value={form.phone}
             error={errors.phone}
             onChange={(e) => setForm((f) => ({ ...f, phone: e.target.value }))}
           />
           <TextField
-            label="Email"
+            label={t("Email")}
             type="email"
             value={form.email}
             onChange={(e) => setForm((f) => ({ ...f, email: e.target.value }))}
           />
         </div>
-        <SelectField label="Group" value={form.groupId} onChange={(e) => setForm((f) => ({ ...f, groupId: e.target.value }))}>
-          <option value="">Not assigned yet</option>
+        <SelectField label={t("Group")} value={form.groupId} onChange={(e) => setForm((f) => ({ ...f, groupId: e.target.value }))}>
+          <option value="">{t("Not assigned yet")}</option>
           {groups?.map((g) => (
             <option key={g.id} value={g.id}>
               {g.name}
@@ -332,22 +335,22 @@ function AddStudentDirectModal({ open, onClose }: { open: boolean; onClose: () =
         </SelectField>
 
         <div className="border-t border-slate-200 pt-4">
-          <p className="mb-3 text-xs font-semibold uppercase tracking-wide text-slate-500">Parent (optional)</p>
+          <p className="mb-3 text-xs font-semibold uppercase tracking-wide text-slate-500">{t("Parent (optional)")}</p>
           <div className="space-y-4">
             <TextField
-              label="Parent Name"
+              label={t("Parent Name")}
               value={form.parentName}
               onChange={(e) => setForm((f) => ({ ...f, parentName: e.target.value }))}
             />
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               <TextField
-                label="Parent Email"
+                label={t("Parent Email")}
                 type="email"
                 value={form.parentEmail}
                 onChange={(e) => setForm((f) => ({ ...f, parentEmail: e.target.value }))}
               />
               <TextField
-                label="Parent Phone"
+                label={t("Parent Phone")}
                 value={form.parentPhone}
                 onChange={(e) => setForm((f) => ({ ...f, parentPhone: e.target.value }))}
               />
@@ -355,7 +358,7 @@ function AddStudentDirectModal({ open, onClose }: { open: boolean; onClose: () =
           </div>
         </div>
 
-        <p className="text-xs text-slate-500">A secure temporary password is generated automatically.</p>
+        <p className="text-xs text-slate-500">{t("A secure temporary password is generated automatically.")}</p>
 
         <div className="flex justify-end gap-3 border-t border-slate-200 pt-4">
           <button
@@ -364,7 +367,7 @@ function AddStudentDirectModal({ open, onClose }: { open: boolean; onClose: () =
             disabled={createStudentDirect.isPending}
             className="rounded-md border border-slate-300 px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 disabled:opacity-60"
           >
-            Cancel
+            {t("Cancel")}
           </button>
           <button
             type="submit"
@@ -372,7 +375,7 @@ function AddStudentDirectModal({ open, onClose }: { open: boolean; onClose: () =
             className="flex items-center gap-2 rounded-md bg-indigo-600 px-3 py-2 text-sm font-medium text-white hover:bg-indigo-700 disabled:opacity-60"
           >
             {createStudentDirect.isPending && <Loader2 className="h-4 w-4 animate-spin" />}
-            Create Student
+            {t("Create Student")}
           </button>
         </div>
       </form>
@@ -381,6 +384,7 @@ function AddStudentDirectModal({ open, onClose }: { open: boolean; onClose: () =
 }
 
 function LinkParentModal({ student, onClose }: { student: StudentDto | null; onClose: () => void }) {
+  const { t } = useTranslation();
   const linkParent = useLinkParent(student?.id ?? "");
   const { showToast } = useToast();
   const [form, setForm] = useState({ parentName: "", parentEmail: "", parentPhone: "" });
@@ -424,12 +428,12 @@ function LinkParentModal({ student, onClose }: { student: StudentDto | null; onC
 
   if (tempPassword) {
     return (
-      <Modal open={Boolean(student)} onClose={onClose} title="Parent Linked">
+      <Modal open={Boolean(student)} onClose={onClose} title={t("Parent Linked")}>
         <p className="mb-4 text-sm text-slate-600">
-          Parent can log in at <span className="font-medium text-slate-900 dark:text-slate-100">/parent/login</span> with their email or
+          {t("Parent can log in at")}<span className="font-medium text-slate-900 dark:text-slate-100">/parent/login</span> with their email or
           phone and the password below.
         </p>
-        <TempPasswordReveal label="Parent temporary password" password={tempPassword} onDone={onClose} />
+        <TempPasswordReveal label={t("Parent temporary password")} password={tempPassword} onDone={onClose} />
       </Modal>
     );
   }
@@ -438,14 +442,14 @@ function LinkParentModal({ student, onClose }: { student: StudentDto | null; onC
     <Modal open={Boolean(student)} onClose={onClose} title={`Link Parent — ${student?.name ?? ""}`}>
       <form onSubmit={handleSubmit} className="space-y-4">
         <TextField
-          label="Parent Name"
+          label={t("Parent Name")}
           required
           value={form.parentName}
           error={errors.parentName}
           onChange={(e) => setForm((f) => ({ ...f, parentName: e.target.value }))}
         />
         <TextField
-          label="Parent Email"
+          label={t("Parent Email")}
           type="email"
           required
           value={form.parentEmail}
@@ -453,14 +457,14 @@ function LinkParentModal({ student, onClose }: { student: StudentDto | null; onC
           onChange={(e) => setForm((f) => ({ ...f, parentEmail: e.target.value }))}
         />
         <TextField
-          label="Parent Phone"
+          label={t("Parent Phone")}
           required
           value={form.parentPhone}
           error={errors.parentPhone}
           onChange={(e) => setForm((f) => ({ ...f, parentPhone: e.target.value }))}
         />
 
-        <p className="text-xs text-slate-500">A secure temporary password is generated automatically for the parent.</p>
+        <p className="text-xs text-slate-500">{t("A secure temporary password is generated automatically for the parent.")}</p>
 
         <div className="flex justify-end gap-3 border-t border-slate-200 pt-4">
           <button
@@ -469,7 +473,7 @@ function LinkParentModal({ student, onClose }: { student: StudentDto | null; onC
             disabled={linkParent.isPending}
             className="rounded-md border border-slate-300 px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 disabled:opacity-60"
           >
-            Cancel
+            {t("Cancel")}
           </button>
           <button
             type="submit"
@@ -477,7 +481,7 @@ function LinkParentModal({ student, onClose }: { student: StudentDto | null; onC
             className="flex items-center gap-2 rounded-md bg-indigo-600 px-3 py-2 text-sm font-medium text-white hover:bg-indigo-700 disabled:opacity-60"
           >
             {linkParent.isPending && <Loader2 className="h-4 w-4 animate-spin" />}
-            Generate Parent Password
+            {t("Generate Parent Password")}
           </button>
         </div>
       </form>
@@ -486,16 +490,17 @@ function LinkParentModal({ student, onClose }: { student: StudentDto | null; onC
 }
 
 function ViewTempPasswordModal({ studentId, onClose }: { studentId: string | null; onClose: () => void }) {
+  const { t } = useTranslation();
   const { data, isLoading } = useStudentTempPassword(studentId);
 
   return (
-    <Modal open={Boolean(studentId)} onClose={onClose} title="Temporary Password">
-      {isLoading && <p className="text-sm text-slate-500">Loading...</p>}
+    <Modal open={Boolean(studentId)} onClose={onClose} title={t("Temporary Password")}>
+      {isLoading && <p className="text-sm text-slate-500">{t("Loading...")}</p>}
       {!isLoading && data && (
         data.tempPassword ? (
-          <TempPasswordReveal label="Temporary password" password={data.tempPassword} onDone={onClose} />
+          <TempPasswordReveal label={t("Temporary password")} password={data.tempPassword} onDone={onClose} />
         ) : (
-          <p className="text-sm text-slate-500">This student has already changed their password.</p>
+          <p className="text-sm text-slate-500">{t("This student has already changed their password.")}</p>
         )
       )}
     </Modal>
@@ -514,18 +519,20 @@ function ageFromBirthDate(dateOfBirth?: string | null): string {
 }
 
 function PasswordStatusBadge({ mustChangePassword }: { mustChangePassword: boolean }) {
+  const { t } = useTranslation();
   return mustChangePassword ? (
     <span className="inline-flex items-center rounded-full bg-yellow-100 px-2 py-0.5 text-xs font-medium text-yellow-700">
-      Not Changed
+      {t("Not Changed")}
     </span>
   ) : (
     <span className="inline-flex items-center rounded-full bg-green-100 px-2 py-0.5 text-xs font-medium text-green-700">
-      Changed
+      {t("Changed")}
     </span>
   );
 }
 
 export function StudentsPage() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const role = useUserRole();
   const isReception = role === "reception";
@@ -549,10 +556,10 @@ export function StudentsPage() {
     if (!deleting) return;
     try {
       await deleteStudent.mutateAsync(deleting.id);
-      showToast("Student deleted.");
+      showToast(t("Student deleted."));
       setDeleting(null);
     } catch {
-      showToast("Failed to delete student.", "error");
+      showToast(t("Failed to delete student."), "error");
     }
   }
 
@@ -563,7 +570,7 @@ export function StudentsPage() {
       setResettingPasswordFor(null);
       setResetResult(result.tempPassword);
     } catch {
-      showToast("Failed to reset password.", "error");
+      showToast(t("Failed to reset password."), "error");
     }
   }
 
@@ -572,7 +579,7 @@ export function StudentsPage() {
       <SubscriptionLimitBanners resource="student" />
 
       <div className="mb-6 flex items-center justify-between">
-        <h1 className="text-2xl font-semibold text-slate-900 dark:text-slate-100">Students</h1>
+        <h1 className="text-2xl font-semibold text-slate-900 dark:text-slate-100">{t("Students")}</h1>
         <button
           onClick={() => {
             if (isReception) {
@@ -604,7 +611,7 @@ export function StudentsPage() {
         }
         columns={[
           {
-            header: "Name",
+            header: t("Name"),
             render: (s) =>
               // Reception has its own, simpler workflow (this page is shared
               // between /students and /reception/students) and no access to
@@ -622,16 +629,16 @@ export function StudentsPage() {
                 </Link>
               ),
           },
-          { header: "Phone", render: (s) => s.phone ?? "-" },
-          { header: "Age", render: (s) => ageFromBirthDate(s.dateOfBirth), align: "right" },
+          { header: t("Phone"), render: (s) => s.phone ?? "-" },
+          { header: t("Age"), render: (s) => ageFromBirthDate(s.dateOfBirth), align: "right" },
           {
-            header: "Enrollment",
+            header: t("Enrollment"),
             render: (s) => (
               <span className="capitalize">{s.enrollmentStatus.replace("_", " ")}</span>
             ),
           },
-          { header: "Password", render: (s) => <PasswordStatusBadge mustChangePassword={s.mustChangePassword} /> },
-          { header: "Parent Contact", render: (s) => s.parentPhone ?? "-" },
+          { header: t("Password"), render: (s) => <PasswordStatusBadge mustChangePassword={s.mustChangePassword} /> },
+          { header: t("Parent Contact"), render: (s) => s.parentPhone ?? "-" },
         ]}
         renderActions={(s) => (
           <>
@@ -639,8 +646,8 @@ export function StudentsPage() {
               <button
                 onClick={() => setLinkingParentFor(s)}
                 className="rounded p-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-700"
-                aria-label="Link parent"
-                title="Add/Edit Parent"
+                aria-label={t("Link parent")}
+                title={t("Add/Edit Parent")}
               >
                 <UserPlus className="h-4 w-4" />
               </button>
@@ -649,8 +656,8 @@ export function StudentsPage() {
               <button
                 onClick={() => setViewingPasswordFor(s.id)}
                 className="rounded p-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-700"
-                aria-label="View temporary password"
-                title="View temporary password"
+                aria-label={t("View temporary password")}
+                title={t("View temporary password")}
               >
                 <Eye className="h-4 w-4" />
               </button>
@@ -659,8 +666,8 @@ export function StudentsPage() {
               <button
                 onClick={() => setResettingPasswordFor(s)}
                 className="rounded p-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-700"
-                aria-label="Reset password"
-                title="Reset password"
+                aria-label={t("Reset password")}
+                title={t("Reset password")}
               >
                 <RotateCcw className="h-4 w-4" />
               </button>
@@ -668,16 +675,16 @@ export function StudentsPage() {
             <button
               onClick={() => setViewingHistoryFor(s)}
               className="rounded p-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-700"
-              aria-label="View attendance history"
-              title="View attendance history"
+              aria-label={t("View attendance history")}
+              title={t("View attendance history")}
             >
               <CalendarClock className="h-4 w-4" />
             </button>
             <button
               onClick={() => setViewingRemindersFor(s)}
               className="rounded p-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-700"
-              aria-label="View reminders"
-              title="View reminders"
+              aria-label={t("View reminders")}
+              title={t("View reminders")}
             >
               <Bell className="h-4 w-4" />
             </button>
@@ -687,14 +694,14 @@ export function StudentsPage() {
                 setFormOpen(true);
               }}
               className="rounded p-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-700"
-              aria-label="Edit student"
+              aria-label={t("Edit student")}
             >
               <Pencil className="h-4 w-4" />
             </button>
             <button
               onClick={() => setDeleting(s)}
               className="rounded p-1.5 text-slate-400 hover:bg-red-50 hover:text-red-600"
-              aria-label="Delete student"
+              aria-label={t("Delete student")}
             >
               <Trash2 className="h-4 w-4" />
             </button>
@@ -721,7 +728,7 @@ export function StudentsPage() {
 
       <ConfirmDialog
         open={Boolean(deleting)}
-        title="Delete student"
+        title={t("Delete student")}
         message={`Are you sure you want to delete ${deleting?.name}? This cannot be undone.`}
         isConfirming={deleteStudent.isPending}
         onConfirm={confirmDelete}
@@ -730,7 +737,7 @@ export function StudentsPage() {
 
       <ConfirmDialog
         open={Boolean(resettingPasswordFor)}
-        title="Reset password"
+        title={t("Reset password")}
         message={`Generate a new temporary password for ${resettingPasswordFor?.name}? They will need to set a new password on next login.`}
         confirmLabel={resetPassword.isPending ? "Resetting..." : "Reset Password"}
         isConfirming={resetPassword.isPending}
@@ -738,9 +745,9 @@ export function StudentsPage() {
         onCancel={() => setResettingPasswordFor(null)}
       />
 
-      <Modal open={Boolean(resetResult)} onClose={() => setResetResult(null)} title="Password Reset">
+      <Modal open={Boolean(resetResult)} onClose={() => setResetResult(null)} title={t("Password Reset")}>
         {resetResult && (
-          <TempPasswordReveal label="New temporary password" password={resetResult} onDone={() => setResetResult(null)} />
+          <TempPasswordReveal label={t("New temporary password")} password={resetResult} onDone={() => setResetResult(null)} />
         )}
       </Modal>
     </div>

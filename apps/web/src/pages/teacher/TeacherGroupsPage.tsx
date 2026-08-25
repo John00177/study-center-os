@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import type { ScheduleDto, TeacherGroupDto } from "@crm/shared-types";
 import { useMyGroups } from "../../hooks/use-teacher-dashboard";
+import { useTranslation } from "../../hooks/use-translation";
 
 const DAY_LABELS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
@@ -16,16 +17,17 @@ function nextClass(schedules: ScheduleDto[]): ScheduleDto | null {
 }
 
 export function TeacherGroupsPage() {
+  const { t } = useTranslation();
   const { data: groups, isLoading } = useMyGroups();
 
   return (
     <div>
-      <h1 className="mb-6 text-2xl font-semibold text-slate-900 dark:text-slate-100">My Groups</h1>
+      <h1 className="mb-6 text-2xl font-semibold text-slate-900 dark:text-slate-100">{t("My Groups")}</h1>
 
-      {isLoading && <p className="text-sm text-slate-500">Loading...</p>}
+      {isLoading && <p className="text-sm text-slate-500">{t("Loading...")}</p>}
 
       {!isLoading && (groups?.length ?? 0) === 0 && (
-        <p className="text-sm text-slate-500">You have no assigned groups yet.</p>
+        <p className="text-sm text-slate-500">{t("You have no assigned groups yet.")}</p>
       )}
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">

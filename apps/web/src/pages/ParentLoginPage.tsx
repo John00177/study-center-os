@@ -4,10 +4,12 @@ import { FormEvent, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useParentLogin } from "../hooks/use-parent-portal";
 import { useParentAuthStore } from "../stores/parent-auth.store";
+import { useTranslation } from "../hooks/use-translation";
 
 type LoginMode = "phone" | "email";
 
 export function ParentLoginPage() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const setParent = useParentAuthStore((state) => state.setParent);
   const parentLogin = useParentLogin();
@@ -43,8 +45,8 @@ export function ParentLoginPage() {
             <Users className="h-7 w-7 text-primary" />
           </div>
         </div>
-        <h1 className="mb-1 text-center text-2xl font-semibold text-slate-900">Parent Portal</h1>
-        <p className="mb-6 text-center text-sm text-slate-500">Track your child's progress</p>
+        <h1 className="mb-1 text-center text-2xl font-semibold text-slate-900">{t("Parent Portal")}</h1>
+        <p className="mb-6 text-center text-sm text-slate-500">{t("Track your child's progress")}</p>
 
         <div className="mb-5 flex rounded-md bg-slate-100 p-1 text-sm font-medium">
           <button
@@ -57,7 +59,7 @@ export function ParentLoginPage() {
               mode === "phone" ? "bg-white text-primary shadow-sm" : "text-slate-500"
             }`}
           >
-            Login with Phone
+            {t("Login with Phone")}
           </button>
           <button
             type="button"
@@ -69,7 +71,7 @@ export function ParentLoginPage() {
               mode === "email" ? "bg-white text-primary shadow-sm" : "text-slate-500"
             }`}
           >
-            Login with Email
+            {t("Login with Email")}
           </button>
         </div>
 
@@ -90,7 +92,7 @@ export function ParentLoginPage() {
           </div>
           <div>
             <label htmlFor="parent-password" className="mb-1 block text-sm font-medium text-slate-700">
-              Password
+              {t("Password")}
             </label>
             <input
               id="parent-password"
@@ -110,7 +112,7 @@ export function ParentLoginPage() {
             className="flex w-full items-center justify-center gap-2 rounded-lg bg-primary px-4 py-3 text-base font-medium text-white shadow-sm transition hover:bg-primary/90 disabled:opacity-60"
           >
             {parentLogin.isPending && <Loader2 className="h-4 w-4 animate-spin" />}
-            Login
+            {t("Login")}
           </button>
 
           <p className="text-center text-xs text-slate-400">

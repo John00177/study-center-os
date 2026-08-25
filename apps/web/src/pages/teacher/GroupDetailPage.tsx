@@ -15,6 +15,7 @@ import { StudentHomeworkListModal } from "../../components/homework/StudentHomew
 import { StudentHomeworkPendingBadge } from "../../components/homework/StudentHomeworkPendingBadge";
 import { enqueueAttendanceAction } from "../../lib/offline-queue";
 import { useGroupHomework } from "../../hooks/use-homework";
+import { useTranslation } from "../../hooks/use-translation";
 import {
   useCreateLessonNote,
   useGroupAttendance,
@@ -70,6 +71,7 @@ function weekPillsAround(isoDate: string) {
 }
 
 function StudentsTab({ groupId }: { groupId: string }) {
+  const { t } = useTranslation();
   const { data: students, isLoading } = useGroupStudents(groupId);
   const [viewingHomeworkFor, setViewingHomeworkFor] = useState<{ id: string; name: string } | null>(null);
 
@@ -78,18 +80,18 @@ function StudentsTab({ groupId }: { groupId: string }) {
       <DataTable
         data={students}
         isLoading={isLoading}
-        emptyMessage="No active students in this group."
+        emptyMessage={t("No active students in this group.")}
         getRowKey={(s) => s.id}
         onRowClick={(s) => setViewingHomeworkFor({ id: s.id, name: s.name })}
         columns={[
-          { header: "Name", render: (s) => <span className="font-medium text-slate-900 dark:text-slate-100">{s.name}</span> },
-          { header: "Phone", render: (s) => s.phone ?? "-" },
+          { header: t("Name"), render: (s) => <span className="font-medium text-slate-900 dark:text-slate-100">{s.name}</span> },
+          { header: t("Phone"), render: (s) => s.phone ?? "-" },
           {
-            header: "Attendance Rate",
+            header: t("Attendance Rate"),
             render: (s) => (s.attendanceRate === null ? "No records yet" : `${s.attendanceRate}%`),
             align: "right",
           },
-          { header: "Homework", render: (s) => <StudentHomeworkPendingBadge studentId={s.id} /> },
+          { header: t("Homework"), render: (s) => <StudentHomeworkPendingBadge studentId={s.id} /> },
         ]}
       />
 
@@ -104,6 +106,7 @@ function StudentsTab({ groupId }: { groupId: string }) {
 }
 
 function AttendanceTab({ groupId }: { groupId: string }) {
+  const { t } = useTranslation();
   const [date, setDate] = useState(todayIsoDate());
   const { showToast } = useToast();
   const { data: students, isLoading: studentsLoading } = useGroupStudents(groupId);
@@ -142,14 +145,14 @@ function AttendanceTab({ groupId }: { groupId: string }) {
   async function saveRecords(records: { studentId: string; status: AttendanceStatus; notes?: string }[]) {
     try {
       await markAttendance.mutateAsync({ date, records });
-      showToast("Attendance saved.");
+      showToast(t("Attendance saved."));
     } catch (err) {
       // Offline (or otherwise unreachable API): queue it locally and sync on reconnect.
       if (!navigator.onLine || (isAxiosError(err) && !err.response)) {
         enqueueAttendanceAction({ groupId, date, records });
-        showToast("Saved offline — will sync when you're back online.");
+        showToast(t("Saved offline — will sync when you're back online."));
       } else {
-        showToast("Failed to save attendance.", "error");
+        showToast(t("Failed to save attendance."), "error");
       }
     }
   }
@@ -158,7 +161,7 @@ function AttendanceTab({ groupId }: { groupId: string }) {
     const roster = students ?? [];
     const unset = roster.filter((s) => !entries[s.id]?.status);
     if (unset.length > 0) {
-      showToast("Mark a status for every student before saving.", "error");
+      showToast(t("Mark a status for every student before saving."), "error");
       return;
     }
 
@@ -221,7 +224,7 @@ function AttendanceTab({ groupId }: { groupId: string }) {
     <div>
       <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
         <div className="hidden sm:block">
-          <TextField label="Date" type="date" value={date} onChange={(e) => setDate(e.target.value)} />
+          <TextField label={t("Date")} type="date" value={date} onChange={(e) => setDate(e.target.value)} />
         </div>
         <div className="flex w-full gap-1.5 overflow-x-auto pb-1 sm:hidden">
           {weekPillsAround(date).map((pill) => (
@@ -233,7 +236,7 @@ function AttendanceTab({ groupId }: { groupId: string }) {
                 pill.iso === date ? "bg-indigo-600 text-white" : "bg-slate-100 text-slate-600"
               }`}
             >
-              <span>{pill.label}</span>
+              <span>{t(pill.label)}</span>
               <span className="text-sm">{pill.dayNum}</span>
             </button>
           ))}
@@ -243,12 +246,12 @@ function AttendanceTab({ groupId }: { groupId: string }) {
           className="hidden items-center gap-2 rounded-md border border-slate-300 px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 sm:flex"
         >
           <CheckCheck className="h-4 w-4" />
-          Mark All Present
+          {t("Mark All Present")}
         </button>
       </div>
 
-      {!isReady && <p className="text-sm text-slate-500">Loading...</p>}
-      {isReady && roster.length === 0 && <p className="text-sm text-slate-500">No active students in this group.</p>}
+      {!isReady && <p className="text-sm text-slate-500">{t("Loading...")}</p>}
+      {isReady && roster.length === 0 && <p className="text-sm text-slate-500">{t("No active students in this group.")}</p>}
 
       {isReady && roster.length > 0 && (
         <>
@@ -274,7 +277,7 @@ function AttendanceTab({ groupId }: { groupId: string }) {
                                 isActive ? opt.activeClass : "border-slate-300 bg-white text-slate-600 hover:bg-slate-50"
                               }`}
                             >
-                              {opt.label}
+                              {t(opt.label)}
                             </button>
                           );
                         })}
@@ -298,7 +301,7 @@ function AttendanceTab({ groupId }: { groupId: string }) {
                     {noteFor === student.id && (
                       <div className="mt-3 sm:hidden">
                         <TextField
-                          label="Excuse note"
+                          label={t("Excuse note")}
                           value={entry.notes}
                           onChange={(e) =>
                             setEntries((prev) => ({
@@ -316,7 +319,7 @@ function AttendanceTab({ groupId }: { groupId: string }) {
             </div>
           </div>
 
-          <Fab icon={<CheckCheck className="h-6 w-6" />} label="Mark all present" onClick={markAllPresent} />
+          <Fab icon={<CheckCheck className="h-6 w-6" />} label={t("Mark all present")} onClick={markAllPresent} />
 
           <div className="mt-4 hidden justify-end sm:flex">
             <button
@@ -325,7 +328,7 @@ function AttendanceTab({ groupId }: { groupId: string }) {
               className="flex items-center gap-2 rounded-md bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700 disabled:opacity-60"
             >
               {markAttendance.isPending && <Loader2 className="h-4 w-4 animate-spin" />}
-              Save attendance
+              {t("Save attendance")}
             </button>
           </div>
         </>
@@ -335,6 +338,7 @@ function AttendanceTab({ groupId }: { groupId: string }) {
 }
 
 function AddLessonNoteModal({ open, onClose, groupId }: { open: boolean; onClose: () => void; groupId: string }) {
+  const { t } = useTranslation();
   const createLessonNote = useCreateLessonNote(groupId);
   const { showToast } = useToast();
   const [form, setForm] = useState({ title: "", description: "", date: todayIsoDate() });
@@ -359,30 +363,30 @@ function AddLessonNoteModal({ open, onClose, groupId }: { open: boolean; onClose
         description: form.description.trim() || undefined,
         date: form.date,
       });
-      showToast("Lesson note added.");
+      showToast(t("Lesson note added."));
       onClose();
     } catch {
-      showToast("Failed to add lesson note.", "error");
+      showToast(t("Failed to add lesson note."), "error");
     }
   }
 
   return (
-    <Modal open={open} onClose={onClose} title="Add Lesson Note">
+    <Modal open={open} onClose={onClose} title={t("Add Lesson Note")}>
       <form onSubmit={handleSubmit} className="space-y-4">
         <TextField
-          label="Title"
+          label={t("Title")}
           required
           value={form.title}
           error={error ?? undefined}
           onChange={(e) => setForm((f) => ({ ...f, title: e.target.value }))}
         />
         <TextField
-          label="Description"
+          label={t("Description")}
           value={form.description}
           onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))}
         />
         <TextField
-          label="Date"
+          label={t("Date")}
           type="date"
           required
           value={form.date}
@@ -396,7 +400,7 @@ function AddLessonNoteModal({ open, onClose, groupId }: { open: boolean; onClose
             disabled={createLessonNote.isPending}
             className="rounded-md border border-slate-300 px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 disabled:opacity-60"
           >
-            Cancel
+            {t("Cancel")}
           </button>
           <button
             type="submit"
@@ -404,7 +408,7 @@ function AddLessonNoteModal({ open, onClose, groupId }: { open: boolean; onClose
             className="flex items-center gap-2 rounded-md bg-indigo-600 px-3 py-2 text-sm font-medium text-white hover:bg-indigo-700 disabled:opacity-60"
           >
             {createLessonNote.isPending && <Loader2 className="h-4 w-4 animate-spin" />}
-            Save note
+            {t("Save note")}
           </button>
         </div>
       </form>
@@ -413,6 +417,7 @@ function AddLessonNoteModal({ open, onClose, groupId }: { open: boolean; onClose
 }
 
 function LessonsTab({ groupId }: { groupId: string }) {
+  const { t } = useTranslation();
   const { data: lessons, isLoading } = useLessonNotes(groupId);
   const [addOpen, setAddOpen] = useState(false);
 
@@ -424,7 +429,7 @@ function LessonsTab({ groupId }: { groupId: string }) {
           className="flex items-center gap-2 rounded-md bg-indigo-600 px-3 py-2 text-sm font-medium text-white hover:bg-indigo-700"
         >
           <Plus className="h-4 w-4" />
-          Add Note
+          {t("Add Note")}
         </button>
       </div>
 
@@ -434,9 +439,9 @@ function LessonsTab({ groupId }: { groupId: string }) {
         emptyMessage='No lesson notes yet. Click "Add Note" to add one.'
         getRowKey={(l) => l.id}
         columns={[
-          { header: "Date", render: (l) => new Date(l.date).toLocaleDateString() },
-          { header: "Title", render: (l) => <span className="font-medium text-slate-900 dark:text-slate-100">{l.title}</span> },
-          { header: "Description", render: (l) => l.description ?? "-" },
+          { header: t("Date"), render: (l) => new Date(l.date).toLocaleDateString() },
+          { header: t("Title"), render: (l) => <span className="font-medium text-slate-900 dark:text-slate-100">{l.title}</span> },
+          { header: t("Description"), render: (l) => l.description ?? "-" },
         ]}
       />
 
@@ -446,6 +451,7 @@ function LessonsTab({ groupId }: { groupId: string }) {
 }
 
 function HomeworkTab({ groupId }: { groupId: string }) {
+  const { t } = useTranslation();
   const { data: homework, isLoading } = useGroupHomework(groupId);
   const { data: lessons } = useLessonNotes(groupId);
   const [assignOpen, setAssignOpen] = useState(false);
@@ -459,7 +465,7 @@ function HomeworkTab({ groupId }: { groupId: string }) {
           className="flex items-center gap-2 rounded-md bg-indigo-600 px-3 py-2 text-sm font-medium text-white hover:bg-indigo-700"
         >
           <Plus className="h-4 w-4" />
-          Assign Homework
+          {t("Assign Homework")}
         </button>
       </div>
 
@@ -470,11 +476,11 @@ function HomeworkTab({ groupId }: { groupId: string }) {
         getRowKey={(h) => h.id}
         onRowClick={(h) => setViewingId(h.id)}
         columns={[
-          { header: "Title", render: (h) => <span className="font-medium text-slate-900 dark:text-slate-100">{h.title}</span> },
-          { header: "Due Date", render: (h) => new Date(h.dueDate).toLocaleDateString() },
-          { header: "Status", render: (h) => <span className="capitalize">{h.status}</span> },
+          { header: t("Title"), render: (h) => <span className="font-medium text-slate-900 dark:text-slate-100">{h.title}</span> },
+          { header: t("Due Date"), render: (h) => new Date(h.dueDate).toLocaleDateString() },
+          { header: t("Status"), render: (h) => <span className="capitalize">{h.status}</span> },
           {
-            header: "Submissions",
+            header: t("Submissions"),
             render: (h) => `${h.submissionCounts?.submitted ?? 0}/${h.submissionCounts?.total ?? 0} submitted`,
           },
         ]}
@@ -487,6 +493,7 @@ function HomeworkTab({ groupId }: { groupId: string }) {
 }
 
 export function GroupDetailPage() {
+  const { t } = useTranslation();
   const { id } = useParams<{ id: string }>();
   const [searchParams, setSearchParams] = useSearchParams();
   const { data: groups } = useMyGroups();
@@ -508,7 +515,7 @@ export function GroupDetailPage() {
     <div>
       <Link to="/teacher/groups" className="mb-4 inline-flex items-center gap-1 text-sm text-slate-500 hover:text-slate-700">
         <ArrowLeft className="h-4 w-4" />
-        Back to my groups
+        {t("Back to my groups")}
       </Link>
 
       <h1 className="mb-1 text-2xl font-semibold text-slate-900 dark:text-slate-100">{group?.name ?? "Group"}</h1>

@@ -2,6 +2,7 @@ import { FormEvent, useState } from "react";
 import { AxiosError } from "axios";
 import { Loader2 } from "lucide-react";
 import { PasswordStrengthBar } from "./PasswordStrengthBar";
+import { useTranslation } from "../../hooks/use-translation";
 
 interface ChangePasswordFormProps {
   onSubmit: (currentPassword: string, newPassword: string) => Promise<void>;
@@ -16,6 +17,7 @@ function extractMessage(err: unknown, fallback: string): string {
 }
 
 export function ChangePasswordForm({ onSubmit, onSuccess }: ChangePasswordFormProps) {
+  const { t } = useTranslation();
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -49,15 +51,15 @@ export function ChangePasswordForm({ onSubmit, onSuccess }: ChangePasswordFormPr
   return (
     <div className="flex min-h-screen items-center justify-center bg-slate-100 p-4">
       <div className="w-full max-w-sm rounded-xl bg-white p-8 shadow-md">
-        <h1 className="mb-1 text-center text-2xl font-semibold text-slate-900">Set Your New Password</h1>
+        <h1 className="mb-1 text-center text-2xl font-semibold text-slate-900">{t("Set Your New Password")}</h1>
         <p className="mb-6 text-center text-sm text-slate-500">
-          Your account was created by your study center. Please set a secure password.
+          {t("Your account was created by your study center. Please set a secure password.")}
         </p>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label htmlFor="currentPassword" className="mb-1 block text-sm font-medium text-slate-700">
-              Current Password
+              {t("Current Password")}
             </label>
             <input
               id="currentPassword"
@@ -72,7 +74,7 @@ export function ChangePasswordForm({ onSubmit, onSuccess }: ChangePasswordFormPr
 
           <div>
             <label htmlFor="newPassword" className="mb-1 block text-sm font-medium text-slate-700">
-              New Password
+              {t("New Password")}
             </label>
             <input
               id="newPassword"
@@ -89,7 +91,7 @@ export function ChangePasswordForm({ onSubmit, onSuccess }: ChangePasswordFormPr
 
           <div>
             <label htmlFor="confirmPassword" className="mb-1 block text-sm font-medium text-slate-700">
-              Confirm New Password
+              {t("Confirm New Password")}
             </label>
             <input
               id="confirmPassword"
@@ -112,7 +114,7 @@ export function ChangePasswordForm({ onSubmit, onSuccess }: ChangePasswordFormPr
             className="flex w-full items-center justify-center gap-2 rounded-lg bg-primary px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:opacity-90 disabled:opacity-60"
           >
             {submitting && <Loader2 className="h-4 w-4 animate-spin" />}
-            Set Password
+            {t("Set Password")}
           </button>
         </form>
       </div>

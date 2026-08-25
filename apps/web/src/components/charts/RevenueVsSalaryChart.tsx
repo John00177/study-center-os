@@ -1,4 +1,5 @@
 import { Bar, BarChart, CartesianGrid, Legend, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
+import { useTranslation } from "../../hooks/use-translation";
 
 interface RevenueVsSalaryChartProps {
   data: { month: string; revenue: number; salary: number }[];
@@ -6,8 +7,9 @@ interface RevenueVsSalaryChartProps {
 }
 
 export function RevenueVsSalaryChart({ data, valueFormatter }: RevenueVsSalaryChartProps) {
+  const { t } = useTranslation();
   if (data.length === 0) {
-    return <div className="flex h-[220px] items-center justify-center text-xs text-slate-400">No data</div>;
+    return <div className="flex h-[220px] items-center justify-center text-xs text-slate-400">{t("No data")}</div>;
   }
 
   return (

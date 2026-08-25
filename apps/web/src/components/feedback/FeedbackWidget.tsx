@@ -25,8 +25,8 @@ export function FeedbackWidget({ basePath, profile }: FeedbackWidgetProps) {
         <button
           type="button"
           onClick={() => setMyTicketsOpen(true)}
-          title="My Feedback"
-          aria-label="My Feedback"
+          title={t("My Feedback")}
+          aria-label={t("My Feedback")}
           className="group relative flex h-10 w-10 items-center justify-center rounded-full bg-white text-slate-500 shadow-lg ring-1 ring-slate-200 transition-transform duration-150 hover:scale-110 hover:text-primary"
         >
           <ClipboardList className="h-4 w-4" />
@@ -36,7 +36,7 @@ export function FeedbackWidget({ basePath, profile }: FeedbackWidgetProps) {
             </span>
           )}
           <span className="pointer-events-none absolute right-12 whitespace-nowrap rounded-md bg-slate-900 px-2 py-1 text-xs text-white opacity-0 transition-opacity duration-150 group-hover:opacity-100">
-            My Feedback
+            {t("My Feedback")}
           </span>
         </button>
 

@@ -8,8 +8,10 @@ import { api } from "../lib/api";
 import { useStudentAuthStore } from "../stores/student-auth.store";
 import { useTheme } from "../contexts/ThemeContext";
 import { resolveOrgDisplayName } from "../lib/theme";
+import { useTranslation } from "../hooks/use-translation";
 
 function StudentLoginForm({ onBack }: { onBack: () => void }) {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const setStudent = useStudentAuthStore((state) => state.setStudent);
   const [identifier, setIdentifier] = useState("");
@@ -39,13 +41,13 @@ function StudentLoginForm({ onBack }: { onBack: () => void }) {
   return (
     <div className="flex min-h-screen items-center justify-center bg-slate-100 p-4">
       <div className="w-full max-w-sm rounded-xl bg-white p-8 shadow-md">
-        <h1 className="mb-1 text-center text-2xl font-semibold text-slate-900">Student Portal</h1>
-        <p className="mb-6 text-center text-sm text-slate-500">Check your schedule, homework, and payments</p>
+        <h1 className="mb-1 text-center text-2xl font-semibold text-slate-900">{t("Student Portal")}</h1>
+        <p className="mb-6 text-center text-sm text-slate-500">{t("Check your schedule, homework, and payments")}</p>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label htmlFor="identifier" className="mb-1 block text-sm font-medium text-slate-700">
-              Phone or Email
+              {t("Phone or Email")}
             </label>
             <input
               id="identifier"
@@ -58,7 +60,7 @@ function StudentLoginForm({ onBack }: { onBack: () => void }) {
           </div>
           <div>
             <label htmlFor="student-password" className="mb-1 block text-sm font-medium text-slate-700">
-              Password
+              {t("Password")}
             </label>
             <input
               id="student-password"
@@ -78,7 +80,7 @@ function StudentLoginForm({ onBack }: { onBack: () => void }) {
             className="flex w-full items-center justify-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-medium text-white shadow-sm transition hover:bg-primary/90 disabled:opacity-60"
           >
             {loading && <Loader2 className="h-4 w-4 animate-spin" />}
-            Sign in
+            {t("Sign in")}
           </button>
 
           <p className="text-center text-xs text-slate-400">Demo login: +998901234567 / Student123!</p>
@@ -95,6 +97,7 @@ function StudentLoginForm({ onBack }: { onBack: () => void }) {
 }
 
 export function OwnerLoginPage() {
+  const { t } = useTranslation();
   const [studentMode, setStudentMode] = useState(false);
   const { branding } = useTheme();
   const { email, setEmail, password, setPassword, error, loading, handleSubmit } = useRoleLogin(
@@ -108,8 +111,8 @@ export function OwnerLoginPage() {
 
   return (
     <RoleLoginCard
-      title="Study Center Owner Login"
-      subtitle="Manage your study center"
+      title={t("Study Center Owner Login")}
+      subtitle={t("Manage your study center")}
       icon={<Building2 className="h-8 w-8 text-primary" />}
       orgName={branding ? resolveOrgDisplayName(branding) : undefined}
       logoUrl={branding?.logoUrl}
@@ -122,32 +125,32 @@ export function OwnerLoginPage() {
       error={error}
       loading={loading}
       onSubmit={handleSubmit}
-      demoHint="Demo login: owner@democenter.com / DemoPass123!"
+      demoHint={t("Demo login: owner@democenter.com / DemoPass123!")}
       footer={
         <>
           <Link to="/teacher/login" className="block font-medium text-primary hover:text-primary/80">
-            Teacher Portal →
+            {t("Teacher Portal →")}
           </Link>
           <Link to="/reception/login" className="block font-medium text-primary hover:text-primary/80">
-            Reception Portal →
+            {t("Reception Portal →")}
           </Link>
           <button
             type="button"
             onClick={() => setStudentMode(true)}
             className="block w-full font-medium text-primary hover:text-primary/80"
           >
-            Student Portal →
+            {t("Student Portal →")}
           </button>
           <Link to="/parent/login" className="block font-medium text-primary hover:text-primary/80">
-            Parent Portal →
+            {t("Parent Portal →")}
           </Link>
           <Link to="/platform/login" className="block font-medium text-slate-400 hover:text-slate-600">
-            Platform Admin →
+            {t("Platform Admin →")}
           </Link>
           <p className="pt-2 text-slate-500">
-            New study center?{" "}
+            {t("New study center?")}{" "}
             <Link to="/signup" className="font-medium text-primary hover:text-primary/80">
-              Register your center
+              {t("Register your center")}
             </Link>
           </p>
         </>

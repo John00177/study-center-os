@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import { Loader2 } from "lucide-react";
 import { OrgLogo } from "../branding/OrgLogo";
+import { useTranslation } from "../../hooks/use-translation";
 
 interface RoleLoginCardProps {
   title: string;
@@ -43,6 +44,7 @@ export function RoleLoginCard({
   demoHint,
   footer,
 }: RoleLoginCardProps) {
+  const { t } = useTranslation();
   const bgClass = dark ? "bg-slate-950" : "bg-slate-100";
   const cardClass = dark ? "bg-slate-900 border border-slate-800" : "bg-white";
   const titleClass = dark ? "text-white" : "text-slate-900";
@@ -73,14 +75,14 @@ export function RoleLoginCard({
             )}
           </div>
           <h1 className={`mb-1 text-center text-2xl font-bold tracking-tight ${titleClass}`}>
-            {!dark && orgName ? `Welcome to ${orgName}` : title}
+            {!dark && orgName ? `${t("Welcome to")} ${orgName}` : title}
           </h1>
           <p className={`mb-6 text-center text-sm ${subtitleClass}`}>{subtitle}</p>
 
           <form onSubmit={onSubmit} className="space-y-4">
             <div>
               <label htmlFor="email" className={`mb-1 block text-sm font-medium ${labelClass}`}>
-                Email
+                {t("Email")}
               </label>
               <input
                 id="email"
@@ -94,7 +96,7 @@ export function RoleLoginCard({
 
             <div>
               <label htmlFor="password" className={`mb-1 block text-sm font-medium ${labelClass}`}>
-                Password
+                {t("Password")}
               </label>
               <input
                 id="password"
@@ -110,7 +112,7 @@ export function RoleLoginCard({
 
             <button type="submit" disabled={loading} className={buttonClass}>
               {loading && <Loader2 className="h-4 w-4 animate-spin" />}
-              Sign in
+              {t("Sign in")}
             </button>
 
             {demoHint && <p className={`text-center text-xs ${hintClass}`}>{demoHint}</p>}

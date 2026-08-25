@@ -9,6 +9,7 @@ import { LockedFeaturePage } from "../components/subscription/LockedFeaturePage"
 import { parsePlanLockError } from "../lib/plan-lock";
 import { useTheme } from "../contexts/ThemeContext";
 import { resolveOrgDisplayName } from "../lib/theme";
+import { useTranslation } from "../hooks/use-translation";
 
 const NAV_ITEMS = [
   { to: "/parent/dashboard", label: "Dashboard", icon: LayoutDashboard, end: true },
@@ -19,6 +20,7 @@ const NAV_ITEMS = [
 ];
 
 export function ParentLayout() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const parent = useParentAuthStore((state) => state.parent);
   const logout = useParentAuthStore((state) => state.logout);
@@ -58,7 +60,7 @@ export function ParentLayout() {
             className="flex items-center gap-1 rounded-md px-2 py-1.5 text-sm text-slate-500 transition hover:bg-slate-100 hover:text-slate-900"
           >
             <LogOut size={16} />
-            Logout
+            {t("Logout")}
           </button>
         </div>
       </header>
@@ -81,7 +83,7 @@ export function ParentLayout() {
               }
             >
               <Icon size={22} className="min-h-[24px] min-w-[24px]" />
-              {label}
+              {t(label)}
             </NavLink>
           ))}
         </nav>

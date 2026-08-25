@@ -10,6 +10,7 @@ import { SubscriptionLimitBanners } from "../components/subscription/Subscriptio
 import { TempPasswordReveal } from "../components/auth/TempPasswordReveal";
 import { errorMessage } from "../lib/plan-lock";
 import { useGroups } from "../hooks/use-groups";
+import { useTranslation } from "../hooks/use-translation";
 import {
   CreateTeacherInput,
   TeacherInput,
@@ -40,6 +41,7 @@ function toFormState(teacher?: TeacherDto | null): FormState {
 }
 
 function EditTeacherModal({ open, onClose, teacher }: { open: boolean; onClose: () => void; teacher: TeacherDto | null }) {
+  const { t } = useTranslation();
   const [form, setForm] = useState<FormState>(() => toFormState(teacher));
   const [errors, setErrors] = useState<Record<string, string>>({});
   const updateTeacher = useUpdateTeacher();
@@ -69,7 +71,7 @@ function EditTeacherModal({ open, onClose, teacher }: { open: boolean; onClose: 
 
     try {
       await updateTeacher.mutateAsync({ id: teacher.id, ...input });
-      showToast("Teacher updated.");
+      showToast(t("Teacher updated."));
       onClose();
     } catch (err) {
       showToast(errorMessage(err, "Failed to update teacher."), "error");
@@ -77,10 +79,10 @@ function EditTeacherModal({ open, onClose, teacher }: { open: boolean; onClose: 
   }
 
   return (
-    <Modal open={open} onClose={onClose} title="Edit Teacher">
+    <Modal open={open} onClose={onClose} title={t("Edit Teacher")}>
       <form onSubmit={handleSubmit} className="space-y-4">
         <TextField
-          label="Name"
+          label={t("Name")}
           required
           value={form.name}
           error={errors.name}
@@ -88,19 +90,19 @@ function EditTeacherModal({ open, onClose, teacher }: { open: boolean; onClose: 
         />
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <TextField
-            label="Email"
+            label={t("Email")}
             type="email"
             value={form.email}
             onChange={(e) => setForm((f) => ({ ...f, email: e.target.value }))}
           />
           <TextField
-            label="Phone"
+            label={t("Phone")}
             value={form.phone}
             onChange={(e) => setForm((f) => ({ ...f, phone: e.target.value }))}
           />
         </div>
         <TextField
-          label="Specialization"
+          label={t("Specialization")}
           value={form.specialization}
           onChange={(e) => setForm((f) => ({ ...f, specialization: e.target.value }))}
         />
@@ -112,7 +114,7 @@ function EditTeacherModal({ open, onClose, teacher }: { open: boolean; onClose: 
             disabled={updateTeacher.isPending}
             className="rounded-md border border-slate-300 px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 disabled:opacity-60"
           >
-            Cancel
+            {t("Cancel")}
           </button>
           <button
             type="submit"
@@ -120,7 +122,7 @@ function EditTeacherModal({ open, onClose, teacher }: { open: boolean; onClose: 
             className="flex items-center gap-2 rounded-md bg-indigo-600 px-3 py-2 text-sm font-medium text-white hover:bg-indigo-700 disabled:opacity-60"
           >
             {updateTeacher.isPending && <Loader2 className="h-4 w-4 animate-spin" />}
-            Save changes
+            {t("Save changes")}
           </button>
         </div>
       </form>
@@ -131,6 +133,7 @@ function EditTeacherModal({ open, onClose, teacher }: { open: boolean; onClose: 
 const EMPTY_ADD_FORM = { name: "", email: "", phone: "", specialization: "", groupIds: new Set<string>() };
 
 function AddTeacherModal({ open, onClose }: { open: boolean; onClose: () => void }) {
+  const { t } = useTranslation();
   const { data: groups } = useGroups();
   const createTeacher = useCreateTeacher();
   const { showToast } = useToast();
@@ -185,9 +188,9 @@ function AddTeacherModal({ open, onClose }: { open: boolean; onClose: () => void
 
   if (tempPassword) {
     return (
-      <Modal open={open} onClose={onClose} title="Teacher Created">
+      <Modal open={open} onClose={onClose} title={t("Teacher Created")}>
         <TempPasswordReveal
-          label="Temporary password"
+          label={t("Temporary password")}
           password={tempPassword}
           onDone={() => {
             showToast(`Teacher created! Temporary password: ${tempPassword}`);
@@ -199,10 +202,10 @@ function AddTeacherModal({ open, onClose }: { open: boolean; onClose: () => void
   }
 
   return (
-    <Modal open={open} onClose={onClose} title="Add New Teacher">
+    <Modal open={open} onClose={onClose} title={t("Add New Teacher")}>
       <form onSubmit={handleSubmit} className="space-y-4">
         <TextField
-          label="Full Name"
+          label={t("Full Name")}
           required
           value={form.name}
           error={errors.name}
@@ -210,7 +213,7 @@ function AddTeacherModal({ open, onClose }: { open: boolean; onClose: () => void
         />
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <TextField
-            label="Email"
+            label={t("Email")}
             type="email"
             required
             value={form.email}
@@ -218,7 +221,7 @@ function AddTeacherModal({ open, onClose }: { open: boolean; onClose: () => void
             onChange={(e) => setForm((f) => ({ ...f, email: e.target.value }))}
           />
           <TextField
-            label="Phone"
+            label={t("Phone")}
             required
             value={form.phone}
             error={errors.phone}
@@ -226,13 +229,13 @@ function AddTeacherModal({ open, onClose }: { open: boolean; onClose: () => void
           />
         </div>
         <TextField
-          label="Specialization"
+          label={t("Specialization")}
           value={form.specialization}
           onChange={(e) => setForm((f) => ({ ...f, specialization: e.target.value }))}
         />
 
         <div>
-          <label className="mb-1 block text-sm font-medium text-slate-700">Assign to Groups</label>
+          <label className="mb-1 block text-sm font-medium text-slate-700">{t("Assign to Groups")}</label>
           <div className="max-h-40 space-y-1 overflow-y-auto rounded-lg border border-slate-300 p-2">
             {groups?.length ? (
               groups.map((g) => (
@@ -247,12 +250,12 @@ function AddTeacherModal({ open, onClose }: { open: boolean; onClose: () => void
                 </label>
               ))
             ) : (
-              <p className="px-2 py-1 text-sm text-slate-400">No groups yet.</p>
+              <p className="px-2 py-1 text-sm text-slate-400">{t("No groups yet.")}</p>
             )}
           </div>
         </div>
 
-        <p className="text-xs text-slate-500">A secure temporary password is generated automatically.</p>
+        <p className="text-xs text-slate-500">{t("A secure temporary password is generated automatically.")}</p>
 
         <div className="flex justify-end gap-3 border-t border-slate-200 pt-4">
           <button
@@ -261,7 +264,7 @@ function AddTeacherModal({ open, onClose }: { open: boolean; onClose: () => void
             disabled={createTeacher.isPending}
             className="rounded-md border border-slate-300 px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 disabled:opacity-60"
           >
-            Cancel
+            {t("Cancel")}
           </button>
           <button
             type="submit"
@@ -269,7 +272,7 @@ function AddTeacherModal({ open, onClose }: { open: boolean; onClose: () => void
             className="flex items-center gap-2 rounded-md bg-indigo-600 px-3 py-2 text-sm font-medium text-white hover:bg-indigo-700 disabled:opacity-60"
           >
             {createTeacher.isPending && <Loader2 className="h-4 w-4 animate-spin" />}
-            Create Teacher
+            {t("Create Teacher")}
           </button>
         </div>
       </form>
@@ -278,16 +281,17 @@ function AddTeacherModal({ open, onClose }: { open: boolean; onClose: () => void
 }
 
 function ViewTempPasswordModal({ teacherId, onClose }: { teacherId: string | null; onClose: () => void }) {
+  const { t } = useTranslation();
   const { data, isLoading } = useTeacherTempPassword(teacherId);
 
   return (
-    <Modal open={Boolean(teacherId)} onClose={onClose} title="Temporary Password">
-      {isLoading && <p className="text-sm text-slate-500">Loading...</p>}
+    <Modal open={Boolean(teacherId)} onClose={onClose} title={t("Temporary Password")}>
+      {isLoading && <p className="text-sm text-slate-500">{t("Loading...")}</p>}
       {!isLoading && data && (
         data.tempPassword ? (
-          <TempPasswordReveal label="Temporary password" password={data.tempPassword} onDone={onClose} />
+          <TempPasswordReveal label={t("Temporary password")} password={data.tempPassword} onDone={onClose} />
         ) : (
-          <p className="text-sm text-slate-500">This teacher has already changed their password.</p>
+          <p className="text-sm text-slate-500">{t("This teacher has already changed their password.")}</p>
         )
       )}
     </Modal>
@@ -308,18 +312,20 @@ function DashboardStatusBadge({ status }: { status: TeacherDto["dashboardStatus"
 }
 
 function PasswordStatusBadge({ mustChangePassword }: { mustChangePassword: boolean }) {
+  const { t } = useTranslation();
   return mustChangePassword ? (
     <span className="inline-flex items-center rounded-full bg-yellow-100 px-2 py-0.5 text-xs font-medium text-yellow-700">
-      Password Not Changed
+      {t("Password Not Changed")}
     </span>
   ) : (
     <span className="inline-flex items-center rounded-full bg-green-100 px-2 py-0.5 text-xs font-medium text-green-700">
-      Active
+      {t("Active")}
     </span>
   );
 }
 
 export function TeachersPage() {
+  const { t } = useTranslation();
   const { data, isLoading } = useTeachers();
   const deleteTeacher = useDeleteTeacher();
   const activateDashboard = useActivateTeacherDashboard();
@@ -338,10 +344,10 @@ export function TeachersPage() {
     if (!deleting) return;
     try {
       await deleteTeacher.mutateAsync(deleting.id);
-      showToast("Teacher deleted.");
+      showToast(t("Teacher deleted."));
       setDeleting(null);
     } catch {
-      showToast("Failed to delete teacher.", "error");
+      showToast(t("Failed to delete teacher."), "error");
     }
   }
 
@@ -349,10 +355,10 @@ export function TeachersPage() {
     try {
       if (teacher.dashboardStatus === "active") {
         await suspendDashboard.mutateAsync(teacher.id);
-        showToast("Dashboard access suspended.");
+        showToast(t("Dashboard access suspended."));
       } else {
         await activateDashboard.mutateAsync(teacher.id);
-        showToast("Dashboard access activated.");
+        showToast(t("Dashboard access activated."));
       }
     } catch (err) {
       showToast(errorMessage(err, "Failed to update dashboard access."), "error");
@@ -366,7 +372,7 @@ export function TeachersPage() {
       setResettingPasswordFor(null);
       setResetResult(result.tempPassword);
     } catch {
-      showToast("Failed to reset password.", "error");
+      showToast(t("Failed to reset password."), "error");
     }
   }
 
@@ -375,13 +381,13 @@ export function TeachersPage() {
       <SubscriptionLimitBanners resource="teacher" />
 
       <div className="mb-6 flex items-center justify-between">
-        <h1 className="text-2xl font-semibold text-slate-900 dark:text-slate-100">Teachers</h1>
+        <h1 className="text-2xl font-semibold text-slate-900 dark:text-slate-100">{t("Teachers")}</h1>
         <button
           onClick={() => setAddOpen(true)}
           className="flex items-center gap-2 rounded-md bg-indigo-600 px-3 py-2 text-sm font-medium text-white hover:bg-indigo-700"
         >
           <Plus className="h-4 w-4" />
-          Add Teacher
+          {t("Add Teacher")}
         </button>
       </div>
 
@@ -389,57 +395,57 @@ export function TeachersPage() {
         data={data}
         isLoading={isLoading}
         emptyMessage='No teachers yet. Click "Add Teacher" to add one.'
-        getRowKey={(t) => t.id}
+        getRowKey={(teacher) => teacher.id}
         columns={[
-          { header: "Name", render: (t) => <span className="font-medium text-slate-900 dark:text-slate-100">{t.name}</span> },
-          { header: "Specialization", render: (t) => t.specialization ?? "-" },
-          { header: "Groups", render: (t) => t.activeGroupCount, align: "right" },
-          { header: "Dashboard", render: (t) => <DashboardStatusBadge status={t.dashboardStatus} /> },
-          { header: "Status", render: (t) => <PasswordStatusBadge mustChangePassword={t.mustChangePassword} /> },
+          { header: t("Name"), render: (teacher) => <span className="font-medium text-slate-900 dark:text-slate-100">{teacher.name}</span> },
+          { header: t("Specialization"), render: (teacher) => teacher.specialization ?? "-" },
+          { header: t("Groups"), render: (teacher) => teacher.activeGroupCount, align: "right" },
+          { header: t("Dashboard"), render: (teacher) => <DashboardStatusBadge status={teacher.dashboardStatus} /> },
+          { header: t("Status"), render: (teacher) => <PasswordStatusBadge mustChangePassword={teacher.mustChangePassword} /> },
         ]}
-        renderActions={(t) => (
+        renderActions={(teacher) => (
           <>
-            {t.mustChangePassword && (
+            {teacher.mustChangePassword && (
               <button
-                onClick={() => setViewingPasswordFor(t.id)}
+                onClick={() => setViewingPasswordFor(teacher.id)}
                 className="rounded p-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-700"
-                aria-label="View temporary password"
-                title="View temporary password"
+                aria-label={t("View temporary password")}
+                title={t("View temporary password")}
               >
                 <Eye className="h-4 w-4" />
               </button>
             )}
             <button
-              onClick={() => setResettingPasswordFor(t)}
+              onClick={() => setResettingPasswordFor(teacher)}
               className="rounded p-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-700"
-              aria-label="Reset password"
-              title="Reset password"
+              aria-label={t("Reset password")}
+              title={t("Reset password")}
             >
               <RotateCcw className="h-4 w-4" />
             </button>
             <button
-              onClick={() => toggleDashboardAccess(t)}
+              onClick={() => toggleDashboardAccess(teacher)}
               className="rounded p-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-700"
-              aria-label={t.dashboardStatus === "active" ? "Suspend dashboard access" : "Activate dashboard access"}
-              title={t.dashboardStatus === "active" ? "Suspend dashboard access" : "Activate dashboard access"}
+              aria-label={teacher.dashboardStatus === "active" ? "Suspend dashboard access" : "Activate dashboard access"}
+              title={teacher.dashboardStatus === "active" ? "Suspend dashboard access" : "Activate dashboard access"}
             >
-              {t.dashboardStatus === "active" ? (
+              {teacher.dashboardStatus === "active" ? (
                 <PowerOff className="h-4 w-4" />
               ) : (
                 <Power className="h-4 w-4" />
               )}
             </button>
             <button
-              onClick={() => setEditing(t)}
+              onClick={() => setEditing(teacher)}
               className="rounded p-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-700"
-              aria-label="Edit teacher"
+              aria-label={t("Edit teacher")}
             >
               <Pencil className="h-4 w-4" />
             </button>
             <button
-              onClick={() => setDeleting(t)}
+              onClick={() => setDeleting(teacher)}
               className="rounded p-1.5 text-slate-400 hover:bg-red-50 hover:text-red-600"
-              aria-label="Delete teacher"
+              aria-label={t("Delete teacher")}
             >
               <Trash2 className="h-4 w-4" />
             </button>
@@ -453,7 +459,7 @@ export function TeachersPage() {
 
       <ConfirmDialog
         open={Boolean(deleting)}
-        title="Delete teacher"
+        title={t("Delete teacher")}
         message={`Are you sure you want to delete ${deleting?.name}? This cannot be undone.`}
         isConfirming={deleteTeacher.isPending}
         onConfirm={confirmDelete}
@@ -462,7 +468,7 @@ export function TeachersPage() {
 
       <ConfirmDialog
         open={Boolean(resettingPasswordFor)}
-        title="Reset password"
+        title={t("Reset password")}
         message={`Generate a new temporary password for ${resettingPasswordFor?.name}? They will need to set a new password on next login.`}
         confirmLabel={resetPassword.isPending ? "Resetting..." : "Reset Password"}
         isConfirming={resetPassword.isPending}
@@ -470,9 +476,9 @@ export function TeachersPage() {
         onCancel={() => setResettingPasswordFor(null)}
       />
 
-      <Modal open={Boolean(resetResult)} onClose={() => setResetResult(null)} title="Password Reset">
+      <Modal open={Boolean(resetResult)} onClose={() => setResetResult(null)} title={t("Password Reset")}>
         {resetResult && (
-          <TempPasswordReveal label="New temporary password" password={resetResult} onDone={() => setResetResult(null)} />
+          <TempPasswordReveal label={t("New temporary password")} password={resetResult} onDone={() => setResetResult(null)} />
         )}
       </Modal>
     </div>

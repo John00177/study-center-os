@@ -1,43 +1,45 @@
 import { usePlatformHealth } from "../../hooks/use-platform-admin";
 import { formatCurrency } from "../../lib/format";
+import { useTranslation } from "../../hooks/use-translation";
 
 export function PlatformHealthPage() {
+  const { t } = useTranslation();
   const { data } = usePlatformHealth();
 
   return (
     <div>
-      <h1 className="mb-6 text-2xl font-semibold text-white">Platform Health</h1>
+      <h1 className="mb-6 text-2xl font-semibold text-white">{t("Platform Health")}</h1>
 
       <div className="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <div className="h-24 overflow-hidden rounded-lg border border-slate-800 bg-slate-900 p-3">
-          <p className="text-xs font-medium text-slate-400">Total Organizations</p>
+          <p className="text-xs font-medium text-slate-400">{t("Total Organizations")}</p>
           <p className="mt-1.5 text-xl font-semibold text-white">{data?.totalOrganizations ?? "-"}</p>
         </div>
         <div className="h-24 overflow-hidden rounded-lg border border-slate-800 bg-slate-900 p-3">
-          <p className="text-xs font-medium text-slate-400">Active Students</p>
+          <p className="text-xs font-medium text-slate-400">{t("Active Students")}</p>
           <p className="mt-1.5 text-xl font-semibold text-white">{data?.totalActiveStudents ?? "-"}</p>
         </div>
         <div className="h-24 overflow-hidden rounded-lg border border-slate-800 bg-slate-900 p-3">
-          <p className="text-xs font-medium text-slate-400">Active Teachers</p>
+          <p className="text-xs font-medium text-slate-400">{t("Active Teachers")}</p>
           <p className="mt-1.5 text-xl font-semibold text-white">{data?.totalActiveTeachers ?? "-"}</p>
         </div>
         <div className="h-24 overflow-hidden rounded-lg border border-slate-800 bg-slate-900 p-3">
-          <p className="text-xs font-medium text-slate-400">Total Branches</p>
+          <p className="text-xs font-medium text-slate-400">{t("Total Branches")}</p>
           <p className="mt-1.5 text-xl font-semibold text-white">{data?.totalBranches ?? "-"}</p>
         </div>
       </div>
 
       <div className="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-3">
         <div className="h-24 overflow-hidden rounded-lg border border-slate-800 bg-slate-900 p-3">
-          <p className="text-xs font-medium text-slate-400">Total Groups</p>
+          <p className="text-xs font-medium text-slate-400">{t("Total Groups")}</p>
           <p className="mt-1.5 text-xl font-semibold text-white">{data?.totalGroups ?? "-"}</p>
         </div>
         <div className="h-24 overflow-hidden rounded-lg border border-slate-800 bg-slate-900 p-3">
-          <p className="text-xs font-medium text-slate-400">Avg Students / Org</p>
+          <p className="text-xs font-medium text-slate-400">{t("Avg Students / Org")}</p>
           <p className="mt-1.5 text-xl font-semibold text-white">{data ? data.avgStudentsPerOrg.toFixed(1) : "-"}</p>
         </div>
         <div className="h-24 overflow-hidden rounded-lg border border-slate-800 bg-slate-900 p-3">
-          <p className="text-xs font-medium text-slate-400">Avg Revenue / Org</p>
+          <p className="text-xs font-medium text-slate-400">{t("Avg Revenue / Org")}</p>
           <p className="mt-1.5 text-xl font-semibold text-white">
             {data ? formatCurrency(data.avgRevenuePerOrg, "UZS") : "-"}
           </p>
@@ -45,13 +47,13 @@ export function PlatformHealthPage() {
       </div>
 
       <div>
-        <h3 className="mb-3 text-sm font-semibold uppercase tracking-wide text-slate-400">Top Organizations by Revenue</h3>
+        <h3 className="mb-3 text-sm font-semibold uppercase tracking-wide text-slate-400">{t("Top Organizations by Revenue")}</h3>
         <div className="overflow-hidden rounded-xl border border-slate-800 bg-slate-900">
           <table className="min-w-full divide-y divide-slate-800">
             <thead>
               <tr>
-                <th className="px-4 py-2 text-left text-xs font-medium uppercase text-slate-500">Name</th>
-                <th className="px-4 py-2 text-right text-xs font-medium uppercase text-slate-500">Revenue</th>
+                <th className="px-4 py-2 text-left text-xs font-medium uppercase text-slate-500">{t("Name")}</th>
+                <th className="px-4 py-2 text-right text-xs font-medium uppercase text-slate-500">{t("Revenue")}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-800">

@@ -3,6 +3,7 @@ import { DataTable } from "../DataTable";
 import { Modal } from "../Modal";
 import { useStudentReminderHistory } from "../../hooks/use-reminders";
 import { formatCurrency } from "../../lib/format";
+import { useTranslation } from "../../hooks/use-translation";
 
 const STATUS_STYLES: Record<ReminderStatus, string> = {
   pending: "bg-slate-100 text-slate-600",
@@ -18,6 +19,7 @@ interface StudentRemindersModalProps {
 }
 
 export function StudentRemindersModal({ open, onClose, student }: StudentRemindersModalProps) {
+  const { t } = useTranslation();
   const { data, isLoading } = useStudentReminderHistory(open ? student?.id ?? null : null);
 
   return (
@@ -30,13 +32,13 @@ export function StudentRemindersModal({ open, onClose, student }: StudentReminde
       <DataTable
         data={data}
         isLoading={isLoading}
-        emptyMessage="No reminders sent yet."
+        emptyMessage={t("No reminders sent yet.")}
         getRowKey={(r) => r.id}
         columns={[
-          { header: "Amount", render: (r) => (r.charge ? formatCurrency(r.charge.amount, r.charge.currency) : "-") },
-          { header: "Type", render: (r) => <span className="uppercase">{r.type}</span> },
+          { header: t("Amount"), render: (r) => (r.charge ? formatCurrency(r.charge.amount, r.charge.currency) : "-") },
+          { header: t("Type"), render: (r) => <span className="uppercase">{r.type}</span> },
           {
-            header: "Status",
+            header: t("Status"),
             render: (r) => (
               <span
                 className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium capitalize ${STATUS_STYLES[r.status]}`}
@@ -45,7 +47,7 @@ export function StudentRemindersModal({ open, onClose, student }: StudentReminde
               </span>
             ),
           },
-          { header: "Sent at", render: (r) => new Date(r.createdAt).toLocaleString() },
+          { header: t("Sent at"), render: (r) => new Date(r.createdAt).toLocaleString() },
         ]}
       />
     </Modal>

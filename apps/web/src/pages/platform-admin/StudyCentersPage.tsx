@@ -12,8 +12,10 @@ import {
   useSuspendOrganization,
 } from "../../hooks/use-platform-admin";
 import { formatCurrency } from "../../lib/format";
+import { useTranslation } from "../../hooks/use-translation";
 
 export function StudyCentersPage() {
+  const { t } = useTranslation();
   const [status, setStatus] = useState<OrganizationStatus | "">("");
   const [search, setSearch] = useState("");
   const [viewingId, setViewingId] = useState<string | null>(null);
@@ -34,42 +36,42 @@ export function StudyCentersPage() {
     if (!suspendingId) return;
     try {
       await suspend.mutateAsync({ id: suspendingId });
-      showToast("Study center suspended.");
+      showToast(t("Study center suspended."));
       setSuspendingId(null);
     } catch {
-      showToast("Failed to suspend study center.", "error");
+      showToast(t("Failed to suspend study center."), "error");
     }
   }
 
   async function handleActivate(id: string) {
     try {
       await activate.mutateAsync(id);
-      showToast("Study center activated.");
+      showToast(t("Study center activated."));
     } catch {
-      showToast("Failed to activate study center.", "error");
+      showToast(t("Failed to activate study center."), "error");
     }
   }
 
   return (
     <div>
-      <h1 className="mb-6 text-2xl font-semibold text-white">Study Centers</h1>
+      <h1 className="mb-6 text-2xl font-semibold text-white">{t("Study Centers")}</h1>
 
       <div className="mb-4 flex flex-wrap gap-4">
         <div className="w-56">
           <TextField
-            label="Search"
-            placeholder="Name or owner email..."
+            label={t("Search")}
+            placeholder={t("Name or owner email...")}
             value={search}
             onChange={(e) => setSearch(e.target.value)}
           />
         </div>
         <div className="w-48">
-          <SelectField label="Status" value={status} onChange={(e) => setStatus(e.target.value as OrganizationStatus | "")}>
-            <option value="">All statuses</option>
-            <option value="pending">Pending</option>
-            <option value="trial">Trial</option>
-            <option value="active">Active</option>
-            <option value="suspended">Suspended</option>
+          <SelectField label={t("Status")} value={status} onChange={(e) => setStatus(e.target.value as OrganizationStatus | "")}>
+            <option value="">{t("All statuses")}</option>
+            <option value="pending">{t("Pending")}</option>
+            <option value="trial">{t("Trial")}</option>
+            <option value="active">{t("Active")}</option>
+            <option value="suspended">{t("Suspended")}</option>
           </SelectField>
         </div>
       </div>
@@ -78,24 +80,24 @@ export function StudyCentersPage() {
         <DataTable
           data={filtered}
           isLoading={isLoading}
-          emptyMessage="No study centers found."
+          emptyMessage={t("No study centers found.")}
           getRowKey={(o) => o.id}
           columns={[
-            { header: "Name", render: (o) => <span className="font-medium text-white">{o.name}</span> },
-            { header: "Email", render: (o) => o.ownerEmail ?? "-" },
-            { header: "Phone", render: (o) => o.ownerPhone ?? "-" },
-            { header: "Location", render: (o) => [o.city, o.country].filter(Boolean).join(", ") || "-" },
-            { header: "Status", render: (o) => <span className="capitalize">{o.status}</span> },
-            { header: "Plan", render: (o) => o.subscription?.planName ?? "-" },
-            { header: "Students", render: (o) => o.stats.studentCount, align: "right" },
-            { header: "Revenue", render: (o) => formatCurrency(o.stats.totalRevenue, "UZS"), align: "right" },
+            { header: t("Name"), render: (o) => <span className="font-medium text-white">{o.name}</span> },
+            { header: t("Email"), render: (o) => o.ownerEmail ?? "-" },
+            { header: t("Phone"), render: (o) => o.ownerPhone ?? "-" },
+            { header: t("Location"), render: (o) => [o.city, o.country].filter(Boolean).join(", ") || "-" },
+            { header: t("Status"), render: (o) => <span className="capitalize">{o.status}</span> },
+            { header: t("Plan"), render: (o) => o.subscription?.planName ?? "-" },
+            { header: t("Students"), render: (o) => o.stats.studentCount, align: "right" },
+            { header: t("Revenue"), render: (o) => formatCurrency(o.stats.totalRevenue, "UZS"), align: "right" },
           ]}
           renderActions={(o) => (
             <>
               <button
                 onClick={() => setViewingId(o.id)}
                 className="rounded p-1.5 text-slate-400 hover:bg-slate-800 hover:text-white"
-                aria-label="View detail"
+                aria-label={t("View detail")}
               >
                 <Eye className="h-4 w-4" />
               </button>
@@ -104,7 +106,7 @@ export function StudyCentersPage() {
                   onClick={() => handleActivate(o.id)}
                   disabled={activate.isPending}
                   className="rounded p-1.5 text-slate-400 hover:bg-green-900 hover:text-green-400 disabled:opacity-60"
-                  aria-label="Activate"
+                  aria-label={t("Activate")}
                 >
                   {activate.isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Play className="h-4 w-4" />}
                 </button>
@@ -112,7 +114,7 @@ export function StudyCentersPage() {
                 <button
                   onClick={() => setSuspendingId(o.id)}
                   className="rounded p-1.5 text-slate-400 hover:bg-red-900 hover:text-red-400"
-                  aria-label="Suspend"
+                  aria-label={t("Suspend")}
                 >
                   <Pause className="h-4 w-4" />
                 </button>
@@ -126,7 +128,7 @@ export function StudyCentersPage() {
 
       <ConfirmDialog
         open={Boolean(suspendingId)}
-        title="Suspend study center"
+        title={t("Suspend study center")}
         message="Are you sure you want to suspend this study center? Their staff will lose access."
         confirmLabel={suspend.isPending ? "Suspending..." : "Suspend"}
         isConfirming={suspend.isPending}

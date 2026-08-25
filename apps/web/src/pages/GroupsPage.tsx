@@ -17,6 +17,7 @@ import {
 } from "../hooks/use-groups";
 import { useTheme } from "../contexts/ThemeContext";
 import { useUserRole } from "../stores/auth.store";
+import { useTranslation } from "../hooks/use-translation";
 
 const STATUS_OPTIONS: GroupStatus[] = ["active", "inactive", "completed"];
 const SCHEDULE_DAYS = ["Du", "Se", "Cho", "Pa", "Ju", "Sha", "Yak"] as const;
@@ -65,6 +66,7 @@ function GroupForm({
   onClose: () => void;
   group?: GroupDto | null;
 }) {
+  const { t } = useTranslation();
   const isEditing = Boolean(group);
   const [form, setForm] = useState<FormState>(() => toFormState(group));
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -119,10 +121,10 @@ function GroupForm({
     try {
       if (isEditing && group) {
         await updateGroup.mutateAsync({ id: group.id, ...input });
-        showToast("Group updated.");
+        showToast(t("Group updated."));
       } else {
         await createGroup.mutateAsync(input);
-        showToast("Group created.");
+        showToast(t("Group created."));
       }
       onClose();
     } catch {
@@ -134,7 +136,7 @@ function GroupForm({
     <Modal open={open} onClose={onClose} title={isEditing ? "Edit Group" : "New Group"}>
       <form onSubmit={handleSubmit} className="space-y-4">
         <TextField
-          label="Name"
+          label={t("Name")}
           required
           value={form.name}
           error={errors.name}
@@ -144,13 +146,13 @@ function GroupForm({
         <div className={`grid grid-cols-1 gap-4 ${hasBranches ? "sm:grid-cols-2" : ""}`}>
           {hasBranches && (
             <SelectField
-              label="Branch"
+              label={t("Branch")}
               required
               value={form.branchId}
               error={errors.branchId}
               onChange={(e) => setForm((f) => ({ ...f, branchId: e.target.value }))}
             >
-              <option value="">Select branch</option>
+              <option value="">{t("Select branch")}</option>
               {branches?.map((b) => (
                 <option key={b.id} value={b.id}>
                   {b.name}
@@ -159,13 +161,13 @@ function GroupForm({
             </SelectField>
           )}
           <SelectField
-            label="Course"
+            label={t("Course")}
             required
             value={form.courseId}
             error={errors.courseId}
             onChange={(e) => setForm((f) => ({ ...f, courseId: e.target.value }))}
           >
-            <option value="">Select course</option>
+            <option value="">{t("Select course")}</option>
             {courses?.map((c) => (
               <option key={c.id} value={c.id}>
                 {c.name}
@@ -177,7 +179,7 @@ function GroupForm({
 
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <SelectField
-            label="Status"
+            label={t("Status")}
             value={form.status}
             onChange={(e) => setForm((f) => ({ ...f, status: e.target.value as GroupStatus }))}
           >
@@ -188,7 +190,7 @@ function GroupForm({
             ))}
           </SelectField>
           <TextField
-            label="Max students"
+            label={t("Max students")}
             type="number"
             min="1"
             value={form.maxStudents}
@@ -198,7 +200,7 @@ function GroupForm({
 
         <div>
           <TextField
-            label="Monthly Fee override (UZS)"
+            label={t("Monthly Fee override (UZS)")}
             type="number"
             min="0"
             placeholder={
@@ -210,12 +212,12 @@ function GroupForm({
             onChange={(e) => setForm((f) => ({ ...f, monthlyFee: e.target.value }))}
           />
           <p className="mt-1 text-xs text-slate-500">
-            Optional. Leave blank to charge students the course's monthly fee.
+            {t("Optional. Leave blank to charge students the course's monthly fee.")}
           </p>
         </div>
 
         <div>
-          <label className="mb-1.5 block text-sm font-medium text-slate-700">Schedule Days</label>
+          <label className="mb-1.5 block text-sm font-medium text-slate-700">{t("Schedule Days")}</label>
           <div className="flex flex-wrap gap-2">
             {SCHEDULE_DAYS.map((day) => {
               const selected = form.scheduleDays.includes(day);
@@ -243,7 +245,7 @@ function GroupForm({
         </div>
 
         <div>
-          <label className="mb-1.5 block text-sm font-medium text-slate-700">Lesson Time</label>
+          <label className="mb-1.5 block text-sm font-medium text-slate-700">{t("Lesson Time")}</label>
           <div className="flex items-center gap-3">
             <input
               type="time"
@@ -268,7 +270,7 @@ function GroupForm({
             disabled={isSaving}
             className="rounded-md border border-slate-300 px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 disabled:opacity-60"
           >
-            Cancel
+            {t("Cancel")}
           </button>
           <button
             type="submit"
@@ -285,6 +287,7 @@ function GroupForm({
 }
 
 export function GroupsPage() {
+  const { t } = useTranslation();
   const { data, isLoading } = useGroups();
   const deleteGroup = useDeleteGroup();
   const { showToast } = useToast();
@@ -304,17 +307,17 @@ export function GroupsPage() {
     if (!deleting) return;
     try {
       await deleteGroup.mutateAsync(deleting.id);
-      showToast("Group deleted.");
+      showToast(t("Group deleted."));
       setDeleting(null);
     } catch {
-      showToast("Failed to delete group.", "error");
+      showToast(t("Failed to delete group."), "error");
     }
   }
 
   return (
     <div>
       <div className="mb-6 flex items-center justify-between">
-        <h1 className="text-2xl font-semibold text-slate-900 dark:text-slate-100">Groups</h1>
+        <h1 className="text-2xl font-semibold text-slate-900 dark:text-slate-100">{t("Groups")}</h1>
         {canManage && (
           <button
             onClick={() => {
@@ -324,7 +327,7 @@ export function GroupsPage() {
             className="flex items-center gap-2 rounded-md bg-indigo-600 px-3 py-2 text-sm font-medium text-white hover:bg-indigo-700"
           >
             <Plus className="h-4 w-4" />
-            New Group
+            {t("New Group")}
           </button>
         )}
       </div>
@@ -343,12 +346,12 @@ export function GroupsPage() {
             : undefined
         }
         columns={[
-          { header: "Name", render: (g) => <span className="font-medium text-slate-900 dark:text-slate-100">{g.name}</span> },
-          ...(hasBranches ? [{ header: "Branch", render: (g: GroupDto) => g.branch?.name ?? "-" }] : []),
-          { header: "Course", render: (g) => g.course?.name ?? "-" },
-          { header: "Schedule", render: (g) => formatGroupSchedule(g) },
-          { header: "Teachers", render: (g) => g.teacherCount, align: "right" },
-          { header: "Students", render: (g) => g.studentCount, align: "right" },
+          { header: t("Name"), render: (g) => <span className="font-medium text-slate-900 dark:text-slate-100">{g.name}</span> },
+          ...(hasBranches ? [{ header: t("Branch"), render: (g: GroupDto) => g.branch?.name ?? "-" }] : []),
+          { header: t("Course"), render: (g) => g.course?.name ?? "-" },
+          { header: t("Schedule"), render: (g) => formatGroupSchedule(g) },
+          { header: t("Teachers"), render: (g) => g.teacherCount, align: "right" },
+          { header: t("Students"), render: (g) => g.studentCount, align: "right" },
         ]}
         renderActions={
           canManage
@@ -360,14 +363,14 @@ export function GroupsPage() {
                       setFormOpen(true);
                     }}
                     className="rounded p-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-700"
-                    aria-label="Edit group"
+                    aria-label={t("Edit group")}
                   >
                     <Pencil className="h-4 w-4" />
                   </button>
                   <button
                     onClick={() => setDeleting(g)}
                     className="rounded p-1.5 text-slate-400 hover:bg-red-50 hover:text-red-600"
-                    aria-label="Delete group"
+                    aria-label={t("Delete group")}
                   >
                     <Trash2 className="h-4 w-4" />
                   </button>
@@ -381,7 +384,7 @@ export function GroupsPage() {
 
       <ConfirmDialog
         open={Boolean(deleting)}
-        title="Delete group"
+        title={t("Delete group")}
         message={`Are you sure you want to delete ${deleting?.name}? This cannot be undone.`}
         isConfirming={deleteGroup.isPending}
         onConfirm={confirmDelete}

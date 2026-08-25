@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import type { NotificationListDto, UnreadCountDto } from "@crm/shared-types";
 import { api } from "../../lib/api";
+import { useTranslation } from "../../hooks/use-translation";
 
 /**
  * The student portal's bell. Kept separate from NotificationBell rather than
@@ -23,6 +24,7 @@ function relativeTime(iso: string): string {
 }
 
 export function StudentNotificationBell() {
+  const { t } = useTranslation();
   const [open, setOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const queryClient = useQueryClient();
@@ -62,7 +64,7 @@ export function StudentNotificationBell() {
     <div ref={containerRef} className="relative">
       <button
         onClick={() => setOpen((o) => !o)}
-        aria-label="Notifications"
+        aria-label={t("Notifications")}
         className="relative rounded-md p-1.5 text-slate-500 transition hover:bg-slate-100 hover:text-slate-900"
       >
         <Bell className="h-5 w-5" />
@@ -76,18 +78,18 @@ export function StudentNotificationBell() {
       {open && (
         <div className="absolute right-0 z-50 mt-2 max-h-96 w-80 overflow-y-auto rounded-lg border border-gray-200 bg-white shadow-lg">
           <div className="sticky top-0 flex items-center justify-between border-b border-gray-200 bg-white px-3 py-2">
-            <h3 className="text-sm font-semibold text-slate-900">Notifications</h3>
+            <h3 className="text-sm font-semibold text-slate-900">{t("Notifications")}</h3>
             {items.some((n) => !n.read) && (
               <button
                 onClick={() => markAllRead.mutate()}
                 className="text-xs font-medium text-indigo-600 hover:text-indigo-700"
               >
-                Mark all as read
+                {t("Mark all as read")}
               </button>
             )}
           </div>
 
-          {items.length === 0 && <p className="px-3 py-6 text-center text-sm text-slate-500">No notifications</p>}
+          {items.length === 0 && <p className="px-3 py-6 text-center text-sm text-slate-500">{t("No notifications")}</p>}
 
           <div className="divide-y divide-gray-100">
             {items.map((n) => (

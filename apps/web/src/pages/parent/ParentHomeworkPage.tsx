@@ -2,6 +2,7 @@ import type { ParentHomeworkDto, SubmissionStatus } from "@crm/shared-types";
 import { useMemo, useState } from "react";
 import { Modal } from "../../components/Modal";
 import { useParentHomework } from "../../hooks/use-parent-portal";
+import { useTranslation } from "../../hooks/use-translation";
 
 const STATUS_STYLES: Record<SubmissionStatus, string> = {
   pending: "bg-yellow-100 text-yellow-700",
@@ -13,6 +14,7 @@ const STATUS_STYLES: Record<SubmissionStatus, string> = {
 type Filter = "all" | "pending" | "graded";
 
 export function ParentHomeworkPage() {
+  const { t } = useTranslation();
   const { data, isLoading } = useParentHomework();
   const [selected, setSelected] = useState<ParentHomeworkDto | null>(null);
   const [filter, setFilter] = useState<Filter>("all");
@@ -24,12 +26,12 @@ export function ParentHomeworkPage() {
   }, [data, filter]);
 
   if (isLoading) {
-    return <p className="text-sm text-slate-500">Loading...</p>;
+    return <p className="text-sm text-slate-500">{t("Loading...")}</p>;
   }
 
   return (
     <div>
-      <h1 className="mb-4 text-xl font-semibold text-slate-900">Homework</h1>
+      <h1 className="mb-4 text-xl font-semibold text-slate-900">{t("Homework")}</h1>
 
       <div className="mb-4 flex gap-2">
         {(["all", "pending", "graded"] as Filter[]).map((f) => (
@@ -46,7 +48,7 @@ export function ParentHomeworkPage() {
       </div>
 
       {(!filtered || filtered.length === 0) && (
-        <p className="rounded-xl border border-slate-200 bg-white p-4 text-sm text-slate-500">No homework found.</p>
+        <p className="rounded-xl border border-slate-200 bg-white p-4 text-sm text-slate-500">{t("No homework found.")}</p>
       )}
 
       <div className="space-y-2">
@@ -84,27 +86,27 @@ export function ParentHomeworkPage() {
             </span>
             {selected.description && (
               <div>
-                <p className="text-xs font-medium uppercase text-slate-400">Description</p>
+                <p className="text-xs font-medium uppercase text-slate-400">{t("Description")}</p>
                 <p className="text-slate-900">{selected.description}</p>
               </div>
             )}
             <div>
-              <p className="text-xs font-medium uppercase text-slate-400">Teacher</p>
+              <p className="text-xs font-medium uppercase text-slate-400">{t("Teacher")}</p>
               <p className="text-slate-900">{selected.teacherName}</p>
             </div>
             <div>
-              <p className="text-xs font-medium uppercase text-slate-400">Due date</p>
+              <p className="text-xs font-medium uppercase text-slate-400">{t("Due date")}</p>
               <p className="text-slate-900">{selected.dueDate ? new Date(selected.dueDate).toLocaleDateString() : "-"}</p>
             </div>
             {selected.score !== null && selected.score !== undefined && (
               <div>
-                <p className="text-xs font-medium uppercase text-slate-400">Score</p>
+                <p className="text-xs font-medium uppercase text-slate-400">{t("Score")}</p>
                 <p className="text-slate-900">{selected.score} / 100</p>
               </div>
             )}
             {selected.feedback && (
               <div>
-                <p className="text-xs font-medium uppercase text-slate-400">Feedback</p>
+                <p className="text-xs font-medium uppercase text-slate-400">{t("Feedback")}</p>
                 <p className="text-slate-900">{selected.feedback}</p>
               </div>
             )}

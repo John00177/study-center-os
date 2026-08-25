@@ -70,6 +70,7 @@ import { SupportTicketsPage as AdminSupportTicketsPage } from "./pages/platform-
 import { OrgSupportTicketsPage } from "./pages/support-tickets/OrgSupportTicketsPage";
 import { AuditLogPage } from "./pages/audit/AuditLogPage";
 import { StudentProfilePage as StudentDetailProfilePage } from "./pages/students/StudentProfilePage";
+import { useTranslation } from "./hooks/use-translation";
 
 // Each portal is a dead end for the wrong role — a mismatched login doesn't
 // bounce sideways into some other dashboard, it goes back to /login (or
@@ -121,6 +122,7 @@ function RequireNotOwner({ children }: { children: ReactNode }) {
 }
 
 function RequireOwnerOrAdmin({ children }: { children: ReactNode }) {
+  const { t } = useTranslation();
   const user = useAuthStore((state) => state.user);
   if (!user) {
     return <Navigate to="/login" replace />;
@@ -129,8 +131,8 @@ function RequireOwnerOrAdmin({ children }: { children: ReactNode }) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-slate-50 p-6">
         <div className="max-w-sm rounded-xl border border-slate-200 bg-white p-6 text-center shadow-sm">
-          <h1 className="mb-2 text-lg font-semibold text-slate-900">Access restricted</h1>
-          <p className="text-sm text-slate-500">This page is only available to owners and admins.</p>
+          <h1 className="mb-2 text-lg font-semibold text-slate-900">{t("Access restricted")}</h1>
+          <p className="text-sm text-slate-500">{t("This page is only available to owners and admins.")}</p>
         </div>
       </div>
     );
@@ -139,6 +141,7 @@ function RequireOwnerOrAdmin({ children }: { children: ReactNode }) {
 }
 
 function RequireTeacherAccess({ children }: { children: ReactNode }) {
+  const { t } = useTranslation();
   const user = useAuthStore((state) => state.user);
   if (!user || user.role !== "teacher") {
     return <Navigate to="/login" replace />;
@@ -151,9 +154,9 @@ function RequireTeacherAccess({ children }: { children: ReactNode }) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-slate-50 p-6">
         <div className="max-w-sm rounded-xl border border-slate-200 bg-white p-6 text-center shadow-sm">
-          <h1 className="mb-2 text-lg font-semibold text-slate-900">Teacher dashboard not activated</h1>
+          <h1 className="mb-2 text-lg font-semibold text-slate-900">{t("Teacher dashboard not activated")}</h1>
           <p className="text-sm text-slate-500">
-            Your teacher dashboard access has not been activated yet. Ask an admin to activate it.
+            {t("Your teacher dashboard access has not been activated yet. Ask an admin to activate it.")}
           </p>
         </div>
       </div>

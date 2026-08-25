@@ -5,6 +5,7 @@ import { Modal } from "../Modal";
 import { useToast } from "../Toast";
 import { SelectField, TextField } from "../form/Field";
 import { useCreateHomework } from "../../hooks/use-homework";
+import { useTranslation } from "../../hooks/use-translation";
 
 interface AssignHomeworkModalProps {
   open: boolean;
@@ -14,6 +15,7 @@ interface AssignHomeworkModalProps {
 }
 
 export function AssignHomeworkModal({ open, onClose, groupId, lessons }: AssignHomeworkModalProps) {
+  const { t } = useTranslation();
   const createHomework = useCreateHomework();
   const { showToast } = useToast();
   const [form, setForm] = useState({ title: "", description: "", dueDate: "", lessonId: "" });
@@ -44,25 +46,25 @@ export function AssignHomeworkModal({ open, onClose, groupId, lessons }: AssignH
         dueDate: form.dueDate,
         lessonId: form.lessonId || undefined,
       });
-      showToast("Homework assigned.");
+      showToast(t("Homework assigned."));
       onClose();
     } catch {
-      showToast("Failed to assign homework.", "error");
+      showToast(t("Failed to assign homework."), "error");
     }
   }
 
   return (
-    <Modal open={open} onClose={onClose} title="Assign Homework">
+    <Modal open={open} onClose={onClose} title={t("Assign Homework")}>
       <form onSubmit={handleSubmit} className="space-y-4">
         <TextField
-          label="Title"
+          label={t("Title")}
           required
           value={form.title}
           error={errors.title}
           onChange={(e) => setForm((f) => ({ ...f, title: e.target.value }))}
         />
         <div>
-          <label className="mb-1 block text-sm font-medium text-slate-700">Description</label>
+          <label className="mb-1 block text-sm font-medium text-slate-700">{t("Description")}</label>
           <textarea
             value={form.description}
             onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))}
@@ -71,7 +73,7 @@ export function AssignHomeworkModal({ open, onClose, groupId, lessons }: AssignH
           />
         </div>
         <TextField
-          label="Due date"
+          label={t("Due date")}
           type="date"
           required
           value={form.dueDate}
@@ -79,11 +81,11 @@ export function AssignHomeworkModal({ open, onClose, groupId, lessons }: AssignH
           onChange={(e) => setForm((f) => ({ ...f, dueDate: e.target.value }))}
         />
         <SelectField
-          label="Link to lesson"
+          label={t("Link to lesson")}
           value={form.lessonId}
           onChange={(e) => setForm((f) => ({ ...f, lessonId: e.target.value }))}
         >
-          <option value="">No lesson link</option>
+          <option value="">{t("No lesson link")}</option>
           {lessons?.map((l) => (
             <option key={l.id} value={l.id}>
               {l.title} ({new Date(l.date).toLocaleDateString()})
@@ -98,7 +100,7 @@ export function AssignHomeworkModal({ open, onClose, groupId, lessons }: AssignH
             disabled={createHomework.isPending}
             className="rounded-md border border-slate-300 px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 disabled:opacity-60"
           >
-            Cancel
+            {t("Cancel")}
           </button>
           <button
             type="submit"
@@ -106,7 +108,7 @@ export function AssignHomeworkModal({ open, onClose, groupId, lessons }: AssignH
             className="flex items-center gap-2 rounded-md bg-indigo-600 px-3 py-2 text-sm font-medium text-white hover:bg-indigo-700 disabled:opacity-60"
           >
             {createHomework.isPending && <Loader2 className="h-4 w-4 animate-spin" />}
-            Assign
+            {t("Assign")}
           </button>
         </div>
       </form>

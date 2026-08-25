@@ -1,4 +1,5 @@
 import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
+import { useTranslation } from "../../hooks/use-translation";
 
 interface PlatformRevenueChartProps {
   data: { name: string; value: number }[];
@@ -6,8 +7,9 @@ interface PlatformRevenueChartProps {
 }
 
 export function PlatformRevenueChart({ data, valueFormatter }: PlatformRevenueChartProps) {
+  const { t } = useTranslation();
   if (data.length === 0) {
-    return <div className="flex h-[200px] items-center justify-center text-xs text-slate-500">No data</div>;
+    return <div className="flex h-[200px] items-center justify-center text-xs text-slate-500">{t("No data")}</div>;
   }
 
   return (

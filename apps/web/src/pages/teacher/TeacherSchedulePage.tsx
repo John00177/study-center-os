@@ -1,5 +1,6 @@
 import { DataTable } from "../../components/DataTable";
 import { useMyGroups } from "../../hooks/use-teacher-dashboard";
+import { useTranslation } from "../../hooks/use-translation";
 
 const DAY_LABELS = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 
@@ -12,6 +13,7 @@ interface ScheduleRow {
 }
 
 export function TeacherSchedulePage() {
+  const { t } = useTranslation();
   const { data: groups, isLoading } = useMyGroups();
 
   const rows: ScheduleRow[] = (groups ?? [])
@@ -28,17 +30,17 @@ export function TeacherSchedulePage() {
 
   return (
     <div>
-      <h1 className="mb-6 text-2xl font-semibold text-slate-900 dark:text-slate-100">My Schedule</h1>
+      <h1 className="mb-6 text-2xl font-semibold text-slate-900 dark:text-slate-100">{t("My Schedule")}</h1>
 
       <DataTable
         data={rows}
         isLoading={isLoading}
-        emptyMessage="No scheduled classes."
+        emptyMessage={t("No scheduled classes.")}
         getRowKey={(r) => r.id}
         columns={[
-          { header: "Day", render: (r) => DAY_LABELS[r.dayOfWeek] },
-          { header: "Time", render: (r) => `${r.startTime} - ${r.endTime}` },
-          { header: "Group", render: (r) => r.groupName },
+          { header: t("Day"), render: (r) => DAY_LABELS[r.dayOfWeek] },
+          { header: t("Time"), render: (r) => `${r.startTime} - ${r.endTime}` },
+          { header: t("Group"), render: (r) => r.groupName },
         ]}
       />
     </div>

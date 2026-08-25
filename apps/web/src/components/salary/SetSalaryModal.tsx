@@ -6,6 +6,7 @@ import { SelectField, TextField } from "../form/Field";
 import { useToast } from "../Toast";
 import { useTeachers } from "../../hooks/use-teachers";
 import { useSetSalary } from "../../hooks/use-salary";
+import { useTranslation } from "../../hooks/use-translation";
 
 interface SetSalaryModalProps {
   open: boolean;
@@ -21,6 +22,7 @@ const SALARY_TYPE_LABELS: Record<SalaryType, string> = {
 };
 
 export function SetSalaryModal({ open, onClose, editing }: SetSalaryModalProps) {
+  const { t } = useTranslation();
   const { data: teachers } = useTeachers();
   const setSalary = useSetSalary();
   const { showToast } = useToast();
@@ -73,7 +75,7 @@ export function SetSalaryModal({ open, onClose, editing }: SetSalaryModalProps) 
       showToast(editing ? "Salary updated." : "Salary set.");
       onClose();
     } catch {
-      showToast("Failed to save salary.", "error");
+      showToast(t("Failed to save salary."), "error");
     }
   }
 
@@ -81,14 +83,14 @@ export function SetSalaryModal({ open, onClose, editing }: SetSalaryModalProps) 
     <Modal open={open} onClose={onClose} title={editing ? "Edit Salary" : "Set Salary"}>
       <form onSubmit={handleSubmit} className="space-y-4">
         <SelectField
-          label="Teacher"
+          label={t("Teacher")}
           required
           value={teacherId}
           error={errors.teacherId}
           disabled={Boolean(editing)}
           onChange={(e) => setTeacherId(e.target.value)}
         >
-          <option value="">Select teacher</option>
+          <option value="">{t("Select teacher")}</option>
           {teachers?.map((t) => (
             <option key={t.id} value={t.id}>
               {t.name}
@@ -96,7 +98,7 @@ export function SetSalaryModal({ open, onClose, editing }: SetSalaryModalProps) 
           ))}
         </SelectField>
 
-        <SelectField label="Salary Type" value={type} onChange={(e) => setType(e.target.value as SalaryType)}>
+        <SelectField label={t("Salary Type")} value={type} onChange={(e) => setType(e.target.value as SalaryType)}>
           {Object.entries(SALARY_TYPE_LABELS).map(([value, label]) => (
             <option key={value} value={value}>
               {label}
@@ -106,7 +108,7 @@ export function SetSalaryModal({ open, onClose, editing }: SetSalaryModalProps) 
 
         {type === "fixed" && (
           <TextField
-            label="Monthly Amount (UZS)"
+            label={t("Monthly Amount (UZS)")}
             type="number"
             min="0"
             required
@@ -119,7 +121,7 @@ export function SetSalaryModal({ open, onClose, editing }: SetSalaryModalProps) 
         {type === "hourly" && (
           <>
             <TextField
-              label="Hourly Rate (UZS)"
+              label={t("Hourly Rate (UZS)")}
               type="number"
               min="0"
               required
@@ -131,7 +133,7 @@ export function SetSalaryModal({ open, onClose, editing }: SetSalaryModalProps) 
               }}
             />
             <p className="text-xs text-slate-500">
-              Estimated monthly amount is calculated from the teacher's actual weekly schedule once saved.
+              {t("Estimated monthly amount is calculated from the teacher's actual weekly schedule once saved.")}
             </p>
           </>
         )}
@@ -139,7 +141,7 @@ export function SetSalaryModal({ open, onClose, editing }: SetSalaryModalProps) 
         {type === "per_student" && (
           <>
             <TextField
-              label="Per Student Rate (UZS)"
+              label={t("Per Student Rate (UZS)")}
               type="number"
               min="0"
               required
@@ -151,13 +153,13 @@ export function SetSalaryModal({ open, onClose, editing }: SetSalaryModalProps) 
               }}
             />
             <p className="text-xs text-slate-500">
-              Estimated monthly amount is calculated from the teacher's actual enrolled students once saved.
+              {t("Estimated monthly amount is calculated from the teacher's actual enrolled students once saved.")}
             </p>
           </>
         )}
 
         <TextField
-          label="Effective From"
+          label={t("Effective From")}
           type="date"
           required
           value={effectiveFrom}
@@ -165,12 +167,12 @@ export function SetSalaryModal({ open, onClose, editing }: SetSalaryModalProps) 
         />
 
         <div>
-          <label className="mb-1 block text-sm font-medium text-slate-700">Notes</label>
+          <label className="mb-1 block text-sm font-medium text-slate-700">{t("Notes")}</label>
           <textarea
             value={notes}
             onChange={(e) => setNotes(e.target.value)}
             rows={3}
-            placeholder="Optional notes..."
+            placeholder={t("Optional notes...")}
             className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm text-slate-900 dark:text-slate-100 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/30"
           />
         </div>
@@ -182,7 +184,7 @@ export function SetSalaryModal({ open, onClose, editing }: SetSalaryModalProps) 
             disabled={setSalary.isPending}
             className="rounded-md border border-slate-300 px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 disabled:opacity-60"
           >
-            Cancel
+            {t("Cancel")}
           </button>
           <button
             type="submit"
@@ -190,7 +192,7 @@ export function SetSalaryModal({ open, onClose, editing }: SetSalaryModalProps) 
             className="flex items-center gap-2 rounded-md bg-indigo-600 px-3 py-2 text-sm font-medium text-white hover:bg-indigo-700 disabled:opacity-60"
           >
             {setSalary.isPending && <Loader2 className="h-4 w-4 animate-spin" />}
-            Save
+            {t("Save")}
           </button>
         </div>
       </form>

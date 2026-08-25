@@ -64,7 +64,7 @@ export function SendNotificationModal({ open, onClose }: { open: boolean; onClos
       reset();
       onClose();
     } catch {
-      showToast("Failed to send notification.", "error");
+      showToast(t("Failed to send notification."), "error");
     }
   }
 
@@ -100,7 +100,7 @@ export function SendNotificationModal({ open, onClose }: { open: boolean; onClos
 
         <div>
           <label className="mb-1 block text-xs font-medium uppercase tracking-wide text-slate-500 dark:text-slate-400">
-            Type
+            {t("Type")}
           </label>
           <div className="flex gap-2">
             {TYPE_OPTIONS.map((option) => (

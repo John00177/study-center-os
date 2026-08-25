@@ -9,6 +9,7 @@ import { useToast } from "../../components/Toast";
 import { SelectField, TextField } from "../../components/form/Field";
 import { useMyGroups } from "../../hooks/use-teacher-dashboard";
 import { useCloseTest, useDeleteTest, usePublishTest, useTest, useTests } from "../../hooks/use-ai-test-generator";
+import { useTranslation } from "../../hooks/use-translation";
 
 const SUBJECTS = ["IELTS", "General English", "Mathematics", "Science", "Other"];
 
@@ -34,12 +35,13 @@ const TYPE_LABELS: Record<QuestionType, string> = {
 };
 
 function TestPreviewModal({ testId, onClose }: { testId: string | null; onClose: () => void }) {
+  const { t } = useTranslation();
   const { data: test, isLoading } = useTest(testId);
 
   return (
     <Modal open={Boolean(testId)} onClose={onClose} title={test?.title ?? "Test"} widthClassName="max-w-2xl">
       {isLoading || !test ? (
-        <p className="text-sm text-slate-500">Loading...</p>
+        <p className="text-sm text-slate-500">{t("Loading...")}</p>
       ) : (
         <div className="space-y-4">
           <div className="flex flex-wrap items-center gap-2">
@@ -51,7 +53,7 @@ function TestPreviewModal({ testId, onClose }: { testId: string | null; onClose:
             </span>
           </div>
           <p className="text-sm text-slate-600">
-            Total Marks: <span className="font-semibold">{test.totalMarks}</span> · Pass Marks:{" "}
+            {t("Total Marks:")}<span className="font-semibold">{test.totalMarks}</span> · Pass Marks:{" "}
             <span className="font-semibold">{test.passMarks}</span>
           </p>
 
@@ -88,7 +90,7 @@ function TestPreviewModal({ testId, onClose }: { testId: string | null; onClose:
                     Correct answer: {q.correctAnswer}
                   </p>
                 )}
-                {q.type === "essay" && <p className="mt-2 text-sm italic text-slate-500">Teacher will grade manually.</p>}
+                {q.type === "essay" && <p className="mt-2 text-sm italic text-slate-500">{t("Teacher will grade manually.")}</p>}
               </div>
             ))}
           </div>
@@ -99,6 +101,7 @@ function TestPreviewModal({ testId, onClose }: { testId: string | null; onClose:
 }
 
 function PublishModal({ test, onClose }: { test: TestDto | null; onClose: () => void }) {
+  const { t } = useTranslation();
   const { data: groups } = useMyGroups();
   const [groupId, setGroupId] = useState("");
   const publish = usePublishTest();
@@ -108,22 +111,22 @@ function PublishModal({ test, onClose }: { test: TestDto | null; onClose: () => 
     if (!test || !groupId) return;
     try {
       await publish.mutateAsync({ id: test.id, groupId });
-      showToast("Test published to group.");
+      showToast(t("Test published to group."));
       onClose();
     } catch {
-      showToast("Failed to publish test.", "error");
+      showToast(t("Failed to publish test."), "error");
     }
   }
 
   return (
-    <Modal open={Boolean(test)} onClose={onClose} title="Publish to Group" widthClassName="max-w-sm">
+    <Modal open={Boolean(test)} onClose={onClose} title={t("Publish to Group")} widthClassName="max-w-sm">
       {test && (
         <div className="space-y-4">
           <p className="text-sm text-slate-600">
             Publish "<span className="font-medium text-slate-900 dark:text-slate-100">{test.title}</span>" to a group. Students will be able to take it immediately.
           </p>
-          <SelectField label="Group" required value={groupId} onChange={(e) => setGroupId(e.target.value)}>
-            <option value="">Select group</option>
+          <SelectField label={t("Group")} required value={groupId} onChange={(e) => setGroupId(e.target.value)}>
+            <option value="">{t("Select group")}</option>
             {groups?.map((g) => (
               <option key={g.id} value={g.id}>
                 {g.name}
@@ -132,14 +135,14 @@ function PublishModal({ test, onClose }: { test: TestDto | null; onClose: () => 
           </SelectField>
           <div className="flex justify-end gap-3 border-t border-slate-200 pt-4">
             <button onClick={onClose} className="rounded-md border border-slate-300 px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50">
-              Cancel
+              {t("Cancel")}
             </button>
             <button
               onClick={handlePublish}
               disabled={!groupId || publish.isPending}
               className="rounded-md bg-indigo-600 px-3 py-2 text-sm font-medium text-white hover:bg-indigo-700 disabled:opacity-60"
             >
-              Publish
+              {t("Publish")}
             </button>
           </div>
         </div>
@@ -149,6 +152,7 @@ function PublishModal({ test, onClose }: { test: TestDto | null; onClose: () => 
 }
 
 export function MyTestsPage() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const { showToast } = useToast();
   const [status, setStatus] = useState<TestStatus | "">("");
@@ -167,10 +171,10 @@ export function MyTestsPage() {
     if (!deleting) return;
     try {
       await deleteTest.mutateAsync(deleting.id);
-      showToast("Test deleted.");
+      showToast(t("Test deleted."));
       setDeleting(null);
     } catch {
-      showToast("Failed to delete test.", "error");
+      showToast(t("Failed to delete test."), "error");
     }
   }
 
@@ -178,41 +182,41 @@ export function MyTestsPage() {
     if (!closing) return;
     try {
       await closeTest.mutateAsync(closing.id);
-      showToast("Test closed. Students can no longer submit.");
+      showToast(t("Test closed. Students can no longer submit."));
       setClosing(null);
     } catch {
-      showToast("Failed to close test.", "error");
+      showToast(t("Failed to close test."), "error");
     }
   }
 
   return (
     <div>
       <div className="mb-6 flex items-center justify-between">
-        <h1 className="text-2xl font-semibold text-slate-900 dark:text-slate-100">My Tests</h1>
+        <h1 className="text-2xl font-semibold text-slate-900 dark:text-slate-100">{t("My Tests")}</h1>
         <Link
           to="/teacher/ai-tests/generate"
           className="flex items-center gap-2 rounded-md bg-indigo-600 px-3 py-2 text-sm font-medium text-white hover:bg-indigo-700"
         >
           <Sparkles className="h-4 w-4" />
-          New Test
+          {t("New Test")}
         </Link>
       </div>
 
       <div className="mb-4 flex flex-wrap items-end gap-4">
         <div className="w-48">
-          <TextField label="Search" placeholder="Topic or title..." value={search} onChange={(e) => setSearch(e.target.value)} />
+          <TextField label={t("Search")} placeholder={t("Topic or title...")} value={search} onChange={(e) => setSearch(e.target.value)} />
         </div>
         <div className="w-40">
-          <SelectField label="Status" value={status} onChange={(e) => setStatus(e.target.value as TestStatus | "")}>
-            <option value="">All</option>
-            <option value="draft">Draft</option>
-            <option value="published">Published</option>
-            <option value="closed">Closed</option>
+          <SelectField label={t("Status")} value={status} onChange={(e) => setStatus(e.target.value as TestStatus | "")}>
+            <option value="">{t("All")}</option>
+            <option value="draft">{t("Draft")}</option>
+            <option value="published">{t("Published")}</option>
+            <option value="closed">{t("Closed")}</option>
           </SelectField>
         </div>
         <div className="w-48">
-          <SelectField label="Subject" value={subject} onChange={(e) => setSubject(e.target.value)}>
-            <option value="">All</option>
+          <SelectField label={t("Subject")} value={subject} onChange={(e) => setSubject(e.target.value)}>
+            <option value="">{t("All")}</option>
             {SUBJECTS.map((s) => (
               <option key={s} value={s}>
                 {s}
@@ -225,60 +229,60 @@ export function MyTestsPage() {
       <DataTable
         data={data}
         isLoading={isLoading}
-        emptyMessage="No tests yet. Create your first AI-generated test!"
-        getRowKey={(t) => t.id}
-        onRowClick={(t) => setPreviewingId(t.id)}
+        emptyMessage={t("No tests yet. Create your first AI-generated test!")}
+        getRowKey={(test) => test.id}
+        onRowClick={(test) => setPreviewingId(test.id)}
         columns={[
-          { header: "Title", render: (t) => <span className="font-medium text-slate-900 dark:text-slate-100">{t.title}</span> },
-          { header: "Topic", render: (t) => t.topic },
-          { header: "Subject", render: (t) => <span className="inline-flex items-center rounded-full bg-indigo-50 px-2 py-0.5 text-xs font-medium text-indigo-700">{t.subject}</span> },
-          { header: "Level", render: (t) => <span className="inline-flex items-center rounded-full bg-slate-100 px-2 py-0.5 text-xs font-medium text-slate-600">{t.level}</span> },
-          { header: "Questions", render: (t) => t.questionCount, align: "right" },
-          { header: "Group", render: (t) => t.group?.name ?? "-" },
+          { header: t("Title"), render: (test) => <span className="font-medium text-slate-900 dark:text-slate-100">{test.title}</span> },
+          { header: t("Topic"), render: (test) => test.topic },
+          { header: t("Subject"), render: (test) => <span className="inline-flex items-center rounded-full bg-indigo-50 px-2 py-0.5 text-xs font-medium text-indigo-700">{test.subject}</span> },
+          { header: t("Level"), render: (test) => <span className="inline-flex items-center rounded-full bg-slate-100 px-2 py-0.5 text-xs font-medium text-slate-600">{test.level}</span> },
+          { header: t("Questions"), render: (test) => test.questionCount, align: "right" },
+          { header: t("Group"), render: (test) => test.group?.name ?? "-" },
           {
-            header: "Status",
-            render: (t) => (
-              <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium capitalize ${STATUS_STYLES[t.status]}`}>
-                {t.status}
+            header: t("Status"),
+            render: (test) => (
+              <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium capitalize ${STATUS_STYLES[test.status]}`}>
+                {test.status}
               </span>
             ),
           },
-          { header: "Submissions", render: (t) => t.submissionCount, align: "right" },
-          { header: "Avg Score", render: (t) => (t.averageScore != null ? `${t.averageScore}%` : "-"), align: "right" },
-          { header: "Created", render: (t) => new Date(t.createdAt).toLocaleDateString() },
+          { header: t("Submissions"), render: (test) => test.submissionCount, align: "right" },
+          { header: t("Avg Score"), render: (test) => (test.averageScore != null ? `${test.averageScore}%` : "-"), align: "right" },
+          { header: t("Created"), render: (test) => new Date(test.createdAt).toLocaleDateString() },
         ]}
-        renderActions={(t) => (
+        renderActions={(test) => (
           <>
-            <button onClick={() => setPreviewingId(t.id)} className="rounded p-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-700" aria-label="View test" title="View">
+            <button onClick={() => setPreviewingId(test.id)} className="rounded p-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-700" aria-label={t("View test")} title={t("View")}>
               <Eye className="h-4 w-4" />
             </button>
             <button
-              onClick={() => setPreviewingId(t.id)}
+              onClick={() => setPreviewingId(test.id)}
               className="rounded p-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-700"
-              aria-label="Edit test"
-              title="Edit"
+              aria-label={t("Edit test")}
+              title={t("Edit")}
             >
               <Pencil className="h-4 w-4" />
             </button>
-            {t.status === "draft" && (
-              <button onClick={() => setPublishing(t)} className="rounded p-1.5 text-slate-400 hover:bg-green-50 hover:text-green-600" aria-label="Publish test" title="Publish">
+            {test.status === "draft" && (
+              <button onClick={() => setPublishing(test)} className="rounded p-1.5 text-slate-400 hover:bg-green-50 hover:text-green-600" aria-label={t("Publish test")} title={t("Publish")}>
                 <Send className="h-4 w-4" />
               </button>
             )}
-            {t.status === "published" && (
-              <button onClick={() => setClosing(t)} className="rounded p-1.5 text-slate-400 hover:bg-orange-50 hover:text-orange-600" aria-label="Close test" title="Close">
+            {test.status === "published" && (
+              <button onClick={() => setClosing(test)} className="rounded p-1.5 text-slate-400 hover:bg-orange-50 hover:text-orange-600" aria-label={t("Close test")} title={t("Close")}>
                 <Lock className="h-4 w-4" />
               </button>
             )}
             <button
-              onClick={() => navigate(`/teacher/ai-tests/${t.id}/results`)}
+              onClick={() => navigate(`/teacher/ai-tests/${test.id}/results`)}
               className="rounded p-1.5 text-slate-400 hover:bg-indigo-50 hover:text-indigo-600"
-              aria-label="View results"
-              title="Results"
+              aria-label={t("View results")}
+              title={t("Results")}
             >
               <BarChart3 className="h-4 w-4" />
             </button>
-            <button onClick={() => setDeleting(t)} className="rounded p-1.5 text-slate-400 hover:bg-red-50 hover:text-red-600" aria-label="Delete test" title="Delete">
+            <button onClick={() => setDeleting(test)} className="rounded p-1.5 text-slate-400 hover:bg-red-50 hover:text-red-600" aria-label={t("Delete test")} title={t("Delete")}>
               <Trash2 className="h-4 w-4" />
             </button>
           </>
@@ -290,18 +294,18 @@ export function MyTestsPage() {
 
       <ConfirmDialog
         open={Boolean(deleting)}
-        title="Delete test"
+        title={t("Delete test")}
         message={`Are you sure you want to delete "${deleting?.title}"? This cannot be undone.`}
-        confirmLabel="Delete"
+        confirmLabel={t("Delete")}
         isConfirming={deleteTest.isPending}
         onConfirm={confirmDelete}
         onCancel={() => setDeleting(null)}
       />
       <ConfirmDialog
         open={Boolean(closing)}
-        title="Close test"
+        title={t("Close test")}
         message={`Close "${closing?.title}"? Students will no longer be able to submit answers.`}
-        confirmLabel="Close"
+        confirmLabel={t("Close")}
         isConfirming={closeTest.isPending}
         onConfirm={confirmClose}
         onCancel={() => setClosing(null)}

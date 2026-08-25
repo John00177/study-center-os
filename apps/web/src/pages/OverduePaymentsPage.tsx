@@ -14,6 +14,7 @@ import { useTheme } from "../contexts/ThemeContext";
 import { parsePlanLockError } from "../lib/plan-lock";
 import { formatCurrency } from "../lib/format";
 import { useUserRole } from "../stores/auth.store";
+import { useTranslation } from "../hooks/use-translation";
 
 interface PendingSend {
   charges: OverdueChargeDto[];
@@ -21,6 +22,7 @@ interface PendingSend {
 }
 
 export function OverduePaymentsPage() {
+  const { t } = useTranslation();
   const role = useUserRole();
   // Recording a payment is receptionist-only (see FinancePage.tsx and the
   // backend guard on POST /payments) — owner/admin get this page read-only,
@@ -78,7 +80,7 @@ export function OverduePaymentsPage() {
       setSelectedIds(new Set());
       setPendingSend(null);
     } catch {
-      showToast("Failed to send reminder.", "error");
+      showToast(t("Failed to send reminder."), "error");
     }
   }
 
@@ -86,7 +88,7 @@ export function OverduePaymentsPage() {
     if (!markingPaid) return;
     const account = accounts?.[0];
     if (!account) {
-      showToast("No financial account available to record this payment.", "error");
+      showToast(t("No financial account available to record this payment."), "error");
       return;
     }
     try {
@@ -99,10 +101,10 @@ export function OverduePaymentsPage() {
         paymentMethod: "cash",
         chargeId: markingPaid.id,
       });
-      showToast("Payment recorded.");
+      showToast(t("Payment recorded."));
       setMarkingPaid(null);
     } catch {
-      showToast("Failed to record payment.", "error");
+      showToast(t("Failed to record payment."), "error");
     }
   }
 
@@ -115,7 +117,7 @@ export function OverduePaymentsPage() {
   return (
     <div>
       <div className="mb-6 flex items-center justify-between">
-        <h1 className="text-2xl font-semibold text-slate-900 dark:text-slate-100">Overdue Payments</h1>
+        <h1 className="text-2xl font-semibold text-slate-900 dark:text-slate-100">{t("Overdue Payments")}</h1>
       </div>
 
       {!isLoading && charges && (
@@ -132,8 +134,8 @@ export function OverduePaymentsPage() {
       <div className="mb-4 flex flex-wrap items-end gap-4">
         {hasBranches && (
           <div className="w-48">
-            <SelectField label="Branch" value={branchId} onChange={(e) => setBranchId(e.target.value)}>
-              <option value="">All branches</option>
+            <SelectField label={t("Branch")} value={branchId} onChange={(e) => setBranchId(e.target.value)}>
+              <option value="">{t("All branches")}</option>
               {branches?.map((b) => (
                 <option key={b.id} value={b.id}>
                   {b.name}
@@ -144,11 +146,11 @@ export function OverduePaymentsPage() {
         )}
         <div className="w-48">
           <SelectField
-            label="Days overdue"
+            label={t("Days overdue")}
             value={minDaysOverdue}
             onChange={(e) => setMinDaysOverdue(e.target.value)}
           >
-            <option value="">Any</option>
+            <option value="">{t("Any")}</option>
             <option value="1">1+ days</option>
             <option value="7">7+ days</option>
             <option value="14">14+ days</option>
@@ -178,7 +180,7 @@ export function OverduePaymentsPage() {
       <DataTable
         data={charges}
         isLoading={isLoading}
-        emptyMessage="No overdue payments."
+        emptyMessage={t("No overdue payments.")}
         getRowKey={(c) => c.id}
         columns={[
           {
@@ -192,15 +194,15 @@ export function OverduePaymentsPage() {
               />
             ),
           },
-          { header: "Student", render: (c) => c.student?.name ?? "-" },
+          { header: t("Student"), render: (c) => c.student?.name ?? "-" },
           {
-            header: "Parent / phone",
+            header: t("Parent / phone"),
             render: (c) => c.student?.phone ?? "-",
           },
-          { header: "Amount", render: (c) => formatCurrency(c.amount, c.currency) },
-          { header: "Due date", render: (c) => new Date(c.dueDate).toLocaleDateString() },
+          { header: t("Amount"), render: (c) => formatCurrency(c.amount, c.currency) },
+          { header: t("Due date"), render: (c) => new Date(c.dueDate).toLocaleDateString() },
           {
-            header: "Days overdue",
+            header: t("Days overdue"),
             render: (c) => (
               <span
                 className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${
@@ -212,7 +214,7 @@ export function OverduePaymentsPage() {
             ),
           },
           {
-            header: "Last reminder",
+            header: t("Last reminder"),
             render: (c) =>
               c.lastReminder
                 ? `${c.lastReminder.type.toUpperCase()} · ${c.lastReminder.status} · ${new Date(c.lastReminder.createdAt).toLocaleDateString()}`
@@ -226,22 +228,22 @@ export function OverduePaymentsPage() {
                 onClick={() => setMarkingPaid(c)}
                 className="rounded-md bg-green-600 px-2.5 py-1.5 text-xs font-medium text-white hover:bg-green-700"
               >
-                Mark Paid
+                {t("Mark Paid")}
               </button>
             )}
             <button
               onClick={() => setPendingSend({ charges: [c], type: "sms" })}
               className="rounded p-1.5 text-slate-400 hover:bg-indigo-50 hover:text-indigo-600"
-              aria-label="Send SMS"
-              title="Send SMS"
+              aria-label={t("Send SMS")}
+              title={t("Send SMS")}
             >
               <MessageSquare className="h-4 w-4" />
             </button>
             <button
               onClick={() => setPendingSend({ charges: [c], type: "whatsapp" })}
               className="rounded p-1.5 text-slate-400 hover:bg-green-50 hover:text-green-600"
-              aria-label="Send WhatsApp"
-              title="Send WhatsApp"
+              aria-label={t("Send WhatsApp")}
+              title={t("Send WhatsApp")}
             >
               <MessageCircle className="h-4 w-4" />
             </button>
@@ -259,7 +261,7 @@ export function OverduePaymentsPage() {
 
       <ConfirmDialog
         open={Boolean(markingPaid)}
-        title="Mark as paid"
+        title={t("Mark as paid")}
         message={
           markingPaid
             ? `Record a ${formatCurrency(markingPaid.amount, markingPaid.currency)} cash payment for ${markingPaid.student?.name ?? "this student"}?`
@@ -287,7 +289,7 @@ export function OverduePaymentsPage() {
       {sendReminder.isPending && (
         <div className="fixed bottom-4 right-4 flex items-center gap-2 rounded-md bg-white px-3 py-2 text-sm text-slate-600 shadow-md">
           <Loader2 className="h-4 w-4 animate-spin" />
-          Sending...
+          {t("Sending...")}
         </div>
       )}
     </div>

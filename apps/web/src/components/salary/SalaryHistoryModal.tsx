@@ -7,6 +7,7 @@ import { PaymentStatusBadge } from "./SalaryStatusBadge";
 import { SalarySlip } from "./SalarySlip";
 import { useSalaryPaymentHistory } from "../../hooks/use-salary";
 import { formatCurrency } from "../../lib/format";
+import { useTranslation } from "../../hooks/use-translation";
 
 interface SalaryHistoryModalProps {
   salary: TeacherSalaryLineDto | null;
@@ -14,6 +15,7 @@ interface SalaryHistoryModalProps {
 }
 
 export function SalaryHistoryModal({ salary, onClose }: SalaryHistoryModalProps) {
+  const { t } = useTranslation();
   const { data: payments, isLoading } = useSalaryPaymentHistory(salary?.id ?? null);
   const [printing, setPrinting] = useState<SalaryPaymentDto | null>(null);
 
@@ -38,21 +40,21 @@ export function SalaryHistoryModal({ salary, onClose }: SalaryHistoryModalProps)
         <DataTable
           data={payments}
           isLoading={isLoading}
-          emptyMessage="No payment records yet."
+          emptyMessage={t("No payment records yet.")}
           getRowKey={(p) => p.id}
           columns={[
-            { header: "Month", render: (p) => p.month },
-            { header: "Amount", render: (p) => formatCurrency(p.amount, p.currency) },
-            { header: "Status", render: (p) => <PaymentStatusBadge status={p.status} /> },
-            { header: "Paid Date", render: (p) => (p.paidAt ? new Date(p.paidAt).toLocaleDateString() : "—") },
-            { header: "Method", render: (p) => <span className="capitalize">{p.paymentMethod?.replace("_", " ") ?? "—"}</span> },
+            { header: t("Month"), render: (p) => p.month },
+            { header: t("Amount"), render: (p) => formatCurrency(p.amount, p.currency) },
+            { header: t("Status"), render: (p) => <PaymentStatusBadge status={p.status} /> },
+            { header: t("Paid Date"), render: (p) => (p.paidAt ? new Date(p.paidAt).toLocaleDateString() : "—") },
+            { header: t("Method"), render: (p) => <span className="capitalize">{p.paymentMethod?.replace("_", " ") ?? "—"}</span> },
           ]}
           renderActions={(p) => (
             <button
               onClick={() => setPrinting(p)}
               disabled={p.status !== "paid"}
               className="rounded p-1.5 text-slate-400 hover:bg-indigo-50 hover:text-indigo-600 disabled:cursor-not-allowed disabled:opacity-40"
-              aria-label="Print slip"
+              aria-label={t("Print slip")}
               title={p.status === "paid" ? "Print slip" : "Only paid months have a slip"}
             >
               <Printer className="h-4 w-4" />
@@ -61,7 +63,7 @@ export function SalaryHistoryModal({ salary, onClose }: SalaryHistoryModalProps)
         />
       </Modal>
 
-      <Modal open={Boolean(printing)} onClose={() => setPrinting(null)} title="Salary Slip" widthClassName="max-w-lg">
+      <Modal open={Boolean(printing)} onClose={() => setPrinting(null)} title={t("Salary Slip")} widthClassName="max-w-lg">
         {printing && salary && (
           <SalarySlip
             teacherName={salary.teacherName}

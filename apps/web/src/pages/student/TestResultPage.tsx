@@ -1,16 +1,18 @@
 import { useParams } from "react-router-dom";
 import { useOwnTestResult } from "../../hooks/use-student-tests";
+import { useTranslation } from "../../hooks/use-translation";
 
 export function TestResultPage() {
+  const { t } = useTranslation();
   const { id } = useParams<{ id: string }>();
   const { data: result, isLoading } = useOwnTestResult(id ?? null);
 
   if (isLoading) {
-    return <p className="text-sm text-slate-500">Loading...</p>;
+    return <p className="text-sm text-slate-500">{t("Loading...")}</p>;
   }
 
   if (!result) {
-    return <p className="text-sm text-slate-500">Result not found.</p>;
+    return <p className="text-sm text-slate-500">{t("Result not found.")}</p>;
   }
 
   return (
@@ -28,19 +30,19 @@ export function TestResultPage() {
           {result.passed ? "Passed" : "Failed"}
         </span>
         {result.status === "submitted" && (
-          <p className="mt-2 text-xs text-slate-500">Some essay questions are still pending teacher grading.</p>
+          <p className="mt-2 text-xs text-slate-500">{t("Some essay questions are still pending teacher grading.")}</p>
         )}
       </div>
 
       {result.feedback && (
         <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
-          <p className="text-xs font-medium uppercase tracking-wide text-slate-500">Teacher Feedback</p>
+          <p className="text-xs font-medium uppercase tracking-wide text-slate-500">{t("Teacher Feedback")}</p>
           <p className="mt-1 text-sm text-slate-800">{result.feedback}</p>
         </div>
       )}
 
       <div>
-        <h2 className="mb-2 text-sm font-semibold uppercase tracking-wide text-slate-500">Question Review</h2>
+        <h2 className="mb-2 text-sm font-semibold uppercase tracking-wide text-slate-500">{t("Question Review")}</h2>
         <div className="space-y-3">
           {result.questions.map((q, i) => (
             <div
@@ -53,11 +55,11 @@ export function TestResultPage() {
                 Question {i + 1}: {q.text}
               </p>
               <p className="mt-1 text-sm">
-                Your answer: <span className="font-medium">{q.yourAnswer ?? "-"}</span>
+                {t("Your answer:")}<span className="font-medium">{q.yourAnswer ?? "-"}</span>
               </p>
               {q.type !== "essay" && q.correctAnswer && q.isCorrect === false && (
                 <p className="text-sm text-slate-600">
-                  Correct answer: <span className="font-medium">{q.correctAnswer}</span>
+                  {t("Correct answer:")}<span className="font-medium">{q.correctAnswer}</span>
                 </p>
               )}
               {q.type === "essay" && (

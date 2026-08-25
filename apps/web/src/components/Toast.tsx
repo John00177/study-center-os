@@ -1,5 +1,6 @@
 import { CheckCircle2, Info, X, XCircle } from "lucide-react";
 import { createContext, useCallback, useContext, useRef, useState, type ReactNode } from "react";
+import { useTranslation } from "../hooks/use-translation";
 
 type ToastVariant = "success" | "error" | "info";
 
@@ -39,6 +40,7 @@ const VARIANT_STYLES: Record<ToastVariant, { border: string; bg: string; text: s
 };
 
 export function ToastProvider({ children }: { children: ReactNode }) {
+  const { t } = useTranslation();
   const [toasts, setToasts] = useState<ToastItem[]>([]);
   const nextId = useRef(0);
 
@@ -72,7 +74,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
               <button
                 onClick={() => dismiss(toast.id)}
                 className="shrink-0 rounded p-0.5 hover:bg-black/5 dark:text-slate-300 dark:hover:bg-white/10"
-                aria-label="Dismiss"
+                aria-label={t("Dismiss")}
               >
                 <X className="h-4 w-4" />
               </button>

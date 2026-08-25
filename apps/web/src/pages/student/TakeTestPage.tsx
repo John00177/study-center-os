@@ -4,6 +4,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { ConfirmDialog } from "../../components/ConfirmDialog";
 import { useToast } from "../../components/Toast";
 import { useSubmitTest, useTestForTaking } from "../../hooks/use-student-tests";
+import { useTranslation } from "../../hooks/use-translation";
 
 function formatTime(totalSeconds: number) {
   const m = Math.floor(totalSeconds / 60);
@@ -12,6 +13,7 @@ function formatTime(totalSeconds: number) {
 }
 
 export function TakeTestPage() {
+  const { t } = useTranslation();
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { showToast } = useToast();
@@ -51,33 +53,33 @@ export function TakeTestPage() {
       setSubmitted({ totalScore: result.totalScore, status: result.status });
     } catch (err) {
       if (isAxiosError(err) && err.response?.status === 409) {
-        showToast("You have already submitted this test.", "error");
+        showToast(t("You have already submitted this test."), "error");
         navigate(`/student/tests/${id}/result`);
       } else {
-        showToast("Failed to submit test.", "error");
+        showToast(t("Failed to submit test."), "error");
       }
     }
   }
 
   if (isLoading) {
-    return <p className="text-sm text-slate-500">Loading...</p>;
+    return <p className="text-sm text-slate-500">{t("Loading...")}</p>;
   }
 
   if (error) {
     if (isAxiosError(error) && error.response?.status === 409) {
       return (
         <div className="rounded-xl border border-slate-200 bg-white p-6 text-center">
-          <p className="text-sm text-slate-600">You have already submitted this test.</p>
+          <p className="text-sm text-slate-600">{t("You have already submitted this test.")}</p>
           <button
             onClick={() => navigate(`/student/tests/${id}/result`)}
             className="mt-4 rounded-md bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700"
           >
-            View Results
+            {t("View Results")}
           </button>
         </div>
       );
     }
-    return <p className="text-sm text-red-600">This test isn't available.</p>;
+    return <p className="text-sm text-red-600">{t("This test isn't available.")}</p>;
   }
 
   if (!test) {
@@ -87,21 +89,21 @@ export function TakeTestPage() {
   if (submitted) {
     return (
       <div className="mx-auto max-w-md rounded-xl border border-slate-200 bg-white p-8 text-center shadow-sm">
-        <p className="text-2xl font-bold text-slate-900">Test Submitted!</p>
+        <p className="text-2xl font-bold text-slate-900">{t("Test Submitted!")}</p>
         {submitted.status === "graded" ? (
           <p className="mt-2 text-lg text-slate-700">
-            You scored <span className="font-bold text-indigo-600">{submitted.totalScore}</span> / {test.totalMarks}
+            {t("You scored")}<span className="font-bold text-indigo-600">{submitted.totalScore}</span> / {test.totalMarks}
           </p>
         ) : (
           <p className="mt-2 text-sm text-slate-500">
-            Your objective answers are graded. Essay questions are pending teacher review.
+            {t("Your objective answers are graded. Essay questions are pending teacher review.")}
           </p>
         )}
         <button
           onClick={() => navigate(`/student/tests/${id}/result`)}
           className="mt-6 w-full rounded-md bg-indigo-600 py-3 text-sm font-medium text-white hover:bg-indigo-700"
         >
-          View Results
+          {t("View Results")}
         </button>
       </div>
     );
@@ -181,7 +183,7 @@ export function TakeTestPage() {
               value={answers[question.id] ?? ""}
               onChange={(e) => setAnswers((a) => ({ ...a, [question.id]: e.target.value }))}
               className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
-              placeholder="Type your answer"
+              placeholder={t("Type your answer")}
             />
           )}
 
@@ -191,7 +193,7 @@ export function TakeTestPage() {
               onChange={(e) => setAnswers((a) => ({ ...a, [question.id]: e.target.value }))}
               rows={6}
               className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
-              placeholder="Write your answer"
+              placeholder={t("Write your answer")}
             />
           )}
         </div>
@@ -203,28 +205,28 @@ export function TakeTestPage() {
           disabled={index === 0}
           className="flex-1 rounded-md border border-slate-300 py-3 text-sm font-medium text-slate-700 hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50"
         >
-          Previous
+          {t("Previous")}
         </button>
         {isLastQuestion ? (
           <button
             onClick={() => setConfirmOpen(true)}
             className="flex-1 rounded-md bg-indigo-600 py-3 text-sm font-medium text-white hover:bg-indigo-700"
           >
-            Submit Test
+            {t("Submit Test")}
           </button>
         ) : (
           <button
             onClick={() => setIndex((i) => Math.min(test.questions.length - 1, i + 1))}
             className="flex-1 rounded-md bg-indigo-600 py-3 text-sm font-medium text-white hover:bg-indigo-700"
           >
-            Next
+            {t("Next")}
           </button>
         )}
       </div>
 
       <ConfirmDialog
         open={confirmOpen}
-        title="Submit test"
+        title={t("Submit test")}
         message="Are you sure you want to submit? You cannot change your answers after submitting."
         confirmLabel={submitTest.isPending ? "Submitting..." : "Submit"}
         isConfirming={submitTest.isPending}

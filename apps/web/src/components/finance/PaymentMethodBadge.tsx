@@ -1,3 +1,5 @@
+import { useTranslation } from "../../hooks/use-translation";
+
 // Text labels only — no real payment gateway/API integration behind any of these.
 export const PAYMENT_METHOD_OPTIONS = [
   { value: "cash", label: "Cash" },
@@ -24,10 +26,11 @@ export function paymentMethodLabel(method: string): string {
 }
 
 export function PaymentMethodBadge({ method }: { method: string }) {
+  const { t } = useTranslation();
   const style = PAYMENT_METHOD_STYLES[method] ?? "bg-slate-100 text-slate-700 dark:bg-slate-700 dark:text-slate-200";
   return (
     <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium capitalize ${style}`}>
-      {paymentMethodLabel(method)}
+      {t(paymentMethodLabel(method))}
     </span>
   );
 }

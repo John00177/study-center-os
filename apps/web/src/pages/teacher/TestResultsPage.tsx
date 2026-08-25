@@ -8,6 +8,7 @@ import { Modal } from "../../components/Modal";
 import { TextField } from "../../components/form/Field";
 import { useToast } from "../../components/Toast";
 import { useGradeEssay, useSubmissionDetail, useTest, useTestResults } from "../../hooks/use-ai-test-generator";
+import { useTranslation } from "../../hooks/use-translation";
 
 function SummaryCard({ label, value }: { label: string; value: string | number }) {
   return (
@@ -27,6 +28,7 @@ function SubmissionDetailModal({
   row: TestResultRowDto | null;
   onClose: () => void;
 }) {
+  const { t } = useTranslation();
   const { data: detail, isLoading } = useSubmissionDetail(testId, row?.submissionId ?? null);
   const gradeEssay = useGradeEssay(testId);
   const { showToast } = useToast();
@@ -41,20 +43,20 @@ function SubmissionDetailModal({
     const marks = Number(drafts[questionId] ?? 0);
     try {
       await gradeEssay.mutateAsync({ submissionId: row!.submissionId, questionId, marksObtained: marks });
-      showToast("Essay graded.");
+      showToast(t("Essay graded."));
     } catch {
-      showToast("Failed to grade essay.", "error");
+      showToast(t("Failed to grade essay."), "error");
     }
   }
 
   return (
     <Modal open={Boolean(row)} onClose={onClose} title={detail?.student?.name ? `${detail.student.name}'s Answers` : "Answers"} widthClassName="max-w-2xl">
       {isLoading || !detail ? (
-        <p className="text-sm text-slate-500">Loading...</p>
+        <p className="text-sm text-slate-500">{t("Loading...")}</p>
       ) : (
         <div className="space-y-3">
           <p className="text-sm text-slate-600">
-            Score: <span className="font-semibold">{detail.totalScore}</span> / {detail.totalMarks} ({detail.percentage}%)
+            {t("Score:")}<span className="font-semibold">{detail.totalScore}</span> / {detail.totalMarks} ({detail.percentage}%)
           </p>
           {detail.questions.map((q, i) => (
             <div key={q.id} className="rounded-lg border border-slate-200 p-3">
@@ -87,7 +89,7 @@ function SubmissionDetailModal({
                     disabled={gradeEssay.isPending}
                     className="rounded-md bg-indigo-600 px-3 py-2 text-sm font-medium text-white hover:bg-indigo-700 disabled:opacity-60"
                   >
-                    Grade
+                    {t("Grade")}
                   </button>
                 </form>
               )}
@@ -103,6 +105,7 @@ function SubmissionDetailModal({
 }
 
 export function TestResultsPage() {
+  const { t } = useTranslation();
   const { id } = useParams<{ id: string }>();
   const { data: test } = useTest(id ?? null);
   const { data: results, isLoading } = useTestResults(id ?? null);
@@ -121,37 +124,37 @@ export function TestResultsPage() {
         <div>
           <Link to="/teacher/ai-tests" className="mb-1 flex items-center gap-1 text-sm font-medium text-indigo-600 hover:text-indigo-700">
             <ArrowLeft className="h-4 w-4" />
-            Back to My Tests
+            {t("Back to My Tests")}
           </Link>
           <h1 className="text-2xl font-semibold text-slate-900 dark:text-slate-100">{test?.title ?? "Test Results"}</h1>
         </div>
       </div>
 
       {isLoading || !results ? (
-        <p className="text-sm text-slate-500">Loading...</p>
+        <p className="text-sm text-slate-500">{t("Loading...")}</p>
       ) : (
         <>
           <div className="mb-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-5">
-            <SummaryCard label="Total Students" value={results.summary.totalStudents} />
-            <SummaryCard label="Submitted" value={results.summary.submittedCount} />
-            <SummaryCard label="Not Submitted" value={results.summary.notSubmittedCount} />
-            <SummaryCard label="Average Score" value={`${results.summary.averageScore}%`} />
-            <SummaryCard label="Pass Rate" value={`${results.summary.passRate}%`} />
+            <SummaryCard label={t("Total Students")} value={results.summary.totalStudents} />
+            <SummaryCard label={t("Submitted")} value={results.summary.submittedCount} />
+            <SummaryCard label={t("Not Submitted")} value={results.summary.notSubmittedCount} />
+            <SummaryCard label={t("Average Score")} value={`${results.summary.averageScore}%`} />
+            <SummaryCard label={t("Pass Rate")} value={`${results.summary.passRate}%`} />
           </div>
 
           <div className="mb-8">
-            <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-slate-500">Submissions</h2>
+            <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-slate-500">{t("Submissions")}</h2>
             <DataTable
               data={results.rows}
               isLoading={false}
-              emptyMessage="No submissions yet."
+              emptyMessage={t("No submissions yet.")}
               getRowKey={(r) => r.submissionId}
               columns={[
-                { header: "Student", render: (r) => r.student?.name ?? "Unknown" },
-                { header: "Score", render: (r) => `${r.totalScore} / ${r.totalMarks}` },
-                { header: "Percentage", render: (r) => `${r.percentage}%` },
+                { header: t("Student"), render: (r) => r.student?.name ?? "Unknown" },
+                { header: t("Score"), render: (r) => `${r.totalScore} / ${r.totalMarks}` },
+                { header: t("Percentage"), render: (r) => `${r.percentage}%` },
                 {
-                  header: "Status",
+                  header: t("Status"),
                   render: (r) => (
                     <span
                       className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${
@@ -162,19 +165,19 @@ export function TestResultsPage() {
                     </span>
                   ),
                 },
-                { header: "Submitted At", render: (r) => (r.submittedAt ? new Date(r.submittedAt).toLocaleString() : "-") },
+                { header: t("Submitted At"), render: (r) => (r.submittedAt ? new Date(r.submittedAt).toLocaleString() : "-") },
               ]}
               renderActions={(r) => (
                 <>
-                  <button onClick={() => setViewingRow(r)} className="rounded p-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-700" aria-label="View answers" title="View Answers">
+                  <button onClick={() => setViewingRow(r)} className="rounded p-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-700" aria-label={t("View answers")} title={t("View Answers")}>
                     <Eye className="h-4 w-4" />
                   </button>
                   {r.hasPendingEssay && (
                     <button
                       onClick={() => setViewingRow(r)}
                       className="rounded p-1.5 text-orange-500 hover:bg-orange-50"
-                      aria-label="Grade essay"
-                      title="Grade Essay (pending)"
+                      aria-label={t("Grade essay")}
+                      title={t("Grade Essay (pending)")}
                     >
                       <GraduationCap className="h-4 w-4" />
                     </button>
@@ -185,11 +188,11 @@ export function TestResultsPage() {
           </div>
 
           <div>
-            <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-slate-500">Per-Question Analytics</h2>
+            <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-slate-500">{t("Per-Question Analytics")}</h2>
             <p className="mb-2 text-xs text-slate-400">Red bars mark questions where fewer than half the class answered correctly — worth reteaching.</p>
             <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
               {chartData.length === 0 ? (
-                <p className="py-8 text-center text-sm text-slate-400">No auto-graded questions to analyze.</p>
+                <p className="py-8 text-center text-sm text-slate-400">{t("No auto-graded questions to analyze.")}</p>
               ) : (
                 <ResponsiveContainer width="100%" height={260}>
                   <BarChart data={chartData} margin={{ top: 8, right: 8, left: 0, bottom: 0 }}>

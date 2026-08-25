@@ -9,6 +9,7 @@ import { RecordPaymentModal } from "../components/salary/RecordPaymentModal";
 import { SalaryHistoryModal } from "../components/salary/SalaryHistoryModal";
 import { useMarkAllSalariesPaid, useSalaries } from "../hooks/use-salary";
 import { formatCurrency } from "../lib/format";
+import { useTranslation } from "../hooks/use-translation";
 
 const TYPE_LABELS: Record<string, string> = {
   fixed: "Fixed",
@@ -17,6 +18,7 @@ const TYPE_LABELS: Record<string, string> = {
 };
 
 export function TeacherSalariesPage() {
+  const { t } = useTranslation();
   const { data: salaries, isLoading } = useSalaries();
   const markAllPaid = useMarkAllSalariesPaid();
   const { showToast } = useToast();
@@ -31,16 +33,16 @@ export function TeacherSalariesPage() {
   async function handleMarkAllPaid() {
     try {
       await markAllPaid.mutateAsync();
-      showToast("All pending salaries marked as paid.");
+      showToast(t("All pending salaries marked as paid."));
     } catch {
-      showToast("Failed to mark salaries as paid.", "error");
+      showToast(t("Failed to mark salaries as paid."), "error");
     }
   }
 
   return (
     <div>
       <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
-        <h1 className="text-2xl font-semibold text-slate-900 dark:text-slate-100">Teacher Salaries</h1>
+        <h1 className="text-2xl font-semibold text-slate-900 dark:text-slate-100">{t("Teacher Salaries")}</h1>
         <div className="flex items-center gap-3">
           {pendingCount > 0 && (
             <button
@@ -60,7 +62,7 @@ export function TeacherSalariesPage() {
             className="flex items-center gap-2 rounded-md bg-indigo-600 px-3 py-2 text-sm font-medium text-white hover:bg-indigo-700"
           >
             <Plus className="h-4 w-4" />
-            Set Salary
+            {t("Set Salary")}
           </button>
         </div>
       </div>
@@ -68,15 +70,15 @@ export function TeacherSalariesPage() {
       <DataTable
         data={salaries}
         isLoading={isLoading}
-        emptyMessage="No teacher salaries configured yet."
+        emptyMessage={t("No teacher salaries configured yet.")}
         getRowKey={(s) => s.id}
         columns={[
-          { header: "Teacher", render: (s) => s.teacherName },
-          { header: "Current Salary", render: (s) => formatCurrency(s.amount, s.currency) },
-          { header: "Type", render: (s) => TYPE_LABELS[s.type] ?? s.type },
-          { header: "Status", render: (s) => <SalaryStatusBadge status={s.status} /> },
-          { header: "This Month Payment", render: (s) => <PaymentStatusBadge status={s.thisMonthPaymentStatus} /> },
-          { header: "Last Paid", render: (s) => (s.lastPaidAt ? new Date(s.lastPaidAt).toLocaleDateString() : "—") },
+          { header: t("Teacher"), render: (s) => s.teacherName },
+          { header: t("Current Salary"), render: (s) => formatCurrency(s.amount, s.currency) },
+          { header: t("Type"), render: (s) => TYPE_LABELS[s.type] ?? s.type },
+          { header: t("Status"), render: (s) => <SalaryStatusBadge status={s.status} /> },
+          { header: t("This Month Payment"), render: (s) => <PaymentStatusBadge status={s.thisMonthPaymentStatus} /> },
+          { header: t("Last Paid"), render: (s) => (s.lastPaidAt ? new Date(s.lastPaidAt).toLocaleDateString() : "—") },
         ]}
         renderActions={(s) => (
           <div className="flex justify-end gap-2">
@@ -87,21 +89,21 @@ export function TeacherSalariesPage() {
               }}
               className="rounded-md border border-slate-300 px-2.5 py-1.5 text-xs font-medium text-slate-700 hover:bg-slate-50"
             >
-              Edit Salary
+              {t("Edit Salary")}
             </button>
             {s.thisMonthPaymentStatus !== "paid" && (
               <button
                 onClick={() => setPayingSalary(s)}
                 className="rounded-md bg-green-600 px-2.5 py-1.5 text-xs font-medium text-white hover:bg-green-700"
               >
-                Record Payment
+                {t("Record Payment")}
               </button>
             )}
             <button
               onClick={() => setHistorySalary(s)}
               className="rounded-md border border-slate-300 px-2.5 py-1.5 text-xs font-medium text-slate-700 hover:bg-slate-50"
             >
-              View History
+              {t("View History")}
             </button>
           </div>
         )}

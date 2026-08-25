@@ -3,6 +3,7 @@ import { Wallet } from "lucide-react";
 import { PaymentStatusBadge } from "./SalaryStatusBadge";
 import { useTeacherOwnSalary } from "../../hooks/use-salary";
 import { formatCurrency } from "../../lib/format";
+import { useTranslation } from "../../hooks/use-translation";
 
 const TYPE_LABELS: Record<string, string> = {
   fixed: "Fixed",
@@ -11,12 +12,13 @@ const TYPE_LABELS: Record<string, string> = {
 };
 
 export function MySalaryCard() {
+  const { t } = useTranslation();
   const { data: salary, isLoading } = useTeacherOwnSalary();
 
   if (isLoading) {
     return (
       <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
-        <p className="text-sm text-slate-500">Loading salary...</p>
+        <p className="text-sm text-slate-500">{t("Loading salary...")}</p>
       </div>
     );
   }
@@ -26,9 +28,9 @@ export function MySalaryCard() {
       <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
         <div className="flex items-center gap-2 text-slate-500">
           <Wallet size={18} />
-          <span className="text-sm font-medium">My Salary</span>
+          <span className="text-sm font-medium">{t("My Salary")}</span>
         </div>
-        <p className="mt-3 text-sm text-slate-500">Salary not yet configured. Contact administration.</p>
+        <p className="mt-3 text-sm text-slate-500">{t("Salary not yet configured. Contact administration.")}</p>
       </div>
     );
   }
@@ -40,7 +42,7 @@ export function MySalaryCard() {
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2 text-slate-500">
           <Wallet size={18} />
-          <span className="text-sm font-medium">My Salary</span>
+          <span className="text-sm font-medium">{t("My Salary")}</span>
         </div>
         <PaymentStatusBadge status={salary.thisMonthPaymentStatus} />
       </div>
@@ -67,7 +69,7 @@ export function MySalaryCard() {
         to="/teacher/salary"
         className="mt-4 block rounded-md border border-slate-300 px-3 py-2 text-center text-sm font-medium text-slate-700 hover:bg-slate-50"
       >
-        View full details
+        {t("View full details")}
       </Link>
     </div>
   );

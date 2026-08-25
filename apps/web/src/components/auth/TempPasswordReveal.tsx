@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Check, Copy, ShieldAlert } from "lucide-react";
+import { useTranslation } from "../../hooks/use-translation";
 
 interface TempPasswordRevealProps {
   label: string;
@@ -9,6 +10,7 @@ interface TempPasswordRevealProps {
 
 /** Shown exactly once, right after an account is created — the creator must copy it now. */
 export function TempPasswordReveal({ label, password, onDone }: TempPasswordRevealProps) {
+  const { t } = useTranslation();
   const [copied, setCopied] = useState(false);
 
   async function copy() {
@@ -46,7 +48,7 @@ export function TempPasswordReveal({ label, password, onDone }: TempPasswordReve
         onClick={onDone}
         className="w-full rounded-md bg-indigo-600 px-3 py-2 text-sm font-medium text-white hover:bg-indigo-700"
       >
-        Done
+        {t("Done")}
       </button>
     </div>
   );

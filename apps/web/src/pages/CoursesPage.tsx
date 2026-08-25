@@ -7,6 +7,7 @@ import { DataTable } from "../components/DataTable";
 import { Modal } from "../components/Modal";
 import { useToast } from "../components/Toast";
 import { SelectField, TextField } from "../components/form/Field";
+import { useTranslation } from "../hooks/use-translation";
 import {
   CourseInput,
   useCourse,
@@ -99,6 +100,7 @@ function CourseForm({
   onClose: () => void;
   course?: CourseDto | null;
 }) {
+  const { t } = useTranslation();
   const isEditing = Boolean(course);
   const [form, setForm] = useState<FormState>(() => toFormState(course));
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -139,10 +141,10 @@ function CourseForm({
     try {
       if (isEditing && course) {
         await updateCourse.mutateAsync({ id: course.id, ...input });
-        showToast("Course updated.");
+        showToast(t("Course updated."));
       } else {
         await createCourse.mutateAsync(input);
-        showToast("Course created.");
+        showToast(t("Course created."));
       }
       onClose();
     } catch {
@@ -154,24 +156,24 @@ function CourseForm({
     <Modal open={open} onClose={onClose} title={isEditing ? "Edit Course" : "New Course"}>
       <form onSubmit={handleSubmit} className="space-y-4">
         <TextField
-          label="Course Name"
+          label={t("Course Name")}
           required
           value={form.name}
           error={errors.name}
           onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
         />
         <div>
-          <label className="mb-1 block text-sm font-medium text-slate-700">Slug</label>
+          <label className="mb-1 block text-sm font-medium text-slate-700">{t("Slug")}</label>
           <input
             disabled
             value={slugify(form.name) || "course"}
             className="w-full rounded-md border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-500"
           />
-          <p className="mt-1 text-xs text-slate-400">Generated automatically from the course name.</p>
+          <p className="mt-1 text-xs text-slate-400">{t("Generated automatically from the course name.")}</p>
         </div>
 
         <SelectField
-          label="Category"
+          label={t("Category")}
           required
           value={form.category}
           error={errors.category}
@@ -179,14 +181,14 @@ function CourseForm({
         >
           {CATEGORY_OPTIONS.map((o) => (
             <option key={o.value} value={o.value}>
-              {o.label}
+              {t(o.label)}
             </option>
           ))}
         </SelectField>
 
         <div>
           <label className="mb-1 block text-sm font-medium text-slate-700">
-            Monthly Fee (UZS) <span className="ml-0.5 text-red-500">*</span>
+            {t("Monthly Fee (UZS)")}<span className="ml-0.5 text-red-500">*</span>
           </label>
           <div className="relative">
             <input
@@ -206,17 +208,17 @@ function CourseForm({
           </div>
           {errors.monthlyFee && <p className="mt-1 text-xs text-red-600">{errors.monthlyFee}</p>}
           <p className="mt-1 text-xs text-slate-500">
-            Students will be charged this amount automatically when enrolled.
+            {t("Students will be charged this amount automatically when enrolled.")}
           </p>
         </div>
 
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <SelectField
-            label="Level"
+            label={t("Level")}
             value={form.level}
             onChange={(e) => setForm((f) => ({ ...f, level: e.target.value }))}
           >
-            <option value="">Not specified</option>
+            <option value="">{t("Not specified")}</option>
             {LEVEL_OPTIONS.map((l) => (
               <option key={l} value={l}>
                 {l}
@@ -224,15 +226,15 @@ function CourseForm({
             ))}
           </SelectField>
           <TextField
-            label="Duration"
-            placeholder="3 months"
+            label={t("Duration")}
+            placeholder={t("3 months")}
             value={form.duration}
             onChange={(e) => setForm((f) => ({ ...f, duration: e.target.value }))}
           />
         </div>
 
         <div>
-          <label className="mb-1 block text-sm font-medium text-slate-700">Description</label>
+          <label className="mb-1 block text-sm font-medium text-slate-700">{t("Description")}</label>
           <textarea
             rows={3}
             value={form.description}
@@ -248,7 +250,7 @@ function CourseForm({
             disabled={isSaving}
             className="rounded-md border border-slate-300 px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 disabled:opacity-60"
           >
-            Cancel
+            {t("Cancel")}
           </button>
           <button
             type="submit"
@@ -273,12 +275,13 @@ function CourseDetailModal({
   onClose: () => void;
   onEdit: (course: CourseDto) => void;
 }) {
+  const { t } = useTranslation();
   const { data: course, isLoading } = useCourse(courseId);
 
   return (
     <Modal open={Boolean(courseId)} onClose={onClose} title={course?.name ?? "Course"}>
       {isLoading || !course ? (
-        <p className="text-sm text-slate-500">Loading...</p>
+        <p className="text-sm text-slate-500">{t("Loading...")}</p>
       ) : (
         <div className="space-y-5">
           <div className="flex items-center gap-2">
@@ -288,7 +291,7 @@ function CourseDetailModal({
           </div>
 
           <div className="rounded-lg bg-indigo-50 p-4">
-            <p className="text-xs font-medium uppercase tracking-wide text-indigo-500">Monthly Fee</p>
+            <p className="text-xs font-medium uppercase tracking-wide text-indigo-500">{t("Monthly Fee")}</p>
             <p className="mt-1 text-2xl font-bold text-indigo-700">
               {course.monthlyFee ? `${new Intl.NumberFormat("en-US").format(course.monthlyFee)} UZS` : "Free"}
               {course.monthlyFee ? <span className="ml-1 text-sm font-medium text-indigo-400">/ month</span> : null}
@@ -311,7 +314,7 @@ function CourseDetailModal({
                 ))}
               </ul>
             ) : (
-              <p className="text-sm text-slate-500">No groups yet.</p>
+              <p className="text-sm text-slate-500">{t("No groups yet.")}</p>
             )}
           </div>
 
@@ -321,7 +324,7 @@ function CourseDetailModal({
               className="flex items-center gap-2 rounded-md bg-indigo-600 px-3 py-2 text-sm font-medium text-white hover:bg-indigo-700"
             >
               <Pencil className="h-4 w-4" />
-              Edit
+              {t("Edit")}
             </button>
           </div>
         </div>
@@ -331,6 +334,7 @@ function CourseDetailModal({
 }
 
 export function CoursesPage() {
+  const { t } = useTranslation();
   const { data, isLoading } = useCourses();
   const deleteCourse = useDeleteCourse();
   const { showToast } = useToast();
@@ -371,13 +375,13 @@ export function CoursesPage() {
     if (!deleting) return;
     try {
       await deleteCourse.mutateAsync(deleting.id);
-      showToast("Course deleted.");
+      showToast(t("Course deleted."));
       setDeleting(null);
     } catch (err) {
       if (isAxiosError(err) && err.response?.status === 409) {
-        showToast("Cannot delete a course with active groups.", "error");
+        showToast(t("Cannot delete a course with active groups."), "error");
       } else {
-        showToast("Failed to delete course.", "error");
+        showToast(t("Failed to delete course."), "error");
       }
       setDeleting(null);
     }
@@ -386,7 +390,7 @@ export function CoursesPage() {
   return (
     <div>
       <div className="mb-6 flex items-center justify-between">
-        <h1 className="text-2xl font-semibold text-slate-900 dark:text-slate-100">Courses</h1>
+        <h1 className="text-2xl font-semibold text-slate-900 dark:text-slate-100">{t("Courses")}</h1>
         <button
           onClick={() => {
             setEditing(null);
@@ -395,33 +399,33 @@ export function CoursesPage() {
           className="flex items-center gap-2 rounded-md bg-indigo-600 px-3 py-2 text-sm font-medium text-white hover:bg-indigo-700"
         >
           <Plus className="h-4 w-4" />
-          New Course
+          {t("New Course")}
         </button>
       </div>
 
       <div className="mb-4 flex flex-wrap items-end gap-4">
         <div className="w-48">
-          <TextField label="Search" placeholder="Course name..." value={search} onChange={(e) => setSearch(e.target.value)} />
+          <TextField label={t("Search")} placeholder={t("Course name...")} value={search} onChange={(e) => setSearch(e.target.value)} />
         </div>
         <div className="w-48">
           <SelectField
-            label="Category"
+            label={t("Category")}
             value={categoryFilter}
             onChange={(e) => setCategoryFilter(e.target.value as CourseCategory | "")}
           >
-            <option value="">All categories</option>
+            <option value="">{t("All categories")}</option>
             {CATEGORY_OPTIONS.map((o) => (
               <option key={o.value} value={o.value}>
-                {o.label}
+                {t(o.label)}
               </option>
             ))}
           </SelectField>
         </div>
         <div className="w-40">
-          <SelectField label="Sort by" value={sortBy} onChange={(e) => setSortBy(e.target.value as SortBy)}>
-            <option value="name">Name</option>
-            <option value="fee">Fee</option>
-            <option value="category">Category</option>
+          <SelectField label={t("Sort by")} value={sortBy} onChange={(e) => setSortBy(e.target.value as SortBy)}>
+            <option value="name">{t("Name")}</option>
+            <option value="fee">{t("Fee")}</option>
+            <option value="category">{t("Category")}</option>
           </SelectField>
         </div>
       </div>
@@ -433,17 +437,17 @@ export function CoursesPage() {
         getRowKey={(c) => c.id}
         onRowClick={(c) => setDetailId(c.id)}
         columns={[
-          { header: "Course Name", render: (c) => <span className="font-medium text-slate-900 dark:text-slate-100">{c.name}</span> },
-          { header: "Category", render: (c) => <CategoryBadge category={c.category} /> },
-          { header: "Level", render: (c) => c.level ?? "-" },
-          { header: "Duration", render: (c) => c.duration ?? "-" },
+          { header: t("Course Name"), render: (c) => <span className="font-medium text-slate-900 dark:text-slate-100">{c.name}</span> },
+          { header: t("Category"), render: (c) => <CategoryBadge category={c.category} /> },
+          { header: t("Level"), render: (c) => c.level ?? "-" },
+          { header: t("Duration"), render: (c) => c.duration ?? "-" },
           {
-            header: "Monthly Fee",
+            header: t("Monthly Fee"),
             align: "right",
             render: (c) => <span className="font-bold text-slate-900 dark:text-slate-100">{formatFee(c.monthlyFee)}</span>,
           },
-          { header: "Groups", render: (c) => c.groupCount, align: "right" },
-          { header: "Students", render: (c) => c.studentCount, align: "right" },
+          { header: t("Groups"), render: (c) => c.groupCount, align: "right" },
+          { header: t("Students"), render: (c) => c.studentCount, align: "right" },
         ]}
         renderActions={(c) => (
           <>
@@ -453,14 +457,14 @@ export function CoursesPage() {
                 setFormOpen(true);
               }}
               className="rounded p-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-700"
-              aria-label="Edit course"
+              aria-label={t("Edit course")}
             >
               <Pencil className="h-4 w-4" />
             </button>
             <button
               onClick={() => setDeleting(c)}
               className="rounded p-1.5 text-slate-400 hover:bg-red-50 hover:text-red-600"
-              aria-label="Delete course"
+              aria-label={t("Delete course")}
             >
               <Trash2 className="h-4 w-4" />
             </button>
@@ -482,7 +486,7 @@ export function CoursesPage() {
 
       <ConfirmDialog
         open={Boolean(deleting)}
-        title="Delete course"
+        title={t("Delete course")}
         message={`Are you sure you want to delete ${deleting?.name}? This cannot be undone.`}
         isConfirming={deleteCourse.isPending}
         onConfirm={confirmDelete}

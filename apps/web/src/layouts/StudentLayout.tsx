@@ -8,6 +8,7 @@ import { FeedbackWidget } from "../components/feedback/FeedbackWidget";
 import { useTheme } from "../contexts/ThemeContext";
 import { resolveOrgDisplayName } from "../lib/theme";
 import { StudentNotificationBell } from "../components/notifications/StudentNotificationBell";
+import { useTranslation } from "../hooks/use-translation";
 
 const NAV_ITEMS = [
   { to: "/student", label: "Dashboard", icon: LayoutDashboard, end: true },
@@ -19,6 +20,7 @@ const NAV_ITEMS = [
 ];
 
 export function StudentLayout() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const student = useStudentAuthStore((state) => state.student);
   const logout = useStudentAuthStore((state) => state.logout);
@@ -56,7 +58,7 @@ export function StudentLayout() {
             className="flex items-center gap-1 rounded-md px-2 py-1.5 text-sm text-slate-500 transition hover:bg-slate-100 hover:text-slate-900"
           >
             <LogOut size={16} />
-            Logout
+            {t("Logout")}
           </button>
         </div>
       </header>
@@ -78,7 +80,7 @@ export function StudentLayout() {
             }
           >
             <Icon size={22} className="min-h-[24px] min-w-[24px]" />
-            {label}
+            {t(label)}
           </NavLink>
         ))}
       </nav>

@@ -7,6 +7,7 @@ import { SelectField } from "../components/form/Field";
 import { useTheme } from "../contexts/ThemeContext";
 import { useMyBranding, useUpdateBranding, useUploadLogo } from "../hooks/use-organizations";
 import { DEFAULT_ACCENT_COLOR, DEFAULT_PRIMARY_COLOR } from "../lib/theme";
+import { useTranslation } from "../hooks/use-translation";
 
 const THEME_OPTIONS: { value: ThemeMode; label: string }[] = [
   { value: "light", label: "Light" },
@@ -33,6 +34,7 @@ function SectionCard({ title, children }: { title: string; children: React.React
 }
 
 export function BrandingSettingsPage() {
+  const { t } = useTranslation();
   const { showToast } = useToast();
   const { previewBranding } = useTheme();
   const { data: branding, isLoading } = useMyBranding();
@@ -85,36 +87,36 @@ export function BrandingSettingsPage() {
         theme,
         language,
       });
-      showToast("Branding saved.");
+      showToast(t("Branding saved."));
     } catch {
-      showToast("Failed to save branding.", "error");
+      showToast(t("Failed to save branding."), "error");
     }
   }
 
   async function handleLogoFile(file: File | undefined) {
     if (!file) return;
     if (!ALLOWED_LOGO_TYPES.includes(file.type)) {
-      showToast("Logo must be a PNG, JPG, or WebP image.", "error");
+      showToast(t("Logo must be a PNG, JPG, or WebP image."), "error");
       return;
     }
     if (file.size > MAX_LOGO_BYTES) {
-      showToast("Logo must be under 2MB.", "error");
+      showToast(t("Logo must be under 2MB."), "error");
       return;
     }
     try {
       await uploadLogo.mutateAsync(file);
-      showToast("Logo uploaded.");
+      showToast(t("Logo uploaded."));
     } catch {
-      showToast("Failed to upload logo.", "error");
+      showToast(t("Failed to upload logo."), "error");
     }
   }
 
   async function handleRemoveLogo() {
     try {
       await updateBranding.mutateAsync({ logoUrl: null });
-      showToast("Logo removed.");
+      showToast(t("Logo removed."));
     } catch {
-      showToast("Failed to remove logo.", "error");
+      showToast(t("Failed to remove logo."), "error");
     }
   }
 
@@ -129,7 +131,7 @@ export function BrandingSettingsPage() {
   }
 
   if (isLoading) {
-    return <p className="text-sm text-slate-500">Loading...</p>;
+    return <p className="text-sm text-slate-500">{t("Loading...")}</p>;
   }
 
   const previewName = displayName.trim() || branding?.name || "Your Study Center";
@@ -137,13 +139,13 @@ export function BrandingSettingsPage() {
   return (
     <div className="mx-auto max-w-3xl space-y-6">
       <div>
-        <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-slate-100">Branding</h1>
+        <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-slate-100">{t("Branding")}</h1>
         <p className="text-sm text-slate-600">Make {branding?.name ?? "your study center"} feel like your own.</p>
       </div>
 
-      <SectionCard title="General">
+      <SectionCard title={t("General")}>
         <div>
-          <label className="mb-1 block text-sm font-medium text-slate-700">Display Name</label>
+          <label className="mb-1 block text-sm font-medium text-slate-700">{t("Display Name")}</label>
           <input
             type="text"
             value={displayName}
@@ -158,7 +160,7 @@ export function BrandingSettingsPage() {
         </div>
       </SectionCard>
 
-      <SectionCard title="Logo">
+      <SectionCard title={t("Logo")}>
         <div className="flex flex-wrap items-center gap-6">
           <OrgLogo
             logoUrl={branding?.logoUrl}
@@ -184,8 +186,8 @@ export function BrandingSettingsPage() {
                 ) : (
                   <Upload className="h-6 w-6 text-slate-400" />
                 )}
-                <span className="text-sm font-medium text-slate-700">Drag & drop or click to upload</span>
-                <span className="text-xs text-slate-400">PNG, JPG, or WebP. Max 2MB.</span>
+                <span className="text-sm font-medium text-slate-700">{t("Drag & drop or click to upload")}</span>
+                <span className="text-xs text-slate-400">{t("PNG, JPG, or WebP. Max 2MB.")}</span>
               </label>
               <input id="logo-upload" type="file" accept="image/png,image/jpeg,image/webp" className="hidden" onChange={handleFileInput} />
             </div>
@@ -196,14 +198,14 @@ export function BrandingSettingsPage() {
                 className="mt-3 flex items-center gap-1.5 text-sm font-medium text-red-600 hover:text-red-700 disabled:opacity-60"
               >
                 <Trash2 className="h-4 w-4" />
-                Remove Logo
+                {t("Remove Logo")}
               </button>
             )}
           </div>
         </div>
 
         <div className="mt-4 border-t border-slate-100 pt-4">
-          <label className="mb-1 block text-sm font-medium text-slate-700">Logo URL (Dark Mode)</label>
+          <label className="mb-1 block text-sm font-medium text-slate-700">{t("Logo URL (Dark Mode)")}</label>
           <div className="flex items-center gap-3">
             {logoDarkUrl && (
               <img
@@ -220,14 +222,14 @@ export function BrandingSettingsPage() {
               className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm transition focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/30"
             />
           </div>
-          <p className="mt-1 text-xs text-slate-500">Optional. Used instead of the logo above when dark theme is active.</p>
+          <p className="mt-1 text-xs text-slate-500">{t("Optional. Used instead of the logo above when dark theme is active.")}</p>
         </div>
       </SectionCard>
 
-      <SectionCard title="Favicon & Login Background">
+      <SectionCard title={t("Favicon & Login Background")}>
         <div className="space-y-4">
           <div>
-            <label className="mb-1 block text-sm font-medium text-slate-700">Favicon URL</label>
+            <label className="mb-1 block text-sm font-medium text-slate-700">{t("Favicon URL")}</label>
             <div className="flex items-center gap-3">
               {faviconUrl && (
                 <img src={faviconUrl} alt="Favicon preview" className="h-8 w-8 shrink-0 rounded border border-slate-200 object-contain" />
@@ -243,7 +245,7 @@ export function BrandingSettingsPage() {
           </div>
 
           <div>
-            <label className="mb-1 block text-sm font-medium text-slate-700">Login Background URL</label>
+            <label className="mb-1 block text-sm font-medium text-slate-700">{t("Login Background URL")}</label>
             <input
               type="text"
               value={loginBgUrl}
@@ -251,7 +253,7 @@ export function BrandingSettingsPage() {
               placeholder="https://example.com/login-bg.jpg"
               className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm transition focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/30"
             />
-            <p className="mt-1 text-xs text-slate-500">Optional. Shown full-bleed behind the login card.</p>
+            <p className="mt-1 text-xs text-slate-500">{t("Optional. Shown full-bleed behind the login card.")}</p>
             {loginBgUrl && (
               <img
                 src={loginBgUrl}
@@ -263,10 +265,10 @@ export function BrandingSettingsPage() {
         </div>
       </SectionCard>
 
-      <SectionCard title="Colors">
+      <SectionCard title={t("Colors")}>
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <div>
-            <label className="mb-1 block text-sm font-medium text-slate-700">Primary Color</label>
+            <label className="mb-1 block text-sm font-medium text-slate-700">{t("Primary Color")}</label>
             <div className="flex items-center gap-2">
               <input
                 type="color"
@@ -283,7 +285,7 @@ export function BrandingSettingsPage() {
             </div>
           </div>
           <div>
-            <label className="mb-1 block text-sm font-medium text-slate-700">Accent Color</label>
+            <label className="mb-1 block text-sm font-medium text-slate-700">{t("Accent Color")}</label>
             <div className="flex items-center gap-2">
               <input
                 type="color"
@@ -303,18 +305,18 @@ export function BrandingSettingsPage() {
 
         <div className="mt-4 flex items-center justify-between rounded-lg bg-slate-50 p-4">
           <div className="flex items-center gap-3">
-            <button className="rounded-lg bg-primary px-3 py-2 text-sm font-medium text-white shadow-sm">Primary Button</button>
+            <button className="rounded-lg bg-primary px-3 py-2 text-sm font-medium text-white shadow-sm">{t("Primary Button")}</button>
             <span className="inline-flex items-center rounded-full bg-accent/15 px-2.5 py-0.5 text-xs font-medium text-accent">
-              Accent Badge
+              {t("Accent Badge")}
             </span>
           </div>
           <button onClick={resetToDefault} className="text-sm font-medium text-slate-500 hover:text-slate-700">
-            Reset to Default
+            {t("Reset to Default")}
           </button>
         </div>
       </SectionCard>
 
-      <SectionCard title="Theme">
+      <SectionCard title={t("Theme")}>
         <div className="flex flex-wrap gap-4">
           {THEME_OPTIONS.map((opt) => (
             <label key={opt.value} className="flex items-center gap-2 text-sm text-slate-700">
@@ -325,28 +327,28 @@ export function BrandingSettingsPage() {
                 onChange={() => setTheme(opt.value)}
                 className="accent-primary"
               />
-              {opt.label}
+              {t(opt.label)}
             </label>
           ))}
         </div>
       </SectionCard>
 
-      <SectionCard title="Language">
+      <SectionCard title={t("Language")}>
         <SelectField
-          label="UI Language"
+          label={t("UI Language")}
           value={language}
           onChange={(e) => setLanguage(e.target.value as UiLanguage)}
           helperText="Sets the UI language preference. Full translation is future work."
         >
           {LANGUAGE_OPTIONS.map((opt) => (
             <option key={opt.value} value={opt.value}>
-              {opt.label}
+              {t(opt.label)}
             </option>
           ))}
         </SelectField>
       </SectionCard>
 
-      <SectionCard title="Preview">
+      <SectionCard title={t("Preview")}>
         <div className="overflow-hidden rounded-lg border border-slate-200">
           <div className="flex items-center gap-2 border-b border-primary/10 bg-primary/5 px-4 py-3">
             <OrgLogo logoUrl={branding?.logoUrl} logoDarkUrl={logoDarkUrl || undefined} name={previewName} className="h-6 w-6" />
@@ -362,7 +364,7 @@ export function BrandingSettingsPage() {
                 <OrgLogo logoUrl={branding?.logoUrl} logoDarkUrl={logoDarkUrl || undefined} name={previewName} className="h-10 w-10" />
               </div>
               <p className="text-center text-sm font-bold text-slate-900 dark:text-slate-100">Welcome to {previewName}</p>
-              <button className="mt-3 w-full rounded-lg bg-primary py-2 text-sm font-medium text-white shadow-sm">Sign in</button>
+              <button className="mt-3 w-full rounded-lg bg-primary py-2 text-sm font-medium text-white shadow-sm">{t("Sign in")}</button>
             </div>
           </div>
         </div>
@@ -375,7 +377,7 @@ export function BrandingSettingsPage() {
           className="flex items-center gap-2 rounded-lg bg-primary px-4 py-2.5 text-sm font-medium text-white shadow-sm transition hover:bg-primary/90 disabled:opacity-60"
         >
           {updateBranding.isPending && <Loader2 className="h-4 w-4 animate-spin" />}
-          Save Branding
+          {t("Save Branding")}
         </button>
       </div>
     </div>

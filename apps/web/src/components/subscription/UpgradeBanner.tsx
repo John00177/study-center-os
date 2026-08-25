@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Lock, X } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "../../hooks/use-translation";
 
 interface UpgradeBannerProps {
   feature: string;
@@ -17,6 +18,7 @@ function label(planSlug: string): string {
 }
 
 export function UpgradeBanner({ feature, currentPlan, requiredPlan, dismissKey }: UpgradeBannerProps) {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const storageKey = `upgradeBannerDismissed_${dismissKey}`;
   const [dismissed, setDismissed] = useState(() => sessionStorage.getItem(storageKey) === "true");
@@ -38,7 +40,7 @@ export function UpgradeBanner({ feature, currentPlan, requiredPlan, dismissKey }
           onClick={() => navigate("/settings/plan")}
           className="rounded-md bg-amber-500 px-3 py-1.5 text-xs font-semibold text-white hover:bg-amber-600"
         >
-          Upgrade Now
+          {t("Upgrade Now")}
         </button>
         <button
           onClick={() => {
@@ -48,7 +50,7 @@ export function UpgradeBanner({ feature, currentPlan, requiredPlan, dismissKey }
           className="flex items-center gap-1 rounded-md px-2 py-1.5 text-xs font-medium text-amber-700 hover:bg-amber-100"
         >
           <X className="h-3.5 w-3.5" />
-          Maybe later
+          {t("Maybe later")}
         </button>
       </div>
     </div>

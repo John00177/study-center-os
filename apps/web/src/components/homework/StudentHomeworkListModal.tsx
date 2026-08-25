@@ -2,6 +2,7 @@ import type { SubmissionStatus } from "@crm/shared-types";
 import { DataTable } from "../DataTable";
 import { Modal } from "../Modal";
 import { useStudentHomework } from "../../hooks/use-homework";
+import { useTranslation } from "../../hooks/use-translation";
 
 const STATUS_STYLES: Record<SubmissionStatus, string> = {
   pending: "bg-slate-100 text-slate-600",
@@ -18,6 +19,7 @@ interface StudentHomeworkListModalProps {
 }
 
 export function StudentHomeworkListModal({ open, onClose, studentId, studentName }: StudentHomeworkListModalProps) {
+  const { t } = useTranslation();
   const { data, isLoading } = useStudentHomework(open ? studentId : null);
 
   return (
@@ -30,21 +32,21 @@ export function StudentHomeworkListModal({ open, onClose, studentId, studentName
       <DataTable
         data={data}
         isLoading={isLoading}
-        emptyMessage="No homework assigned yet."
+        emptyMessage={t("No homework assigned yet.")}
         getRowKey={(h) => h.submissionId}
         columns={[
-          { header: "Title", render: (h) => h.title },
-          { header: "Group", render: (h) => h.group?.name ?? "-" },
-          { header: "Due date", render: (h) => (h.dueDate ? new Date(h.dueDate).toLocaleDateString() : "-") },
+          { header: t("Title"), render: (h) => h.title },
+          { header: t("Group"), render: (h) => h.group?.name ?? "-" },
+          { header: t("Due date"), render: (h) => (h.dueDate ? new Date(h.dueDate).toLocaleDateString() : "-") },
           {
-            header: "Status",
+            header: t("Status"),
             render: (h) => (
               <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium capitalize ${STATUS_STYLES[h.submissionStatus]}`}>
                 {h.submissionStatus}
               </span>
             ),
           },
-          { header: "Score", render: (h) => (h.score !== null && h.score !== undefined ? h.score : "-") },
+          { header: t("Score"), render: (h) => (h.score !== null && h.score !== undefined ? h.score : "-") },
         ]}
       />
     </Modal>

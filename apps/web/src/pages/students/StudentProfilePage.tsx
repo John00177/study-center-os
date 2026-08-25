@@ -14,6 +14,7 @@ import { useStudentDetail, useUpdateStudent } from "../../hooks/use-students";
 import { formatCurrency } from "../../lib/format";
 import { StudentForm } from "../StudentsPage";
 import { PaymentForm } from "../FinancePage";
+import { useTranslation } from "../../hooks/use-translation";
 
 const TABS = ["Profile", "Payments", "Schedule", "Attendance", "Grades", "Notes", "History"] as const;
 type Tab = (typeof TABS)[number];
@@ -84,20 +85,21 @@ function toStudentDto(detail: StudentDetailDto): StudentDto {
 }
 
 function ProfileTab({ detail }: { detail: StudentDetailDto }) {
+  const { t } = useTranslation();
   return (
     <Card>
       <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
-        <Field label="Full Name" value={detail.name} />
-        <Field label="Phone" value={detail.phone} />
-        <Field label="Parent Phone" value={detail.parentPhone} />
-        <Field label="Gender" value={detail.gender ? <span className="capitalize">{detail.gender}</span> : null} />
+        <Field label={t("Full Name")} value={detail.name} />
+        <Field label={t("Phone")} value={detail.phone} />
+        <Field label={t("Parent Phone")} value={detail.parentPhone} />
+        <Field label={t("Gender")} value={detail.gender ? <span className="capitalize">{detail.gender}</span> : null} />
         <Field
-          label="Birth Date"
+          label={t("Birth Date")}
           value={detail.dateOfBirth ? `${new Date(detail.dateOfBirth).toLocaleDateString()} (age ${ageFromBirthDate(detail.dateOfBirth)})` : null}
         />
-        <Field label="Social Account" value={detail.socialAccount} />
+        <Field label={t("Social Account")} value={detail.socialAccount} />
         <Field
-          label="Medical Card"
+          label={t("Medical Card")}
           value={
             <span
               className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${
@@ -111,17 +113,17 @@ function ProfileTab({ detail }: { detail: StudentDetailDto }) {
           }
         />
         <Field
-          label="Status"
+          label={t("Status")}
           value={
             <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium capitalize ${STATUS_BADGE_CLASSES[detail.status]}`}>
               {detail.status}
             </span>
           }
         />
-        <Field label="Enrollment Date" value={new Date(detail.registeredAt).toLocaleDateString()} />
+        <Field label={t("Enrollment Date")} value={new Date(detail.registeredAt).toLocaleDateString()} />
         <div className="sm:col-span-2">
           <Field
-            label="Assigned Groups"
+            label={t("Assigned Groups")}
             value={
               detail.groups.length === 0 ? (
                 "Not assigned to any group"
@@ -141,7 +143,7 @@ function ProfileTab({ detail }: { detail: StudentDetailDto }) {
         </div>
         {detail.notes && (
           <div className="sm:col-span-2">
-            <Field label="Note" value={<span className="whitespace-pre-wrap">{detail.notes}</span>} />
+            <Field label={t("Note")} value={<span className="whitespace-pre-wrap">{detail.notes}</span>} />
           </div>
         )}
       </div>
@@ -167,6 +169,7 @@ function formatPeriod(startIso?: string | null, endIso?: string | null): string 
 }
 
 function PaymentsTab({ studentId }: { studentId: string }) {
+  const { t } = useTranslation();
   const { data: payments, isLoading: paymentsLoading } = usePayments({ studentId });
   const { data: charges, isLoading: chargesLoading } = useCharges({ studentId });
   const [paymentFormOpen, setPaymentFormOpen] = useState(false);
@@ -203,15 +206,15 @@ function PaymentsTab({ studentId }: { studentId: string }) {
     <div className="space-y-4">
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
         <Card>
-          <p className="text-xs font-semibold uppercase tracking-wide text-slate-400 dark:text-slate-500">Total Paid</p>
+          <p className="text-xs font-semibold uppercase tracking-wide text-slate-400 dark:text-slate-500">{t("Total Paid")}</p>
           <p className="mt-1 text-xl font-semibold text-green-600 dark:text-green-400">{formatCurrency(totalPaid, "UZS")}</p>
         </Card>
         <Card>
-          <p className="text-xs font-semibold uppercase tracking-wide text-slate-400 dark:text-slate-500">Total Charges</p>
+          <p className="text-xs font-semibold uppercase tracking-wide text-slate-400 dark:text-slate-500">{t("Total Charges")}</p>
           <p className="mt-1 text-xl font-semibold text-red-600 dark:text-red-400">{formatCurrency(totalCharges, "UZS")}</p>
         </Card>
         <Card>
-          <p className="text-xs font-semibold uppercase tracking-wide text-slate-400 dark:text-slate-500">Balance</p>
+          <p className="text-xs font-semibold uppercase tracking-wide text-slate-400 dark:text-slate-500">{t("Balance")}</p>
           <p className={`mt-1 text-xl font-semibold ${balance > 0 ? "text-red-600 dark:text-red-400" : "text-slate-900 dark:text-slate-100"}`}>
             {formatCurrency(balance, "UZS")}
           </p>
@@ -224,19 +227,19 @@ function PaymentsTab({ studentId }: { studentId: string }) {
           className="flex items-center gap-2 rounded-md bg-indigo-600 px-3 py-2 text-sm font-medium text-white hover:bg-indigo-700"
         >
           <Plus className="h-4 w-4" />
-          Add Payment
+          {t("Add Payment")}
         </button>
       </div>
 
       <DataTable
         data={rows}
         isLoading={paymentsLoading || chargesLoading}
-        emptyMessage="No payments or charges yet."
+        emptyMessage={t("No payments or charges yet.")}
         getRowKey={(r) => r.id}
         columns={[
-          { header: "Date", render: (r) => new Date(r.date).toLocaleDateString() },
+          { header: t("Date"), render: (r) => new Date(r.date).toLocaleDateString() },
           {
-            header: "Amount",
+            header: t("Amount"),
             render: (r) => (
               <span className={r.type === "payment" ? "text-green-600 dark:text-green-400" : "text-red-600 dark:text-red-400"}>
                 {r.type === "payment" ? "+" : "-"}
@@ -244,10 +247,10 @@ function PaymentsTab({ studentId }: { studentId: string }) {
               </span>
             ),
           },
-          { header: "Method", render: (r) => (r.method ? <PaymentMethodBadge method={r.method} /> : "-") },
-          { header: "Period", render: (r) => r.period ?? "-" },
-          { header: "Type", render: (r) => <span className="capitalize">{r.type}</span> },
-          { header: "Note", render: (r) => r.note ?? "-" },
+          { header: t("Method"), render: (r) => (r.method ? <PaymentMethodBadge method={r.method} /> : "-") },
+          { header: t("Period"), render: (r) => r.period ?? "-" },
+          { header: t("Type"), render: (r) => <span className="capitalize">{r.type}</span> },
+          { header: t("Note"), render: (r) => r.note ?? "-" },
         ]}
       />
 
@@ -257,10 +260,11 @@ function PaymentsTab({ studentId }: { studentId: string }) {
 }
 
 function ScheduleTab({ detail }: { detail: StudentDetailDto }) {
+  const { t } = useTranslation();
   if (detail.groups.length === 0) {
     return (
       <Card>
-        <p className="text-sm text-slate-500 dark:text-slate-400">Not assigned to any group yet.</p>
+        <p className="text-sm text-slate-500 dark:text-slate-400">{t("Not assigned to any group yet.")}</p>
       </Card>
     );
   }
@@ -275,12 +279,12 @@ function ScheduleTab({ detail }: { detail: StudentDetailDto }) {
               <p className="text-sm text-slate-500 dark:text-slate-400">{group.course?.name ?? "No course"}</p>
             </div>
             <Link to="/groups" className="text-xs font-medium text-indigo-600 hover:text-indigo-700 dark:text-indigo-400">
-              View Group
+              {t("View Group")}
             </Link>
           </div>
           <div className="mt-4 grid grid-cols-2 gap-4">
-            <Field label="Days" value={group.scheduleDays.length > 0 ? group.scheduleDays.join(", ") : null} />
-            <Field label="Time" value={group.startTime ? `${group.startTime} - ${group.endTime}` : null} />
+            <Field label={t("Days")} value={group.scheduleDays.length > 0 ? group.scheduleDays.join(", ") : null} />
+            <Field label={t("Time")} value={group.startTime ? `${group.startTime} - ${group.endTime}` : null} />
           </div>
         </Card>
       ))}
@@ -289,6 +293,7 @@ function ScheduleTab({ detail }: { detail: StudentDetailDto }) {
 }
 
 function AttendanceTab({ studentId }: { studentId: string }) {
+  const { t } = useTranslation();
   const { data, isLoading } = useStudentAttendanceHistory(studentId);
   const [groupFilter, setGroupFilter] = useState("");
 
@@ -312,7 +317,7 @@ function AttendanceTab({ studentId }: { studentId: string }) {
   return (
     <div className="space-y-4">
       <Card>
-        <p className="text-xs font-semibold uppercase tracking-wide text-slate-400 dark:text-slate-500">This Month</p>
+        <p className="text-xs font-semibold uppercase tracking-wide text-slate-400 dark:text-slate-500">{t("This Month")}</p>
         <p className="mt-1 text-xl font-semibold text-slate-900 dark:text-slate-100">
           {presentRate === null ? "No records this month" : `${presentRate}% present`}
         </p>
@@ -320,8 +325,8 @@ function AttendanceTab({ studentId }: { studentId: string }) {
 
       {groups.length > 0 && (
         <div className="w-48">
-          <SelectField label="Filter by group" value={groupFilter} onChange={(e) => setGroupFilter(e.target.value)}>
-            <option value="">All groups</option>
+          <SelectField label={t("Filter by group")} value={groupFilter} onChange={(e) => setGroupFilter(e.target.value)}>
+            <option value="">{t("All groups")}</option>
             {groups.map(([id, name]) => (
               <option key={id} value={id}>
                 {name}
@@ -334,13 +339,13 @@ function AttendanceTab({ studentId }: { studentId: string }) {
       <DataTable
         data={filtered}
         isLoading={isLoading}
-        emptyMessage="No attendance records yet."
+        emptyMessage={t("No attendance records yet.")}
         getRowKey={(a) => a.id}
         columns={[
-          { header: "Date", render: (a) => new Date(a.date).toLocaleDateString() },
-          { header: "Group", render: (a) => a.group?.name ?? "-" },
-          { header: "Status", render: (a) => <AttendanceStatusBadge status={a.status} /> },
-          { header: "Note", render: (a) => a.notes ?? "-" },
+          { header: t("Date"), render: (a) => new Date(a.date).toLocaleDateString() },
+          { header: t("Group"), render: (a) => a.group?.name ?? "-" },
+          { header: t("Status"), render: (a) => <AttendanceStatusBadge status={a.status} /> },
+          { header: t("Note"), render: (a) => a.notes ?? "-" },
         ]}
       />
     </div>
@@ -348,17 +353,19 @@ function AttendanceTab({ studentId }: { studentId: string }) {
 }
 
 function GradesTab() {
+  const { t } = useTranslation();
   return (
     <Card>
       <div className="flex flex-col items-center justify-center gap-3 py-12 text-center">
         <Lightbulb className="h-8 w-8 text-slate-300 dark:text-slate-600" />
-        <p className="text-sm text-slate-500 dark:text-slate-400">Grades module coming soon.</p>
+        <p className="text-sm text-slate-500 dark:text-slate-400">{t("Grades module coming soon.")}</p>
       </div>
     </Card>
   );
 }
 
 function NotesTab({ detail }: { detail: StudentDetailDto }) {
+  const { t } = useTranslation();
   const [text, setText] = useState(detail.notes ?? "");
   const updateStudent = useUpdateStudent();
   const { showToast } = useToast();
@@ -366,9 +373,9 @@ function NotesTab({ detail }: { detail: StudentDetailDto }) {
   async function save() {
     try {
       await updateStudent.mutateAsync({ id: detail.id, name: detail.name, notes: text });
-      showToast("Note saved.");
+      showToast(t("Note saved."));
     } catch {
-      showToast("Failed to save note.", "error");
+      showToast(t("Failed to save note."), "error");
     }
   }
 
@@ -378,7 +385,7 @@ function NotesTab({ detail }: { detail: StudentDetailDto }) {
         rows={10}
         value={text}
         onChange={(e) => setText(e.target.value)}
-        placeholder="No notes yet."
+        placeholder={t("No notes yet.")}
         className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm text-slate-900 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 dark:border-slate-600 dark:bg-slate-900 dark:text-slate-100"
       />
       <div className="mt-4 flex justify-end">
@@ -395,6 +402,7 @@ function NotesTab({ detail }: { detail: StudentDetailDto }) {
 }
 
 function HistoryTab({ detail }: { detail: StudentDetailDto }) {
+  const { t } = useTranslation();
   const [viewing, setViewing] = useState<StudentDetailDto["auditLogs"][number] | null>(null);
 
   return (
@@ -402,37 +410,37 @@ function HistoryTab({ detail }: { detail: StudentDetailDto }) {
       <DataTable
         data={detail.auditLogs}
         isLoading={false}
-        emptyMessage="No history recorded yet."
+        emptyMessage={t("No history recorded yet.")}
         getRowKey={(a) => a.id}
         onRowClick={(a) => setViewing(a)}
         columns={[
-          { header: "Date", render: (a) => new Date(a.createdAt).toLocaleString() },
-          { header: "Action", render: (a) => <span className="font-mono text-xs">{a.action}</span> },
-          { header: "User", render: (a) => a.actorName ?? "Unknown" },
+          { header: t("Date"), render: (a) => new Date(a.createdAt).toLocaleString() },
+          { header: t("Action"), render: (a) => <span className="font-mono text-xs">{a.action}</span> },
+          { header: t("User"), render: (a) => a.actorName ?? "Unknown" },
         ]}
         renderActions={(a) => (
           <button
             onClick={() => setViewing(a)}
             className="rounded p-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-700 dark:hover:bg-slate-700"
-            aria-label="View details"
-            title="View details"
+            aria-label={t("View details")}
+            title={t("View details")}
           >
             <Eye className="h-4 w-4" />
           </button>
         )}
       />
 
-      <Modal open={Boolean(viewing)} onClose={() => setViewing(null)} title="History Entry" widthClassName="max-w-2xl">
+      <Modal open={Boolean(viewing)} onClose={() => setViewing(null)} title={t("History Entry")} widthClassName="max-w-2xl">
         {viewing && (
           <div className="grid grid-cols-1 gap-4 text-sm sm:grid-cols-2">
             <div>
-              <p className="mb-1 text-xs font-semibold uppercase tracking-wide text-slate-400 dark:text-slate-500">Before</p>
+              <p className="mb-1 text-xs font-semibold uppercase tracking-wide text-slate-400 dark:text-slate-500">{t("Before")}</p>
               <pre className="max-h-64 overflow-auto rounded-lg bg-slate-50 p-3 text-xs text-slate-700 dark:bg-slate-900 dark:text-slate-300">
                 {viewing.beforeValue ? JSON.stringify(viewing.beforeValue, null, 2) : "—"}
               </pre>
             </div>
             <div>
-              <p className="mb-1 text-xs font-semibold uppercase tracking-wide text-slate-400 dark:text-slate-500">After</p>
+              <p className="mb-1 text-xs font-semibold uppercase tracking-wide text-slate-400 dark:text-slate-500">{t("After")}</p>
               <pre className="max-h-64 overflow-auto rounded-lg bg-slate-50 p-3 text-xs text-slate-700 dark:bg-slate-900 dark:text-slate-300">
                 {viewing.afterValue ? JSON.stringify(viewing.afterValue, null, 2) : "—"}
               </pre>
@@ -445,6 +453,7 @@ function HistoryTab({ detail }: { detail: StudentDetailDto }) {
 }
 
 export function StudentProfilePage() {
+  const { t } = useTranslation();
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { data: detail, isLoading } = useStudentDetail(id);
@@ -452,7 +461,7 @@ export function StudentProfilePage() {
   const [editOpen, setEditOpen] = useState(false);
 
   if (isLoading || !detail) {
-    return <p className="text-sm text-slate-500 dark:text-slate-400">Loading...</p>;
+    return <p className="text-sm text-slate-500 dark:text-slate-400">{t("Loading...")}</p>;
   }
 
   return (
@@ -462,7 +471,7 @@ export function StudentProfilePage() {
         className="mb-4 flex items-center gap-1 text-sm font-medium text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100"
       >
         <ArrowLeft className="h-4 w-4" />
-        Back
+        {t("Back")}
       </button>
 
       <Card>
@@ -489,7 +498,7 @@ export function StudentProfilePage() {
             className="flex items-center gap-2 rounded-md border border-slate-300 px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 dark:border-slate-600 dark:text-slate-200 dark:hover:bg-slate-700"
           >
             <Pencil className="h-4 w-4" />
-            Edit
+            {t("Edit")}
           </button>
         </div>
       </Card>

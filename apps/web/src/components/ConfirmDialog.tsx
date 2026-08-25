@@ -1,5 +1,6 @@
 import { Loader2 } from "lucide-react";
 import { Modal } from "./Modal";
+import { useTranslation } from "../hooks/use-translation";
 
 interface ConfirmDialogProps {
   open: boolean;
@@ -20,6 +21,7 @@ export function ConfirmDialog({
   onConfirm,
   onCancel,
 }: ConfirmDialogProps) {
+  const { t } = useTranslation();
   return (
     <Modal open={open} onClose={onCancel} title={title} widthClassName="max-w-sm">
       <p className="text-sm text-slate-600 dark:text-slate-300">{message}</p>
@@ -30,7 +32,7 @@ export function ConfirmDialog({
           disabled={isConfirming}
           className="rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-50 disabled:opacity-60 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700"
         >
-          Cancel
+          {t("Cancel")}
         </button>
         <button
           type="button"

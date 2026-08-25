@@ -8,6 +8,7 @@ import { useToast } from "../components/Toast";
 import { SelectField, TextField } from "../components/form/Field";
 import { SubscriptionLimitBanners } from "../components/subscription/SubscriptionLimitBanners";
 import { errorMessage } from "../lib/plan-lock";
+import { useTranslation } from "../hooks/use-translation";
 import {
   BranchInput,
   useBranches,
@@ -45,6 +46,7 @@ function BranchForm({
   onClose: () => void;
   branch?: BranchDto | null;
 }) {
+  const { t } = useTranslation();
   const isEditing = Boolean(branch);
   const [form, setForm] = useState<FormState>(() => toFormState(branch));
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -78,10 +80,10 @@ function BranchForm({
     try {
       if (isEditing && branch) {
         await updateBranch.mutateAsync({ id: branch.id, ...input });
-        showToast("Branch updated.");
+        showToast(t("Branch updated."));
       } else {
         await createBranch.mutateAsync(input);
-        showToast("Branch created.");
+        showToast(t("Branch created."));
       }
       onClose();
     } catch (err) {
@@ -93,32 +95,32 @@ function BranchForm({
     <Modal open={open} onClose={onClose} title={isEditing ? "Edit Branch" : "New Branch"}>
       <form onSubmit={handleSubmit} className="space-y-4">
         <TextField
-          label="Name"
+          label={t("Name")}
           required
           value={form.name}
           error={errors.name}
           onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
         />
         <TextField
-          label="Address"
+          label={t("Address")}
           value={form.address}
           onChange={(e) => setForm((f) => ({ ...f, address: e.target.value }))}
         />
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <TextField
-            label="Phone"
+            label={t("Phone")}
             value={form.phone}
             onChange={(e) => setForm((f) => ({ ...f, phone: e.target.value }))}
           />
           <TextField
-            label="Email"
+            label={t("Email")}
             type="email"
             value={form.email}
             onChange={(e) => setForm((f) => ({ ...f, email: e.target.value }))}
           />
         </div>
         <SelectField
-          label="Status"
+          label={t("Status")}
           value={form.status}
           onChange={(e) => setForm((f) => ({ ...f, status: e.target.value as BranchStatus }))}
         >
@@ -136,7 +138,7 @@ function BranchForm({
             disabled={isSaving}
             className="rounded-md border border-slate-300 px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 disabled:opacity-60"
           >
-            Cancel
+            {t("Cancel")}
           </button>
           <button
             type="submit"
@@ -153,6 +155,7 @@ function BranchForm({
 }
 
 export function BranchesPage() {
+  const { t } = useTranslation();
   const { data, isLoading } = useBranches();
   const deleteBranch = useDeleteBranch();
   const { showToast } = useToast();
@@ -165,10 +168,10 @@ export function BranchesPage() {
     if (!deleting) return;
     try {
       await deleteBranch.mutateAsync(deleting.id);
-      showToast("Branch deleted.");
+      showToast(t("Branch deleted."));
       setDeleting(null);
     } catch {
-      showToast("Failed to delete branch.", "error");
+      showToast(t("Failed to delete branch."), "error");
     }
   }
 
@@ -177,7 +180,7 @@ export function BranchesPage() {
       <SubscriptionLimitBanners resource="branch" />
 
       <div className="mb-6 flex items-center justify-between">
-        <h1 className="text-2xl font-semibold text-slate-900 dark:text-slate-100">Branches</h1>
+        <h1 className="text-2xl font-semibold text-slate-900 dark:text-slate-100">{t("Branches")}</h1>
         <button
           onClick={() => {
             setEditing(null);
@@ -186,7 +189,7 @@ export function BranchesPage() {
           className="flex items-center gap-2 rounded-md bg-indigo-600 px-3 py-2 text-sm font-medium text-white hover:bg-indigo-700"
         >
           <Plus className="h-4 w-4" />
-          New Branch
+          {t("New Branch")}
         </button>
       </div>
 
@@ -200,9 +203,9 @@ export function BranchesPage() {
           setFormOpen(true);
         }}
         columns={[
-          { header: "Name", render: (b) => <span className="font-medium text-slate-900 dark:text-slate-100">{b.name}</span> },
-          { header: "Status", render: (b) => <span className="capitalize">{b.status}</span> },
-          { header: "Address", render: (b) => b.address ?? "-" },
+          { header: t("Name"), render: (b) => <span className="font-medium text-slate-900 dark:text-slate-100">{b.name}</span> },
+          { header: t("Status"), render: (b) => <span className="capitalize">{b.status}</span> },
+          { header: t("Address"), render: (b) => b.address ?? "-" },
         ]}
         renderActions={(b) => (
           <>
@@ -212,14 +215,14 @@ export function BranchesPage() {
                 setFormOpen(true);
               }}
               className="rounded p-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-700"
-              aria-label="Edit branch"
+              aria-label={t("Edit branch")}
             >
               <Pencil className="h-4 w-4" />
             </button>
             <button
               onClick={() => setDeleting(b)}
               className="rounded p-1.5 text-slate-400 hover:bg-red-50 hover:text-red-600"
-              aria-label="Delete branch"
+              aria-label={t("Delete branch")}
             >
               <Trash2 className="h-4 w-4" />
             </button>
@@ -231,7 +234,7 @@ export function BranchesPage() {
 
       <ConfirmDialog
         open={Boolean(deleting)}
-        title="Delete branch"
+        title={t("Delete branch")}
         message={`Are you sure you want to delete ${deleting?.name}? This cannot be undone.`}
         isConfirming={deleteBranch.isPending}
         onConfirm={confirmDelete}

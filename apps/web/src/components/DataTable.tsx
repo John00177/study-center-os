@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import { BrandedSpinner } from "./branding/BrandedSpinner";
 import { EmptyState, type EmptyStateIcon } from "./branding/EmptyState";
+import { useTranslation } from "../hooks/use-translation";
 
 export interface DataTableColumn<T> {
   header: string;
@@ -32,6 +33,7 @@ export function DataTable<T>({
   renderActions,
   striped = false,
 }: DataTableProps<T>) {
+  const { t } = useTranslation();
   const columnCount = columns.length + (renderActions ? 1 : 0);
 
   return (
@@ -52,7 +54,7 @@ export function DataTable<T>({
               ))}
               {renderActions && (
                 <th className="px-4 py-3 text-right text-xs font-semibold uppercase tracking-wide text-slate-600 dark:text-slate-400">
-                  Actions
+                  {t("Actions")}
                 </th>
               )}
             </tr>
@@ -63,7 +65,7 @@ export function DataTable<T>({
                 <td className="px-4 py-8" colSpan={columnCount}>
                   <div className="flex items-center justify-center gap-2 text-sm text-slate-500 dark:text-slate-400">
                     <BrandedSpinner className="h-4 w-4" />
-                    Loading...
+                    {t("Loading...")}
                   </div>
                 </td>
               </tr>

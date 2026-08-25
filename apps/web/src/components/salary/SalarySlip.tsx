@@ -4,6 +4,7 @@ import { resolveOrgDisplayName } from "../../lib/theme";
 import { formatCurrency } from "../../lib/format";
 import { numberToWords } from "../../lib/number-to-words";
 import { OrgLogo } from "../branding/OrgLogo";
+import { useTranslation } from "../../hooks/use-translation";
 
 interface SalarySlipProps {
   teacherName: string;
@@ -20,6 +21,7 @@ function monthLabel(month: string): string {
 }
 
 export function SalarySlip({ teacherName, month, amount, currency, paidAt, paymentMethod }: SalarySlipProps) {
+  const { t } = useTranslation();
   const { branding } = useTheme();
   const orgName = resolveOrgDisplayName(branding);
 
@@ -30,31 +32,31 @@ export function SalarySlip({ teacherName, month, amount, currency, paidAt, payme
           <OrgLogo logoUrl={branding?.logoUrl} name={orgName} className="h-10 w-10" />
           <div>
             <p className="text-lg font-semibold text-slate-900">{orgName}</p>
-            <p className="text-xs text-slate-500">Salary Payment Slip</p>
+            <p className="text-xs text-slate-500">{t("Salary Payment Slip")}</p>
           </div>
         </div>
 
         <div className="mt-6 grid grid-cols-2 gap-4 text-sm">
           <div>
-            <p className="text-xs uppercase tracking-wide text-slate-500">Teacher</p>
+            <p className="text-xs uppercase tracking-wide text-slate-500">{t("Teacher")}</p>
             <p className="font-medium text-slate-900">{teacherName}</p>
           </div>
           <div>
-            <p className="text-xs uppercase tracking-wide text-slate-500">Month</p>
+            <p className="text-xs uppercase tracking-wide text-slate-500">{t("Month")}</p>
             <p className="font-medium text-slate-900">{monthLabel(month)}</p>
           </div>
           <div>
-            <p className="text-xs uppercase tracking-wide text-slate-500">Payment date</p>
+            <p className="text-xs uppercase tracking-wide text-slate-500">{t("Payment date")}</p>
             <p className="font-medium text-slate-900">{paidAt ? new Date(paidAt).toLocaleDateString() : "—"}</p>
           </div>
           <div>
-            <p className="text-xs uppercase tracking-wide text-slate-500">Payment method</p>
+            <p className="text-xs uppercase tracking-wide text-slate-500">{t("Payment method")}</p>
             <p className="font-medium capitalize text-slate-900">{paymentMethod?.replace("_", " ") ?? "—"}</p>
           </div>
         </div>
 
         <div className="mt-6 rounded-lg bg-slate-50 p-4">
-          <p className="text-xs uppercase tracking-wide text-slate-500">Amount</p>
+          <p className="text-xs uppercase tracking-wide text-slate-500">{t("Amount")}</p>
           <p className="text-2xl font-bold text-slate-900">{formatCurrency(amount, currency)}</p>
           <p className="mt-1 text-xs capitalize text-slate-500">{numberToWords(amount)} {currency} only</p>
         </div>
@@ -62,11 +64,11 @@ export function SalarySlip({ teacherName, month, amount, currency, paidAt, payme
         <div className="mt-10 grid grid-cols-2 gap-8 text-sm">
           <div>
             <div className="h-10 border-b border-slate-400" />
-            <p className="mt-1 text-xs text-slate-500">Received by</p>
+            <p className="mt-1 text-xs text-slate-500">{t("Received by")}</p>
           </div>
           <div>
             <div className="h-10 border-b border-slate-400" />
-            <p className="mt-1 text-xs text-slate-500">Authorized by</p>
+            <p className="mt-1 text-xs text-slate-500">{t("Authorized by")}</p>
           </div>
         </div>
       </div>
@@ -77,7 +79,7 @@ export function SalarySlip({ teacherName, month, amount, currency, paidAt, payme
           className="flex items-center gap-2 rounded-md bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700"
         >
           <Printer className="h-4 w-4" />
-          Print Slip
+          {t("Print Slip")}
         </button>
       </div>
     </div>

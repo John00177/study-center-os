@@ -5,6 +5,7 @@ import { DataTable } from "../DataTable";
 import { Modal } from "../Modal";
 import { useToast } from "../Toast";
 import { useGradeSubmission, useHomeworkDetail } from "../../hooks/use-homework";
+import { useTranslation } from "../../hooks/use-translation";
 
 const STATUS_STYLES: Record<SubmissionStatus, string> = {
   pending: "bg-slate-100 text-slate-600",
@@ -20,6 +21,7 @@ interface HomeworkDetailModalProps {
 }
 
 function GradeRow({ submission }: { submission: HomeworkSubmissionDto }) {
+  const { t } = useTranslation();
   const gradeSubmission = useGradeSubmission();
   const { showToast } = useToast();
   const [score, setScore] = useState(submission.score?.toString() ?? "");
@@ -28,14 +30,14 @@ function GradeRow({ submission }: { submission: HomeworkSubmissionDto }) {
   async function handleGrade() {
     const numericScore = Number(score);
     if (!score || Number.isNaN(numericScore) || numericScore < 0 || numericScore > 100) {
-      showToast("Enter a score between 0 and 100.", "error");
+      showToast(t("Enter a score between 0 and 100."), "error");
       return;
     }
     try {
       await gradeSubmission.mutateAsync({ submissionId: submission.id, score: numericScore, feedback: feedback.trim() || undefined });
-      showToast("Submission graded.");
+      showToast(t("Submission graded."));
     } catch {
-      showToast("Failed to grade submission.", "error");
+      showToast(t("Failed to grade submission."), "error");
     }
   }
 
@@ -47,14 +49,14 @@ function GradeRow({ submission }: { submission: HomeworkSubmissionDto }) {
         max={100}
         value={score}
         onChange={(e) => setScore(e.target.value)}
-        placeholder="Score"
+        placeholder={t("Score")}
         className="w-20 rounded-md border border-slate-300 px-2 py-1 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
       />
       <input
         type="text"
         value={feedback}
         onChange={(e) => setFeedback(e.target.value)}
-        placeholder="Feedback"
+        placeholder={t("Feedback")}
         className="w-40 rounded-md border border-slate-300 px-2 py-1 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
       />
       <button
@@ -64,13 +66,14 @@ function GradeRow({ submission }: { submission: HomeworkSubmissionDto }) {
         className="flex items-center gap-1 rounded-md bg-indigo-600 px-2.5 py-1 text-xs font-medium text-white hover:bg-indigo-700 disabled:opacity-60"
       >
         {gradeSubmission.isPending && <Loader2 className="h-3 w-3 animate-spin" />}
-        Grade
+        {t("Grade")}
       </button>
     </div>
   );
 }
 
 export function HomeworkDetailModal({ open, onClose, homeworkId }: HomeworkDetailModalProps) {
+  const { t } = useTranslation();
   const { data: homework, isLoading } = useHomeworkDetail(open ? homeworkId : null);
 
   const submissions = homework?.submissions ?? [];
@@ -82,7 +85,7 @@ export function HomeworkDetailModal({ open, onClose, homeworkId }: HomeworkDetai
 
   return (
     <Modal open={open} onClose={onClose} title={homework?.title ?? "Homework"} widthClassName="max-w-2xl">
-      {isLoading && <p className="text-sm text-slate-500">Loading...</p>}
+      {isLoading && <p className="text-sm text-slate-500">{t("Loading...")}</p>}
       {homework && (
         <div>
           {homework.description && <p className="mb-2 text-sm text-slate-600">{homework.description}</p>}
@@ -95,7 +98,7 @@ export function HomeworkDetailModal({ open, onClose, homeworkId }: HomeworkDetai
           <div className="mb-4 space-y-2">
             <div>
               <div className="mb-1 flex justify-between text-xs text-slate-500">
-                <span>Submitted</span>
+                <span>{t("Submitted")}</span>
                 <span>{submittedPct}%</span>
               </div>
               <div className="h-2 overflow-hidden rounded-full bg-slate-100">
@@ -104,7 +107,7 @@ export function HomeworkDetailModal({ open, onClose, homeworkId }: HomeworkDetai
             </div>
             <div>
               <div className="mb-1 flex justify-between text-xs text-slate-500">
-                <span>Graded</span>
+                <span>{t("Graded")}</span>
                 <span>{gradedPct}%</span>
               </div>
               <div className="h-2 overflow-hidden rounded-full bg-slate-100">
@@ -116,21 +119,21 @@ export function HomeworkDetailModal({ open, onClose, homeworkId }: HomeworkDetai
           <DataTable
             data={submissions}
             isLoading={false}
-            emptyMessage="No students enrolled."
+            emptyMessage={t("No students enrolled.")}
             getRowKey={(s) => s.id}
             columns={[
-              { header: "Student", render: (s) => s.student?.name ?? "-" },
+              { header: t("Student"), render: (s) => s.student?.name ?? "-" },
               {
-                header: "Status",
+                header: t("Status"),
                 render: (s) => (
                   <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium capitalize ${STATUS_STYLES[s.status]}`}>
                     {s.status}
                   </span>
                 ),
               },
-              { header: "Submitted", render: (s) => (s.submittedAt ? new Date(s.submittedAt).toLocaleDateString() : "-") },
-              { header: "Score", render: (s) => (s.score !== null && s.score !== undefined ? s.score : "-") },
-              { header: "Grade", render: (s) => <GradeRow submission={s} /> },
+              { header: t("Submitted"), render: (s) => (s.submittedAt ? new Date(s.submittedAt).toLocaleDateString() : "-") },
+              { header: t("Score"), render: (s) => (s.score !== null && s.score !== undefined ? s.score : "-") },
+              { header: t("Grade"), render: (s) => <GradeRow submission={s} /> },
             ]}
           />
         </div>

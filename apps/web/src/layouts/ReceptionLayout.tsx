@@ -64,7 +64,7 @@ function ReceptionNav({ onNavigate }: { onNavigate?: () => void }) {
           }
         >
           <Icon size={18} />
-          {translationKey ? t(translationKey) : label}
+          {t(translationKey ?? label)}
         </NavLink>
       ))}
     </nav>
@@ -108,7 +108,7 @@ export function ReceptionLayout() {
               </div>
               <button
                 onClick={() => setMenuOpen(false)}
-                aria-label="Close menu"
+                aria-label={t("Close menu")}
                 className="rounded-md p-1 text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700"
               >
                 <X className="h-5 w-5" />
@@ -125,7 +125,7 @@ export function ReceptionLayout() {
           <div className="flex items-center gap-3">
             <button
               onClick={() => setMenuOpen(true)}
-              aria-label="Open menu"
+              aria-label={t("Open menu")}
               className="rounded-md p-1.5 text-slate-500 hover:bg-slate-100 sm:hidden dark:text-slate-400 dark:hover:bg-slate-700"
             >
               <Menu className="h-5 w-5" />

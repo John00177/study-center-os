@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { isAxiosError } from "axios";
 import { CheckCircle2, Loader2, XCircle } from "lucide-react";
 import { useCheckSlug, useSignup } from "../hooks/use-auth";
+import { useTranslation } from "../hooks/use-translation";
 
 function slugify(input: string): string {
   return input
@@ -27,6 +28,7 @@ function passwordStrength(password: string): { label: string; colorClass: string
 }
 
 export function PublicSignupPage() {
+  const { t } = useTranslation();
   const [organizationName, setOrganizationName] = useState("");
   const [slug, setSlug] = useState("");
   const [slugEdited, setSlugEdited] = useState(false);
@@ -102,12 +104,12 @@ export function PublicSignupPage() {
       <div className="flex min-h-screen items-center justify-center bg-slate-100 p-4">
         <div className="w-full max-w-md rounded-xl bg-white p-8 text-center shadow-md">
           <CheckCircle2 className="mx-auto mb-4 h-12 w-12 text-green-500" />
-          <h1 className="mb-2 text-xl font-semibold text-slate-900">Application submitted!</h1>
+          <h1 className="mb-2 text-xl font-semibold text-slate-900">{t("Application submitted!")}</h1>
           <p className="mb-6 text-sm text-slate-500">
-            We'll review your application and email you within 24 hours.
+            {t("We'll review your application and email you within 24 hours.")}
           </p>
           <Link to="/login" className="text-sm font-medium text-indigo-600 hover:text-indigo-500">
-            Back to Login
+            {t("Back to Login")}
           </Link>
         </div>
       </div>
@@ -117,8 +119,8 @@ export function PublicSignupPage() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-slate-100 p-4">
       <div className="w-full max-w-lg rounded-xl bg-white p-8 shadow-md">
-        <h1 className="mb-1 text-2xl font-semibold text-slate-900">Register Your Study Center</h1>
-        <p className="mb-6 text-sm text-slate-500">Apply for access — an admin will review your application.</p>
+        <h1 className="mb-1 text-2xl font-semibold text-slate-900">{t("Register Your Study Center")}</h1>
+        <p className="mb-6 text-sm text-slate-500">{t("Apply for access — an admin will review your application.")}</p>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
@@ -149,12 +151,12 @@ export function PublicSignupPage() {
               {slugValid && checkingSlug && <Loader2 className="h-3 w-3 animate-spin text-slate-400" />}
               {slugValid && !checkingSlug && slugCheck?.available === true && (
                 <span className="flex items-center gap-1 text-green-600">
-                  <CheckCircle2 className="h-3 w-3" /> Available
+                  <CheckCircle2 className="h-3 w-3" /> {t("Available")}
                 </span>
               )}
               {slugValid && !checkingSlug && slugCheck?.available === false && (
                 <span className="flex items-center gap-1 text-red-600">
-                  <XCircle className="h-3 w-3" /> Taken
+                  <XCircle className="h-3 w-3" /> {t("Taken")}
                 </span>
               )}
             </div>
@@ -214,7 +216,7 @@ export function PublicSignupPage() {
                     />
                   ))}
                 </div>
-                <p className="mt-1 text-xs text-slate-400">{strength.label}</p>
+                <p className="mt-1 text-xs text-slate-400">{t(strength.label)}</p>
               </div>
             )}
           </div>
@@ -243,7 +245,7 @@ export function PublicSignupPage() {
           </div>
 
           <div>
-            <label className="mb-1 block text-sm font-medium text-slate-700">Address</label>
+            <label className="mb-1 block text-sm font-medium text-slate-700">{t("Address")}</label>
             <input
               type="text"
               value={address}
@@ -260,13 +262,13 @@ export function PublicSignupPage() {
             className="flex w-full items-center justify-center gap-2 rounded-md bg-indigo-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-indigo-500 disabled:opacity-60"
           >
             {signup.isPending && <Loader2 className="h-4 w-4 animate-spin" />}
-            Apply
+            {t("Apply")}
           </button>
 
           <p className="text-center text-sm text-slate-500">
             Already have an account?{" "}
             <Link to="/login" className="font-medium text-indigo-600 hover:text-indigo-500">
-              Back to Login
+              {t("Back to Login")}
             </Link>
           </p>
         </form>

@@ -1,12 +1,14 @@
 import { CartesianGrid, Legend, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
+import { useTranslation } from "../../hooks/use-translation";
 
 interface EnrollmentChartProps {
   data: { month: string; newStudents: number; droppedStudents: number }[];
 }
 
 export function EnrollmentChart({ data }: EnrollmentChartProps) {
+  const { t } = useTranslation();
   if (data.length === 0) {
-    return <div className="flex h-[200px] items-center justify-center text-xs text-slate-400">No data</div>;
+    return <div className="flex h-[200px] items-center justify-center text-xs text-slate-400">{t("No data")}</div>;
   }
 
   return (

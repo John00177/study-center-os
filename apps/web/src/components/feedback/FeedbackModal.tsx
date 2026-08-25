@@ -5,6 +5,7 @@ import { Modal } from "../Modal";
 import { SelectField, TextField } from "../form/Field";
 import { useToast } from "../Toast";
 import { useCreateTicket } from "../../hooks/use-support-tickets";
+import { useTranslation } from "../../hooks/use-translation";
 
 interface FeedbackModalProps {
   open: boolean;
@@ -24,6 +25,7 @@ const TYPE_OPTIONS: { value: TicketType; label: string; icon: typeof Bug }[] = [
 const EMPTY_FORM = { type: "issue" as TicketType, title: "", description: "", priority: "medium" as TicketPriority };
 
 export function FeedbackModal({ open, onClose, basePath, profile, onSubmitted }: FeedbackModalProps) {
+  const { t } = useTranslation();
   const createTicket = useCreateTicket(basePath);
   const { showToast } = useToast();
 
@@ -75,22 +77,22 @@ export function FeedbackModal({ open, onClose, basePath, profile, onSubmitted }:
         contactPhone: contactPhone.trim() || undefined,
         priority: form.type === "issue" ? form.priority : undefined,
       });
-      showToast("Thank you! We'll review your feedback and contact you soon.");
+      showToast(t("Thank you! We'll review your feedback and contact you soon."));
       onSubmitted?.();
       onClose();
     } catch {
-      showToast("Failed to send feedback. Please try again.", "error");
+      showToast(t("Failed to send feedback. Please try again."), "error");
     }
   }
 
   return (
-    <Modal open={open} onClose={onClose} title="Send Feedback" widthClassName="max-w-lg">
-      <p className="-mt-2 mb-4 text-sm text-slate-500">Report an issue or share an idea</p>
+    <Modal open={open} onClose={onClose} title={t("Send Feedback")} widthClassName="max-w-lg">
+      <p className="-mt-2 mb-4 text-sm text-slate-500">{t("Report an issue or share an idea")}</p>
 
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
           <label className="mb-1.5 block text-sm font-medium text-slate-700">
-            Type <span className="text-red-500">*</span>
+            {t("Type")}<span className="text-red-500">*</span>
           </label>
           <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
             {TYPE_OPTIONS.map(({ value, label, icon: Icon }) => (
@@ -105,7 +107,7 @@ export function FeedbackModal({ open, onClose, basePath, profile, onSubmitted }:
                 }`}
               >
                 <Icon className="h-5 w-5" />
-                {label}
+                {t(label)}
               </button>
             ))}
           </div>
@@ -113,10 +115,10 @@ export function FeedbackModal({ open, onClose, basePath, profile, onSubmitted }:
 
         <div>
           <TextField
-            label="Title"
+            label={t("Title")}
             required
             maxLength={100}
-            placeholder="Short summary of your feedback"
+            placeholder={t("Short summary of your feedback")}
             value={form.title}
             error={errors.title}
             onChange={(e) => setForm((f) => ({ ...f, title: e.target.value }))}
@@ -126,13 +128,13 @@ export function FeedbackModal({ open, onClose, basePath, profile, onSubmitted }:
 
         <div>
           <label className="mb-1 block text-sm font-medium text-slate-700">
-            Description <span className="text-red-500">*</span>
+            {t("Description")}<span className="text-red-500">*</span>
           </label>
           <textarea
             required
             maxLength={2000}
             rows={4}
-            placeholder="Describe the issue or idea in detail..."
+            placeholder={t("Describe the issue or idea in detail...")}
             value={form.description}
             onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))}
             className={`w-full rounded-lg border px-3 py-2 text-sm text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 ${
@@ -151,14 +153,14 @@ export function FeedbackModal({ open, onClose, basePath, profile, onSubmitted }:
 
         {form.type === "issue" && (
           <SelectField
-            label="Priority"
+            label={t("Priority")}
             value={form.priority}
             onChange={(e) => setForm((f) => ({ ...f, priority: e.target.value as TicketPriority }))}
           >
-            <option value="low">Low</option>
-            <option value="medium">Medium</option>
-            <option value="high">High</option>
-            <option value="urgent">Urgent</option>
+            <option value="low">{t("Low")}</option>
+            <option value="medium">{t("Medium")}</option>
+            <option value="high">{t("High")}</option>
+            <option value="urgent">{t("Urgent")}</option>
           </SelectField>
         )}
 
@@ -168,19 +170,19 @@ export function FeedbackModal({ open, onClose, basePath, profile, onSubmitted }:
             onClick={() => setContactOpen((v) => !v)}
             className="flex w-full items-center justify-between px-3 py-2 text-sm font-medium text-slate-700"
           >
-            Contact Details
+            {t("Contact Details")}
             <span className="text-xs text-slate-400">{contactOpen ? "Hide" : "Show"}</span>
           </button>
           {contactOpen && (
             <div className="space-y-3 border-t border-slate-200 p-3">
-              <TextField label="Name" value={contactName} onChange={(e) => setContactName(e.target.value)} />
+              <TextField label={t("Name")} value={contactName} onChange={(e) => setContactName(e.target.value)} />
               <TextField
-                label="Email"
+                label={t("Email")}
                 type="email"
                 value={contactEmail}
                 onChange={(e) => setContactEmail(e.target.value)}
               />
-              <TextField label="Phone" value={contactPhone} onChange={(e) => setContactPhone(e.target.value)} />
+              <TextField label={t("Phone")} value={contactPhone} onChange={(e) => setContactPhone(e.target.value)} />
               <p className="text-xs text-slate-500">We&apos;ll use this to follow up with you.</p>
             </div>
           )}
@@ -194,7 +196,7 @@ export function FeedbackModal({ open, onClose, basePath, profile, onSubmitted }:
             disabled={createTicket.isPending}
             className="rounded-md border border-slate-300 px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 disabled:opacity-60"
           >
-            Cancel
+            {t("Cancel")}
           </button>
           <button
             type="submit"

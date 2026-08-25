@@ -5,6 +5,7 @@ import { api } from "../lib/api";
 import { usePendingApplications } from "../hooks/use-platform-admin";
 import { DailyBriefing } from "../components/DailyBriefing";
 import { NotificationBell } from "../components/notifications/NotificationBell";
+import { useTranslation } from "../hooks/use-translation";
 
 const NAV_ITEMS = [
   { to: "/admin", label: "Dashboard", icon: LayoutDashboard, end: true },
@@ -16,6 +17,7 @@ const NAV_ITEMS = [
 ];
 
 export function PlatformAdminLayout() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const user = useAuthStore((state) => state.user);
   const logout = useAuthStore((state) => state.logout);
@@ -32,7 +34,7 @@ export function PlatformAdminLayout() {
     <div className="flex min-h-screen bg-slate-950">
       <aside className="hidden w-60 shrink-0 border-r border-slate-800 bg-slate-900 sm:block">
         <div className="border-b border-slate-800 px-4 py-4">
-          <span className="text-lg font-semibold text-white">Platform Admin</span>
+          <span className="text-lg font-semibold text-white">{t("Platform Admin")}</span>
         </div>
         <nav className="flex flex-col gap-1 p-3">
           {NAV_ITEMS.map(({ to, label, icon: Icon, end }) => (
@@ -48,7 +50,7 @@ export function PlatformAdminLayout() {
             >
               <span className="flex items-center gap-3">
                 <Icon size={18} />
-                {label}
+                {t(label)}
               </span>
               {to === "/admin/applications" && pendingCount > 0 && (
                 <span className="rounded-full bg-red-500 px-1.5 py-0.5 text-xs font-semibold text-white">
@@ -62,7 +64,7 @@ export function PlatformAdminLayout() {
 
       <div className="flex flex-1 flex-col">
         <header className="flex items-center justify-between border-b border-slate-800 bg-slate-900 px-6 py-3">
-          <span className="text-sm text-slate-400">Study Center OS — Platform</span>
+          <span className="text-sm text-slate-400">{t("Study Center OS — Platform")}</span>
           <div className="flex items-center gap-4">
             <span className="text-sm font-medium text-white">{user?.name}</span>
             <NotificationBell variant="dark" />
@@ -71,7 +73,7 @@ export function PlatformAdminLayout() {
               className="flex items-center gap-1 rounded-md px-2 py-1 text-sm text-slate-400 hover:bg-slate-800 hover:text-white"
             >
               <LogOut size={16} />
-              Logout
+              {t("Logout")}
             </button>
           </div>
         </header>

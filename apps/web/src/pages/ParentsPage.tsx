@@ -6,6 +6,7 @@ import { DataTable } from "../components/DataTable";
 import { Modal } from "../components/Modal";
 import { useToast } from "../components/Toast";
 import { TextField } from "../components/form/Field";
+import { useTranslation } from "../hooks/use-translation";
 import {
   ParentInput,
   useCreateParent,
@@ -37,6 +38,7 @@ function ParentForm({
   onClose: () => void;
   parent?: ParentDto | null;
 }) {
+  const { t } = useTranslation();
   const isEditing = Boolean(parent);
   const [form, setForm] = useState<FormState>(() => toFormState(parent));
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -68,10 +70,10 @@ function ParentForm({
     try {
       if (isEditing && parent) {
         await updateParent.mutateAsync({ id: parent.id, ...input });
-        showToast("Parent updated.");
+        showToast(t("Parent updated."));
       } else {
         await createParent.mutateAsync(input);
-        showToast("Parent created.");
+        showToast(t("Parent created."));
       }
       onClose();
     } catch {
@@ -83,7 +85,7 @@ function ParentForm({
     <Modal open={open} onClose={onClose} title={isEditing ? "Edit Parent" : "New Parent"}>
       <form onSubmit={handleSubmit} className="space-y-4">
         <TextField
-          label="Name"
+          label={t("Name")}
           required
           value={form.name}
           error={errors.name}
@@ -91,13 +93,13 @@ function ParentForm({
         />
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <TextField
-            label="Email"
+            label={t("Email")}
             type="email"
             value={form.email}
             onChange={(e) => setForm((f) => ({ ...f, email: e.target.value }))}
           />
           <TextField
-            label="Phone"
+            label={t("Phone")}
             value={form.phone}
             onChange={(e) => setForm((f) => ({ ...f, phone: e.target.value }))}
           />
@@ -110,7 +112,7 @@ function ParentForm({
             disabled={isSaving}
             className="rounded-md border border-slate-300 px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 disabled:opacity-60"
           >
-            Cancel
+            {t("Cancel")}
           </button>
           <button
             type="submit"
@@ -127,6 +129,7 @@ function ParentForm({
 }
 
 export function ParentsPage() {
+  const { t } = useTranslation();
   const { data, isLoading } = useParents();
   const deleteParent = useDeleteParent();
   const { showToast } = useToast();
@@ -139,17 +142,17 @@ export function ParentsPage() {
     if (!deleting) return;
     try {
       await deleteParent.mutateAsync(deleting.id);
-      showToast("Parent deleted.");
+      showToast(t("Parent deleted."));
       setDeleting(null);
     } catch {
-      showToast("Failed to delete parent.", "error");
+      showToast(t("Failed to delete parent."), "error");
     }
   }
 
   return (
     <div>
       <div className="mb-6 flex items-center justify-between">
-        <h1 className="text-2xl font-semibold text-slate-900 dark:text-slate-100">Parents</h1>
+        <h1 className="text-2xl font-semibold text-slate-900 dark:text-slate-100">{t("Parents")}</h1>
         <button
           onClick={() => {
             setEditing(null);
@@ -158,7 +161,7 @@ export function ParentsPage() {
           className="flex items-center gap-2 rounded-md bg-indigo-600 px-3 py-2 text-sm font-medium text-white hover:bg-indigo-700"
         >
           <Plus className="h-4 w-4" />
-          New Parent
+          {t("New Parent")}
         </button>
       </div>
 
@@ -172,8 +175,8 @@ export function ParentsPage() {
           setFormOpen(true);
         }}
         columns={[
-          { header: "Name", render: (p) => <span className="font-medium text-slate-900 dark:text-slate-100">{p.name}</span> },
-          { header: "Phone", render: (p) => p.phone ?? "-" },
+          { header: t("Name"), render: (p) => <span className="font-medium text-slate-900 dark:text-slate-100">{p.name}</span> },
+          { header: t("Phone"), render: (p) => p.phone ?? "-" },
         ]}
         renderActions={(p) => (
           <>
@@ -183,14 +186,14 @@ export function ParentsPage() {
                 setFormOpen(true);
               }}
               className="rounded p-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-700"
-              aria-label="Edit parent"
+              aria-label={t("Edit parent")}
             >
               <Pencil className="h-4 w-4" />
             </button>
             <button
               onClick={() => setDeleting(p)}
               className="rounded p-1.5 text-slate-400 hover:bg-red-50 hover:text-red-600"
-              aria-label="Delete parent"
+              aria-label={t("Delete parent")}
             >
               <Trash2 className="h-4 w-4" />
             </button>
@@ -202,7 +205,7 @@ export function ParentsPage() {
 
       <ConfirmDialog
         open={Boolean(deleting)}
-        title="Delete parent"
+        title={t("Delete parent")}
         message={`Are you sure you want to delete ${deleting?.name}? This cannot be undone.`}
         isConfirming={deleteParent.isPending}
         onConfirm={confirmDelete}

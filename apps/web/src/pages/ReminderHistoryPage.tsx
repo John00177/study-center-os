@@ -7,6 +7,7 @@ import { useCurrentSubscription } from "../hooks/use-subscription";
 import { LockedFeaturePage } from "../components/subscription/LockedFeaturePage";
 import { parsePlanLockError } from "../lib/plan-lock";
 import { formatCurrency } from "../lib/format";
+import { useTranslation } from "../hooks/use-translation";
 
 const STATUS_STYLES: Record<ReminderStatus, string> = {
   pending: "bg-slate-100 text-slate-600",
@@ -16,6 +17,7 @@ const STATUS_STYLES: Record<ReminderStatus, string> = {
 };
 
 export function ReminderHistoryPage() {
+  const { t } = useTranslation();
   const [typeFilter, setTypeFilter] = useState<ReminderType | "">("");
   const [statusFilter, setStatusFilter] = useState<ReminderStatus | "">("");
   const { data, isLoading, error } = useReminderHistory();
@@ -32,33 +34,33 @@ export function ReminderHistoryPage() {
 
   return (
     <div>
-      <h1 className="mb-6 text-2xl font-semibold text-slate-900 dark:text-slate-100">Reminder History</h1>
+      <h1 className="mb-6 text-2xl font-semibold text-slate-900 dark:text-slate-100">{t("Reminder History")}</h1>
 
       <div className="mb-4 flex flex-wrap gap-4">
         <div className="w-48">
           <SelectField
-            label="Type"
+            label={t("Type")}
             value={typeFilter}
             onChange={(e) => setTypeFilter(e.target.value as ReminderType | "")}
           >
-            <option value="">All types</option>
+            <option value="">{t("All types")}</option>
             <option value="sms">SMS</option>
-            <option value="whatsapp">WhatsApp</option>
-            <option value="email">Email</option>
-            <option value="push">Push</option>
+            <option value="whatsapp">{t("WhatsApp")}</option>
+            <option value="email">{t("Email")}</option>
+            <option value="push">{t("Push")}</option>
           </SelectField>
         </div>
         <div className="w-48">
           <SelectField
-            label="Status"
+            label={t("Status")}
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value as ReminderStatus | "")}
           >
-            <option value="">All statuses</option>
-            <option value="pending">Pending</option>
-            <option value="sent">Sent</option>
-            <option value="delivered">Delivered</option>
-            <option value="failed">Failed</option>
+            <option value="">{t("All statuses")}</option>
+            <option value="pending">{t("Pending")}</option>
+            <option value="sent">{t("Sent")}</option>
+            <option value="delivered">{t("Delivered")}</option>
+            <option value="failed">{t("Failed")}</option>
           </SelectField>
         </div>
       </div>
@@ -66,14 +68,14 @@ export function ReminderHistoryPage() {
       <DataTable
         data={filtered}
         isLoading={isLoading}
-        emptyMessage="No reminders sent yet."
+        emptyMessage={t("No reminders sent yet.")}
         getRowKey={(r) => r.id}
         columns={[
-          { header: "Student", render: (r) => r.student?.name ?? "-" },
-          { header: "Amount", render: (r) => (r.charge ? formatCurrency(r.charge.amount, r.charge.currency) : "-") },
-          { header: "Type", render: (r) => <span className="uppercase">{r.type}</span> },
+          { header: t("Student"), render: (r) => r.student?.name ?? "-" },
+          { header: t("Amount"), render: (r) => (r.charge ? formatCurrency(r.charge.amount, r.charge.currency) : "-") },
+          { header: t("Type"), render: (r) => <span className="uppercase">{r.type}</span> },
           {
-            header: "Status",
+            header: t("Status"),
             render: (r) => (
               <span
                 className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium capitalize ${STATUS_STYLES[r.status]}`}
@@ -82,7 +84,7 @@ export function ReminderHistoryPage() {
               </span>
             ),
           },
-          { header: "Sent at", render: (r) => new Date(r.createdAt).toLocaleString() },
+          { header: t("Sent at"), render: (r) => new Date(r.createdAt).toLocaleString() },
         ]}
       />
     </div>

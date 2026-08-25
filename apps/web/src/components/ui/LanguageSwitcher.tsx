@@ -1,4 +1,5 @@
 import { useLanguage, type Language } from "../../contexts/LanguageContext";
+import { useTranslation } from "../../hooks/use-translation";
 
 const LANGUAGES: { code: Language; label: string }[] = [
   { code: "uz", label: "UZ" },
@@ -7,13 +8,14 @@ const LANGUAGES: { code: Language; label: string }[] = [
 ];
 
 export function LanguageSwitcher() {
+  const { t } = useTranslation();
   const { language, setLanguage } = useLanguage();
 
   return (
     <div
       className="flex items-center gap-0.5 rounded-md border border-slate-200 p-0.5 dark:border-slate-700"
       role="group"
-      aria-label="Language"
+      aria-label={t("Language")}
     >
       {LANGUAGES.map(({ code, label }) => (
         <button

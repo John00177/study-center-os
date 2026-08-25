@@ -4,6 +4,7 @@ import type { TicketStatus } from "@crm/shared-types";
 import { Modal } from "../Modal";
 import { useTicket, useUpdateTicket } from "../../hooks/use-support-tickets";
 import { useToast } from "../Toast";
+import { useTranslation } from "../../hooks/use-translation";
 import {
   PRIORITY_LABELS,
   STATUS_BADGE_CLASSES,
@@ -41,6 +42,7 @@ export function TicketDetailModal({
   showOrganization = false,
   canReply = false,
 }: TicketDetailModalProps) {
+  const { t } = useTranslation();
   const { data: ticket, isLoading } = useTicket(basePath, open ? ticketId : null);
   const updateTicket = useUpdateTicket(basePath);
   const { showToast } = useToast();
@@ -58,7 +60,7 @@ export function TicketDetailModal({
       await updateTicket.mutateAsync({ id: ticket.id, status });
       showToast(`Ticket marked ${STATUS_LABELS[status].toLowerCase()}.`);
     } catch {
-      showToast("Failed to update ticket.", "error");
+      showToast(t("Failed to update ticket."), "error");
     }
   }
 
@@ -66,9 +68,9 @@ export function TicketDetailModal({
     if (!ticket) return;
     try {
       await updateTicket.mutateAsync({ id: ticket.id, internalNotes: notes });
-      showToast("Internal notes saved.");
+      showToast(t("Internal notes saved."));
     } catch {
-      showToast("Failed to save notes.", "error");
+      showToast(t("Failed to save notes."), "error");
     }
   }
 
@@ -76,14 +78,14 @@ export function TicketDetailModal({
     if (!ticket || !reply.trim()) return;
     try {
       await updateTicket.mutateAsync({ id: ticket.id, adminReply: reply });
-      showToast("Reply sent.");
+      showToast(t("Reply sent."));
     } catch {
-      showToast("Failed to send reply.", "error");
+      showToast(t("Failed to send reply."), "error");
     }
   }
 
   return (
-    <Modal open={open} onClose={onClose} title={ticket ? ticket.title : "Ticket"} widthClassName="max-w-2xl">
+    <Modal open={open} onClose={onClose} title={ticket ? ticket.title : t("Ticket")} widthClassName="max-w-2xl">
       {isLoading && (
         <div className="flex items-center justify-center py-10 text-slate-400">
           <Loader2 className="h-5 w-5 animate-spin" />
@@ -106,24 +108,24 @@ export function TicketDetailModal({
           </div>
 
           <div>
-            <p className="mb-1 text-xs font-semibold uppercase tracking-wide text-slate-400">Description</p>
+            <p className="mb-1 text-xs font-semibold uppercase tracking-wide text-slate-400">{t("Description")}</p>
             <p className="whitespace-pre-wrap text-slate-700">{ticket.description}</p>
           </div>
 
           <div className="grid grid-cols-2 gap-4 rounded-lg border border-slate-200 p-3">
             <div>
-              <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">Submitted by</p>
+              <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">{t("Submitted by")}</p>
               <p className="text-slate-900 dark:text-slate-100">{ticket.submitterName}</p>
               <p className="capitalize text-slate-500">{ticket.submitterType.replace("_", " ")}</p>
             </div>
             {showOrganization && (
               <div>
-                <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">Organization</p>
+                <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">{t("Organization")}</p>
                 <p className="text-slate-900 dark:text-slate-100">{ticket.organizationName ?? "Platform"}</p>
               </div>
             )}
             <div>
-              <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">Contact</p>
+              <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">{t("Contact")}</p>
               {ticket.contactEmail && (
                 <a
                   href={`mailto:${ticket.contactEmail}`}
@@ -139,12 +141,12 @@ export function TicketDetailModal({
                   {ticket.contactPhone}
                 </a>
               )}
-              {!ticket.contactEmail && !ticket.contactPhone && <p className="text-slate-400">No contact info</p>}
+              {!ticket.contactEmail && !ticket.contactPhone && <p className="text-slate-400">{t("No contact info")}</p>}
             </div>
           </div>
 
           <div>
-            <p className="mb-1 text-xs font-semibold uppercase tracking-wide text-slate-400">Status History</p>
+            <p className="mb-1 text-xs font-semibold uppercase tracking-wide text-slate-400">{t("Status History")}</p>
             <ol className="space-y-1 border-l-2 border-slate-200 pl-3 text-xs text-slate-500">
               <li>Created {formatRelativeTime(ticket.createdAt)}</li>
               {ticket.updatedAt !== ticket.createdAt && <li>Last updated {formatRelativeTime(ticket.updatedAt)}</li>}
@@ -169,7 +171,7 @@ export function TicketDetailModal({
                 rows={3}
                 value={reply}
                 onChange={(e) => setReply(e.target.value)}
-                placeholder="Write a reply the submitter will see in their ticket..."
+                placeholder={t("Write a reply the submitter will see in their ticket...")}
                 className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30"
               />
               <button
@@ -177,19 +179,19 @@ export function TicketDetailModal({
                 disabled={updateTicket.isPending || !reply.trim()}
                 className="mt-2 rounded-md bg-primary px-3 py-1.5 text-xs font-medium text-white hover:opacity-90 disabled:opacity-60"
               >
-                Send Reply
+                {t("Send Reply")}
               </button>
             </div>
           )}
 
           {showInternalNotes && (
             <div>
-              <p className="mb-1 text-xs font-semibold uppercase tracking-wide text-slate-400">Internal Notes</p>
+              <p className="mb-1 text-xs font-semibold uppercase tracking-wide text-slate-400">{t("Internal Notes")}</p>
               <textarea
                 rows={3}
                 value={notes}
                 onChange={(e) => setNotes(e.target.value)}
-                placeholder="Notes visible to platform admins only..."
+                placeholder={t("Notes visible to platform admins only...")}
                 className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30"
               />
               <button
@@ -197,7 +199,7 @@ export function TicketDetailModal({
                 disabled={updateTicket.isPending}
                 className="mt-2 rounded-md border border-slate-300 px-3 py-1.5 text-xs font-medium text-slate-700 hover:bg-slate-50 disabled:opacity-60"
               >
-                Save Notes
+                {t("Save Notes")}
               </button>
             </div>
           )}
@@ -210,7 +212,7 @@ export function TicketDetailModal({
                 disabled={updateTicket.isPending}
                 className="rounded-md border border-slate-300 px-3 py-1.5 text-xs font-medium text-slate-700 hover:bg-slate-50 disabled:opacity-60"
               >
-                {label}
+                {t(label)}
               </button>
             ))}
             {ticket.contactEmail && (
@@ -218,7 +220,7 @@ export function TicketDetailModal({
                 href={`mailto:${ticket.contactEmail}?subject=${encodeURIComponent(`Re: ${ticket.title}`)}`}
                 className="ml-auto rounded-md bg-primary px-3 py-1.5 text-xs font-medium text-white hover:opacity-90"
               >
-                Reply
+                {t("Reply")}
               </a>
             )}
           </div>

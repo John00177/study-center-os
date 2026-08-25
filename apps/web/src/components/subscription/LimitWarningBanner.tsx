@@ -1,5 +1,6 @@
 import { AlertTriangle } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "../../hooks/use-translation";
 
 interface LimitWarningBannerProps {
   resource: string; // e.g. "student", "teacher", "branch"
@@ -9,6 +10,7 @@ interface LimitWarningBannerProps {
 }
 
 export function LimitWarningBanner({ resource, current, limit, percentage }: LimitWarningBannerProps) {
+  const { t } = useTranslation();
   const navigate = useNavigate();
 
   if (percentage < 75) return null;
@@ -35,7 +37,7 @@ export function LimitWarningBanner({ resource, current, limit, percentage }: Lim
           isCritical ? "bg-red-600 hover:bg-red-700" : "bg-yellow-600 hover:bg-yellow-700"
         }`}
       >
-        Upgrade
+        {t("Upgrade")}
       </button>
     </div>
   );

@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import type { LucideIcon } from "lucide-react";
+import { useTranslation } from "../hooks/use-translation";
 
 interface AnimatedStatCardProps {
   icon: LucideIcon;
@@ -41,6 +42,7 @@ function useCountUp(value: number, durationMs = 1000, startDelayMs = 0) {
 }
 
 export function AnimatedStatCard({ icon: Icon, value, label, delay = 0, urgent = false, formatValue }: AnimatedStatCardProps) {
+  const { t } = useTranslation();
   const [mounted, setMounted] = useState(false);
   const displayValue = useCountUp(value, 1000, delay);
   const hasEntered = useRef(false);
@@ -62,7 +64,7 @@ export function AnimatedStatCard({ icon: Icon, value, label, delay = 0, urgent =
       <div className="mt-3 text-2xl font-bold text-slate-900 dark:text-slate-100 sm:text-3xl">
         {formatValue ? formatValue(displayValue) : displayValue.toLocaleString()}
       </div>
-      <div className="mt-1 text-sm text-slate-500">{label}</div>
+      <div className="mt-1 text-sm text-slate-500">{t(label)}</div>
     </div>
   );
 }

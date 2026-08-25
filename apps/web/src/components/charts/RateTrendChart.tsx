@@ -1,4 +1,5 @@
 import { CartesianGrid, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
+import { useTranslation } from "../../hooks/use-translation";
 
 interface RateTrendChartProps {
   data: { name: string; value: number }[];
@@ -8,8 +9,9 @@ interface RateTrendChartProps {
 
 /** Single-series trend line — used where EnrollmentChart's two fixed series don't apply (e.g. daily attendance rate). */
 export function RateTrendChart({ data, color = "#10b981", valueFormatter }: RateTrendChartProps) {
+  const { t } = useTranslation();
   if (data.length === 0) {
-    return <div className="flex h-[200px] items-center justify-center text-xs text-slate-400">No data</div>;
+    return <div className="flex h-[200px] items-center justify-center text-xs text-slate-400">{t("No data")}</div>;
   }
 
   return (

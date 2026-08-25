@@ -87,14 +87,14 @@ export function Navigation({ role }: { role?: string | null }) {
     <nav className="flex flex-col gap-1 p-3">
       {items.map(({ to, label, translationKey, icon: Icon, end, requiredModule }) => {
         const locked = requiredModule && subscription && !subscription.allowedModules.includes(requiredModule);
-        const displayLabel = translationKey ? t(translationKey) : label;
+        const displayLabel = t(translationKey ?? label);
 
         if (locked) {
           return (
             <button
               key={to}
               onClick={() => navigate("/settings/plan")}
-              title="Upgrade to unlock"
+              title={t("Upgrade to unlock")}
               className="flex items-center justify-between gap-3 rounded-lg px-3 py-2 text-left text-sm font-medium text-slate-400 transition hover:bg-slate-100 dark:text-slate-500 dark:hover:bg-slate-700"
             >
               <span className="flex items-center gap-3">

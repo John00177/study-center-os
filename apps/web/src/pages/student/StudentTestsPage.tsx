@@ -1,40 +1,42 @@
 import { Link } from "react-router-dom";
 import { useAvailableTests } from "../../hooks/use-student-tests";
+import { useTranslation } from "../../hooks/use-translation";
 
 export function StudentTestsPage() {
+  const { t } = useTranslation();
   const { data, isLoading } = useAvailableTests();
 
   if (isLoading) {
-    return <p className="text-sm text-slate-500">Loading...</p>;
+    return <p className="text-sm text-slate-500">{t("Loading...")}</p>;
   }
 
   return (
     <div>
-      <h1 className="mb-4 text-xl font-semibold text-slate-900">My Tests</h1>
+      <h1 className="mb-4 text-xl font-semibold text-slate-900">{t("My Tests")}</h1>
 
       {(data ?? []).length === 0 && (
         <p className="rounded-xl border border-slate-200 bg-white p-4 text-sm text-slate-500">
-          No tests available right now. Check back later!
+          {t("No tests available right now. Check back later!")}
         </p>
       )}
 
       <div className="space-y-3">
-        {data?.map((t) => (
-          <div key={t.id} className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
-            <p className="font-medium text-slate-900">{t.title}</p>
+        {data?.map((test) => (
+          <div key={test.id} className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+            <p className="font-medium text-slate-900">{test.title}</p>
             <p className="mt-1 text-sm text-slate-500">
-              {t.subject} · {t.level}
+              {test.subject} · {test.level}
             </p>
             <div className="mt-2 flex flex-wrap gap-3 text-xs text-slate-400">
-              <span>{t.duration} min</span>
-              <span>{t.questionCount} questions</span>
-              <span>{t.totalMarks} marks</span>
+              <span>{test.duration} min</span>
+              <span>{test.questionCount} questions</span>
+              <span>{test.totalMarks} marks</span>
             </div>
             <Link
-              to={`/student/tests/${t.id}/take`}
+              to={`/student/tests/${test.id}/take`}
               className="mt-3 block w-full rounded-md bg-indigo-600 py-2.5 text-center text-sm font-medium text-white hover:bg-indigo-700"
             >
-              Start Test
+              {t("Start Test")}
             </Link>
           </div>
         ))}

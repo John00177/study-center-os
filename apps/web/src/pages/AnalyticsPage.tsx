@@ -23,6 +23,7 @@ import { LockedFeaturePage } from "../components/subscription/LockedFeaturePage"
 import { parsePlanLockError } from "../lib/plan-lock";
 import { exportToCsv } from "../lib/csv";
 import { formatCurrency } from "../lib/format";
+import { useTranslation } from "../hooks/use-translation";
 
 type TabKey = "overview" | "revenue" | "enrollment" | "teachers" | "attendance";
 const TABS: { key: TabKey; label: string }[] = [
@@ -34,6 +35,7 @@ const TABS: { key: TabKey; label: string }[] = [
 ];
 
 function ExportButton<T>({ filename, columns, rows }: { filename: string; columns: { key: string; label: string; value: (r: T) => string | number }[]; rows: T[] | undefined }) {
+  const { t } = useTranslation();
   return (
     <button
       onClick={() => rows && exportToCsv(filename, columns, rows)}
@@ -41,7 +43,7 @@ function ExportButton<T>({ filename, columns, rows }: { filename: string; column
       className="flex items-center gap-2 rounded-md border border-slate-300 px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50"
     >
       <Download className="h-4 w-4" />
-      Export CSV
+      {t("Export CSV")}
     </button>
   );
 }
@@ -53,6 +55,7 @@ function collectionRateColor(rate: number) {
 }
 
 function OverviewTab({ filters, canViewRevenue }: { filters: AnalyticsFilters; canViewRevenue: boolean }) {
+  const { t } = useTranslation();
   const { data: revenue } = useRevenueAnalytics(filters, canViewRevenue);
   const { data: enrollment } = useEnrollmentAnalytics(filters);
   const { data: attendance } = useAttendanceAnalytics(filters);
@@ -75,28 +78,28 @@ function OverviewTab({ filters, canViewRevenue }: { filters: AnalyticsFilters; c
       <div className="mb-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {canViewRevenue && (
           <KpiCard
-            label="Total Revenue (this month)"
+            label={t("Total Revenue (this month)")}
             value={formatCurrency(thisMonth, "UZS")}
             trend={revenueTrend}
             icon={<Banknote size={18} />}
           />
         )}
         <KpiCard
-          label="Active Students"
+          label={t("Active Students")}
           value={String(enrollment?.totalStudents ?? "-")}
           trend={studentsTrend}
           icon={<UsersRound size={18} />}
         />
         {canViewRevenue && (
           <KpiCard
-            label="Collection Rate"
+            label={t("Collection Rate")}
             value={revenue ? `${revenue.collectionRate.toFixed(1)}%` : "-"}
             colorClass={revenue ? collectionRateColor(revenue.collectionRate) : undefined}
             icon={<TrendingUp size={18} />}
           />
         )}
         <KpiCard
-          label="Attendance Rate"
+          label={t("Attendance Rate")}
           value={attendance ? `${attendance.overallRate.toFixed(1)}%` : "-"}
           icon={<ClipboardCheck size={18} />}
         />
@@ -106,7 +109,7 @@ function OverviewTab({ filters, canViewRevenue }: { filters: AnalyticsFilters; c
         {canViewRevenue && (
           <div className="rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
             <h3 className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-500">
-              Revenue — last 30 days
+              {t("Revenue — last 30 days")}
             </h3>
             <RevenueChart
               data={(revenue?.dailyRevenue ?? []).map((d) => ({ name: d.date.slice(5), value: d.amount }))}
@@ -116,7 +119,7 @@ function OverviewTab({ filters, canViewRevenue }: { filters: AnalyticsFilters; c
         )}
         <div className="rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
           <h3 className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-500">
-            Enrollment — new vs dropped (12mo)
+            {t("Enrollment — new vs dropped (12mo)")}
           </h3>
           <EnrollmentChart
             data={(enrollment?.enrollmentTrend ?? []).map((t) => ({
@@ -132,26 +135,26 @@ function OverviewTab({ filters, canViewRevenue }: { filters: AnalyticsFilters; c
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
           <div>
             <div className="mb-3 flex items-center justify-between">
-              <h3 className="text-sm font-semibold uppercase tracking-wide text-slate-500">Revenue by Branch</h3>
+              <h3 className="text-sm font-semibold uppercase tracking-wide text-slate-500">{t("Revenue by Branch")}</h3>
               <ExportButton
                 filename={`revenue-by-branch-${new Date().toISOString().slice(0, 10)}.csv`}
                 rows={revenue?.revenueByBranch}
                 columns={[
-                  { key: "branchName", label: "Branch", value: (r) => r.branchName },
-                  { key: "amount", label: "Revenue", value: (r) => r.amount },
+                  { key: "branchName", label: t("Branch"), value: (r) => r.branchName },
+                  { key: "amount", label: t("Revenue"), value: (r) => r.amount },
                 ]}
               />
             </div>
             <DataTable
               data={revenue?.revenueByBranch}
               isLoading={!revenue}
-              emptyMessage="No revenue recorded."
+              emptyMessage={t("No revenue recorded.")}
               getRowKey={(r) => r.branchId}
               columns={[
-                { header: "Branch", render: (r) => r.branchName },
-                { header: "Revenue", render: (r) => formatCurrency(r.amount, "UZS"), align: "right" },
+                { header: t("Branch"), render: (r) => r.branchName },
+                { header: t("Revenue"), render: (r) => formatCurrency(r.amount, "UZS"), align: "right" },
                 {
-                  header: "% of total",
+                  header: t("% of total"),
                   render: (r) => (revenue && revenue.totalRevenue > 0 ? `${((r.amount / revenue.totalRevenue) * 100).toFixed(1)}%` : "-"),
                   align: "right",
                 },
@@ -161,27 +164,27 @@ function OverviewTab({ filters, canViewRevenue }: { filters: AnalyticsFilters; c
 
           <div>
             <div className="mb-3 flex items-center justify-between">
-              <h3 className="text-sm font-semibold uppercase tracking-wide text-slate-500">Overdue Payments</h3>
+              <h3 className="text-sm font-semibold uppercase tracking-wide text-slate-500">{t("Overdue Payments")}</h3>
               <ExportButton
                 filename={`overdue-payments-${new Date().toISOString().slice(0, 10)}.csv`}
                 rows={overdueCharges?.slice(0, 10)}
                 columns={[
-                  { key: "student", label: "Student", value: (r) => r.student?.name ?? "-" },
-                  { key: "amount", label: "Amount", value: (r) => r.amount },
-                  { key: "daysOverdue", label: "Days overdue", value: (r) => r.daysOverdue },
+                  { key: "student", label: t("Student"), value: (r) => r.student?.name ?? "-" },
+                  { key: "amount", label: t("Amount"), value: (r) => r.amount },
+                  { key: "daysOverdue", label: t("Days overdue"), value: (r) => r.daysOverdue },
                 ]}
               />
             </div>
             <DataTable
               data={overdueCharges?.slice(0, 10)}
               isLoading={!overdueCharges}
-              emptyMessage="No overdue payments."
+              emptyMessage={t("No overdue payments.")}
               getRowKey={(c) => c.id}
               columns={[
-                { header: "Student", render: (c) => c.student?.name ?? "-" },
-                { header: "Amount", render: (c) => formatCurrency(c.amount, c.currency) },
+                { header: t("Student"), render: (c) => c.student?.name ?? "-" },
+                { header: t("Amount"), render: (c) => formatCurrency(c.amount, c.currency) },
                 {
-                  header: "Days overdue",
+                  header: t("Days overdue"),
                   render: (c) => (
                     <span className={c.daysOverdue > 7 ? "font-medium text-red-600" : ""}>{c.daysOverdue}</span>
                   ),
@@ -194,17 +197,17 @@ function OverviewTab({ filters, canViewRevenue }: { filters: AnalyticsFilters; c
       )}
 
       <div className="mt-6">
-        <h3 className="mb-3 text-sm font-semibold uppercase tracking-wide text-slate-500">Teacher Workload</h3>
+        <h3 className="mb-3 text-sm font-semibold uppercase tracking-wide text-slate-500">{t("Teacher Workload")}</h3>
         <DataTable
           data={teachers?.teacherWorkload}
           isLoading={!teachers}
-          emptyMessage="No teachers yet."
+          emptyMessage={t("No teachers yet.")}
           getRowKey={(t) => t.teacherId}
           columns={[
-            { header: "Teacher", render: (t) => t.teacherName },
-            { header: "Groups", render: (t) => t.groupCount, align: "right" },
-            { header: "Students", render: (t) => t.studentCount, align: "right" },
-            { header: "Sessions", render: (t) => t.attendanceSessions, align: "right" },
+            { header: t("Teacher"), render: (t) => t.teacherName },
+            { header: t("Groups"), render: (t) => t.groupCount, align: "right" },
+            { header: t("Students"), render: (t) => t.studentCount, align: "right" },
+            { header: t("Sessions"), render: (t) => t.attendanceSessions, align: "right" },
           ]}
         />
       </div>
@@ -213,6 +216,7 @@ function OverviewTab({ filters, canViewRevenue }: { filters: AnalyticsFilters; c
 }
 
 function RevenueTab({ filters }: { filters: AnalyticsFilters }) {
+  const { t } = useTranslation();
   const { data: revenue, isLoading } = useRevenueAnalytics(filters);
   const { data: salaryAnalytics } = useSalaryAnalytics();
 
@@ -234,19 +238,19 @@ function RevenueTab({ filters }: { filters: AnalyticsFilters }) {
   return (
     <div>
       <div className="mb-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <KpiCard label="Total Revenue" value={revenue ? formatCurrency(revenue.totalRevenue, "UZS") : "-"} />
-        <KpiCard label="Total Charges" value={revenue ? formatCurrency(revenue.totalCharges, "UZS") : "-"} />
+        <KpiCard label={t("Total Revenue")} value={revenue ? formatCurrency(revenue.totalRevenue, "UZS") : "-"} />
+        <KpiCard label={t("Total Charges")} value={revenue ? formatCurrency(revenue.totalCharges, "UZS") : "-"} />
         <KpiCard
-          label="Collection Rate"
+          label={t("Collection Rate")}
           value={revenue ? `${revenue.collectionRate.toFixed(1)}%` : "-"}
           colorClass={revenue ? collectionRateColor(revenue.collectionRate) : undefined}
         />
-        <KpiCard label="Outstanding" value={revenue ? formatCurrency(revenue.outstandingBalance, "UZS") : "-"} />
+        <KpiCard label={t("Outstanding")} value={revenue ? formatCurrency(revenue.outstandingBalance, "UZS") : "-"} />
       </div>
 
       <div className="mb-4 rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
-        <h3 className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-500">Daily revenue — last 30 days</h3>
-        {isLoading && <p className="text-sm text-slate-500">Loading...</p>}
+        <h3 className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-500">{t("Daily revenue — last 30 days")}</h3>
+        {isLoading && <p className="text-sm text-slate-500">{t("Loading...")}</p>}
         <RevenueChart
           data={(revenue?.dailyRevenue ?? []).map((d) => ({ name: d.date.slice(5), value: d.amount }))}
           valueFormatter={(v) => formatCurrency(v, "UZS")}
@@ -255,18 +259,18 @@ function RevenueTab({ filters }: { filters: AnalyticsFilters }) {
 
       <div className="mb-8 grid grid-cols-1 gap-4 sm:grid-cols-3">
         <KpiCard
-          label="Total Salary Expense (This Month)"
+          label={t("Total Salary Expense (This Month)")}
           value={salaryAnalytics ? formatCurrency(salaryExpense, "UZS") : "-"}
           colorClass="text-red-600"
           icon={<HandCoins size={18} />}
         />
         <KpiCard
-          label="Salary vs Revenue"
+          label={t("Salary vs Revenue")}
           value={salaryVsRevenueRatio != null ? `${salaryVsRevenueRatio.toFixed(1)}%` : "-"}
           colorClass={salaryVsRevenueRatio != null && salaryVsRevenueRatio > 50 ? "text-red-600" : "text-slate-900"}
         />
         <div className="rounded-lg border border-slate-200 bg-white p-3 shadow-sm">
-          <span className="text-xs font-medium text-slate-500">Teachers Paid / Total</span>
+          <span className="text-xs font-medium text-slate-500">{t("Teachers Paid / Total")}</span>
           <p className="mt-1.5 text-xl font-semibold text-slate-900 dark:text-slate-100">
             {teachersPaidCount} / {teachersTotalCount}
           </p>
@@ -277,44 +281,44 @@ function RevenueTab({ filters }: { filters: AnalyticsFilters }) {
       </div>
 
       <div className="mb-4 rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
-        <h3 className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-500">Revenue vs Salary Expense — by month</h3>
+        <h3 className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-500">{t("Revenue vs Salary Expense — by month")}</h3>
         <RevenueVsSalaryChart data={revenueVsSalaryData} valueFormatter={(v) => formatCurrency(v, "UZS")} />
       </div>
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
         <div>
           <div className="mb-3 flex items-center justify-between">
-            <h3 className="text-sm font-semibold uppercase tracking-wide text-slate-500">By Branch</h3>
+            <h3 className="text-sm font-semibold uppercase tracking-wide text-slate-500">{t("By Branch")}</h3>
             <ExportButton
               filename={`revenue-by-branch-${new Date().toISOString().slice(0, 10)}.csv`}
               rows={revenue?.revenueByBranch}
               columns={[
-                { key: "branchName", label: "Branch", value: (r) => r.branchName },
-                { key: "amount", label: "Revenue", value: (r) => r.amount },
+                { key: "branchName", label: t("Branch"), value: (r) => r.branchName },
+                { key: "amount", label: t("Revenue"), value: (r) => r.amount },
               ]}
             />
           </div>
           <DataTable
             data={revenue?.revenueByBranch}
             isLoading={isLoading}
-            emptyMessage="No revenue recorded."
+            emptyMessage={t("No revenue recorded.")}
             getRowKey={(r) => r.branchId}
             columns={[
-              { header: "Branch", render: (r) => r.branchName },
-              { header: "Revenue", render: (r) => formatCurrency(r.amount, "UZS"), align: "right" },
+              { header: t("Branch"), render: (r) => r.branchName },
+              { header: t("Revenue"), render: (r) => formatCurrency(r.amount, "UZS"), align: "right" },
             ]}
           />
         </div>
         <div>
-          <h3 className="mb-3 text-sm font-semibold uppercase tracking-wide text-slate-500">By Payment Method</h3>
+          <h3 className="mb-3 text-sm font-semibold uppercase tracking-wide text-slate-500">{t("By Payment Method")}</h3>
           <DataTable
             data={revenue?.revenueByPaymentMethod}
             isLoading={isLoading}
-            emptyMessage="No payments recorded."
+            emptyMessage={t("No payments recorded.")}
             getRowKey={(r) => r.method}
             columns={[
-              { header: "Method", render: (r) => <span className="capitalize">{r.method.replace("_", " ")}</span> },
-              { header: "Revenue", render: (r) => formatCurrency(r.amount, "UZS"), align: "right" },
+              { header: t("Method"), render: (r) => <span className="capitalize">{r.method.replace("_", " ")}</span> },
+              { header: t("Revenue"), render: (r) => formatCurrency(r.amount, "UZS"), align: "right" },
             ]}
           />
         </div>
@@ -324,22 +328,23 @@ function RevenueTab({ filters }: { filters: AnalyticsFilters }) {
 }
 
 function EnrollmentTab({ filters }: { filters: AnalyticsFilters }) {
+  const { t } = useTranslation();
   const { data: enrollment, isLoading } = useEnrollmentAnalytics(filters);
 
   return (
     <div>
       <div className="mb-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <KpiCard label="Active Students" value={String(enrollment?.totalStudents ?? "-")} />
-        <KpiCard label="Newcomers" value={String(enrollment?.totalNewcomers ?? "-")} />
-        <KpiCard label="Dropped" value={String(enrollment?.totalDropped ?? "-")} />
-        <KpiCard label="Conversion Rate" value={enrollment ? `${enrollment.conversionRate.toFixed(1)}%` : "-"} />
+        <KpiCard label={t("Active Students")} value={String(enrollment?.totalStudents ?? "-")} />
+        <KpiCard label={t("Newcomers")} value={String(enrollment?.totalNewcomers ?? "-")} />
+        <KpiCard label={t("Dropped")} value={String(enrollment?.totalDropped ?? "-")} />
+        <KpiCard label={t("Conversion Rate")} value={enrollment ? `${enrollment.conversionRate.toFixed(1)}%` : "-"} />
       </div>
 
       <div className="mb-4 rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
         <h3 className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-500">
-          Enrollment trend — new vs dropped (12mo)
+          {t("Enrollment trend — new vs dropped (12mo)")}
         </h3>
-        {isLoading && <p className="text-sm text-slate-500">Loading...</p>}
+        {isLoading && <p className="text-sm text-slate-500">{t("Loading...")}</p>}
         <EnrollmentChart
           data={(enrollment?.enrollmentTrend ?? []).map((t) => ({
             month: t.month.slice(2),
@@ -351,28 +356,28 @@ function EnrollmentTab({ filters }: { filters: AnalyticsFilters }) {
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
         <div>
-          <h3 className="mb-3 text-sm font-semibold uppercase tracking-wide text-slate-500">Students by Branch</h3>
+          <h3 className="mb-3 text-sm font-semibold uppercase tracking-wide text-slate-500">{t("Students by Branch")}</h3>
           <DataTable
             data={enrollment?.studentsByBranch}
             isLoading={isLoading}
-            emptyMessage="No active enrollments."
+            emptyMessage={t("No active enrollments.")}
             getRowKey={(r) => r.branchId}
             columns={[
-              { header: "Branch", render: (r) => r.branchName },
-              { header: "Students", render: (r) => r.count, align: "right" },
+              { header: t("Branch"), render: (r) => r.branchName },
+              { header: t("Students"), render: (r) => r.count, align: "right" },
             ]}
           />
         </div>
         <div>
-          <h3 className="mb-3 text-sm font-semibold uppercase tracking-wide text-slate-500">Students by Course</h3>
+          <h3 className="mb-3 text-sm font-semibold uppercase tracking-wide text-slate-500">{t("Students by Course")}</h3>
           <DataTable
             data={enrollment?.studentsByCourse}
             isLoading={isLoading}
-            emptyMessage="No active enrollments."
+            emptyMessage={t("No active enrollments.")}
             getRowKey={(r) => r.courseId}
             columns={[
-              { header: "Course", render: (r) => r.courseName },
-              { header: "Students", render: (r) => r.count, align: "right" },
+              { header: t("Course"), render: (r) => r.courseName },
+              { header: t("Students"), render: (r) => r.count, align: "right" },
             ]}
           />
         </div>
@@ -382,41 +387,42 @@ function EnrollmentTab({ filters }: { filters: AnalyticsFilters }) {
 }
 
 function TeachersTab({ filters }: { filters: AnalyticsFilters }) {
+  const { t } = useTranslation();
   const { data: teachers, isLoading } = useTeacherAnalytics(filters);
 
   return (
     <div>
       <div className="mb-8 grid grid-cols-1 gap-4 sm:grid-cols-3">
-        <KpiCard label="Total Teachers" value={String(teachers?.totalTeachers ?? "-")} />
-        <KpiCard label="Active on Dashboard" value={String(teachers?.activeTeachers ?? "-")} />
-        <KpiCard label="Avg Students / Teacher" value={teachers ? teachers.averageStudentsPerTeacher.toFixed(1) : "-"} />
+        <KpiCard label={t("Total Teachers")} value={String(teachers?.totalTeachers ?? "-")} />
+        <KpiCard label={t("Active on Dashboard")} value={String(teachers?.activeTeachers ?? "-")} />
+        <KpiCard label={t("Avg Students / Teacher")} value={teachers ? teachers.averageStudentsPerTeacher.toFixed(1) : "-"} />
       </div>
 
       <div className="mb-3 flex items-center justify-between">
-        <h3 className="text-sm font-semibold uppercase tracking-wide text-slate-500">Teacher Workload</h3>
+        <h3 className="text-sm font-semibold uppercase tracking-wide text-slate-500">{t("Teacher Workload")}</h3>
         <ExportButton
           filename={`teacher-workload-${new Date().toISOString().slice(0, 10)}.csv`}
           rows={teachers?.teacherWorkload}
           columns={[
-            { key: "teacherName", label: "Teacher", value: (r) => r.teacherName },
-            { key: "groupCount", label: "Groups", value: (r) => r.groupCount },
-            { key: "studentCount", label: "Students", value: (r) => r.studentCount },
-            { key: "attendanceSessions", label: "Sessions", value: (r) => r.attendanceSessions },
-            { key: "lessonNotesCount", label: "Lesson notes", value: (r) => r.lessonNotesCount },
+            { key: "teacherName", label: t("Teacher"), value: (r) => r.teacherName },
+            { key: "groupCount", label: t("Groups"), value: (r) => r.groupCount },
+            { key: "studentCount", label: t("Students"), value: (r) => r.studentCount },
+            { key: "attendanceSessions", label: t("Sessions"), value: (r) => r.attendanceSessions },
+            { key: "lessonNotesCount", label: t("Lesson notes"), value: (r) => r.lessonNotesCount },
           ]}
         />
       </div>
       <DataTable
         data={teachers?.teacherWorkload}
         isLoading={isLoading}
-        emptyMessage="No teachers yet."
+        emptyMessage={t("No teachers yet.")}
         getRowKey={(t) => t.teacherId}
         columns={[
-          { header: "Teacher", render: (t) => t.teacherName },
-          { header: "Groups", render: (t) => t.groupCount, align: "right" },
-          { header: "Students", render: (t) => t.studentCount, align: "right" },
-          { header: "Sessions", render: (t) => t.attendanceSessions, align: "right" },
-          { header: "Lesson notes", render: (t) => t.lessonNotesCount, align: "right" },
+          { header: t("Teacher"), render: (t) => t.teacherName },
+          { header: t("Groups"), render: (t) => t.groupCount, align: "right" },
+          { header: t("Students"), render: (t) => t.studentCount, align: "right" },
+          { header: t("Sessions"), render: (t) => t.attendanceSessions, align: "right" },
+          { header: t("Lesson notes"), render: (t) => t.lessonNotesCount, align: "right" },
         ]}
       />
     </div>
@@ -424,20 +430,21 @@ function TeachersTab({ filters }: { filters: AnalyticsFilters }) {
 }
 
 function AttendanceTab({ filters }: { filters: AnalyticsFilters }) {
+  const { t } = useTranslation();
   const { data: attendance, isLoading } = useAttendanceAnalytics(filters);
 
   return (
     <div>
       <div className="mb-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <KpiCard label="Overall Rate" value={attendance ? `${attendance.overallRate.toFixed(1)}%` : "-"} />
-        <KpiCard label="Present" value={String(attendance?.presentCount ?? "-")} />
-        <KpiCard label="Absent" value={String(attendance?.absentCount ?? "-")} />
-        <KpiCard label="Late / Excused" value={attendance ? `${attendance.lateCount} / ${attendance.excusedCount}` : "-"} />
+        <KpiCard label={t("Overall Rate")} value={attendance ? `${attendance.overallRate.toFixed(1)}%` : "-"} />
+        <KpiCard label={t("Present")} value={String(attendance?.presentCount ?? "-")} />
+        <KpiCard label={t("Absent")} value={String(attendance?.absentCount ?? "-")} />
+        <KpiCard label={t("Late / Excused")} value={attendance ? `${attendance.lateCount} / ${attendance.excusedCount}` : "-"} />
       </div>
 
       <div className="mb-4 rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
-        <h3 className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-500">Daily attendance rate</h3>
-        {isLoading && <p className="text-sm text-slate-500">Loading...</p>}
+        <h3 className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-500">{t("Daily attendance rate")}</h3>
+        {isLoading && <p className="text-sm text-slate-500">{t("Loading...")}</p>}
         <RateTrendChart
           data={(attendance?.dailyRate ?? []).map((d) => ({ name: d.date.slice(5), value: d.rate }))}
           valueFormatter={(v) => `${v.toFixed(1)}%`}
@@ -446,16 +453,16 @@ function AttendanceTab({ filters }: { filters: AnalyticsFilters }) {
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
         <div>
-          <h3 className="mb-3 text-sm font-semibold uppercase tracking-wide text-slate-500">Rate by Group</h3>
+          <h3 className="mb-3 text-sm font-semibold uppercase tracking-wide text-slate-500">{t("Rate by Group")}</h3>
           <DataTable
             data={attendance?.rateByGroup}
             isLoading={isLoading}
-            emptyMessage="No attendance recorded."
+            emptyMessage={t("No attendance recorded.")}
             getRowKey={(r) => r.groupId}
             columns={[
-              { header: "Group", render: (r) => r.groupName },
+              { header: t("Group"), render: (r) => r.groupName },
               {
-                header: "Rate",
+                header: t("Rate"),
                 render: (r) => <span className={r.rate < 70 ? "font-medium text-red-600" : ""}>{r.rate.toFixed(1)}%</span>,
                 align: "right",
               },
@@ -464,26 +471,26 @@ function AttendanceTab({ filters }: { filters: AnalyticsFilters }) {
         </div>
         <div>
           <div className="mb-3 flex items-center justify-between">
-            <h3 className="text-sm font-semibold uppercase tracking-wide text-slate-500">Low Attendance Students</h3>
+            <h3 className="text-sm font-semibold uppercase tracking-wide text-slate-500">{t("Low Attendance Students")}</h3>
             <ExportButton
               filename={`low-attendance-${new Date().toISOString().slice(0, 10)}.csv`}
               rows={attendance?.lowAttendanceStudents}
               columns={[
-                { key: "studentName", label: "Student", value: (r) => r.studentName },
-                { key: "groupName", label: "Group", value: (r) => r.groupName },
-                { key: "rate", label: "Rate %", value: (r) => r.rate.toFixed(1) },
+                { key: "studentName", label: t("Student"), value: (r) => r.studentName },
+                { key: "groupName", label: t("Group"), value: (r) => r.groupName },
+                { key: "rate", label: t("Rate %"), value: (r) => r.rate.toFixed(1) },
               ]}
             />
           </div>
           <DataTable
             data={attendance?.lowAttendanceStudents}
             isLoading={isLoading}
-            emptyMessage="No students below 70% attendance."
+            emptyMessage={t("No students below 70% attendance.")}
             getRowKey={(r) => r.studentId}
             columns={[
-              { header: "Student", render: (r) => r.studentName },
-              { header: "Group", render: (r) => r.groupName },
-              { header: "Rate", render: (r) => <span className="font-medium text-red-600">{r.rate.toFixed(1)}%</span>, align: "right" },
+              { header: t("Student"), render: (r) => r.studentName },
+              { header: t("Group"), render: (r) => r.groupName },
+              { header: t("Rate"), render: (r) => <span className="font-medium text-red-600">{r.rate.toFixed(1)}%</span>, align: "right" },
             ]}
           />
         </div>
@@ -493,6 +500,7 @@ function AttendanceTab({ filters }: { filters: AnalyticsFilters }) {
 }
 
 export function AnalyticsPage() {
+  const { t } = useTranslation();
   const role = useUserRole();
   const canViewRevenue = role !== "reception";
   const visibleTabs = canViewRevenue ? TABS : TABS.filter((t) => t.key !== "revenue");
@@ -519,10 +527,10 @@ export function AnalyticsPage() {
   return (
     <div>
       <div className="mb-6 flex items-center justify-between">
-        <h1 className="text-2xl font-semibold text-slate-900 dark:text-slate-100">Analytics</h1>
+        <h1 className="text-2xl font-semibold text-slate-900 dark:text-slate-100">{t("Analytics")}</h1>
         <div className="w-56">
           <SelectField label="" value={branchId} onChange={(e) => setBranchId(e.target.value)}>
-            <option value="">All branches</option>
+            <option value="">{t("All branches")}</option>
             {branches?.map((b) => (
               <option key={b.id} value={b.id}>
                 {b.name}
@@ -541,7 +549,7 @@ export function AnalyticsPage() {
               activeTab === key ? "border-indigo-600 text-indigo-700" : "border-transparent text-slate-500 hover:text-slate-700"
             }`}
           >
-            {label}
+            {t(label)}
           </button>
         ))}
       </div>
