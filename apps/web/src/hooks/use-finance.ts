@@ -49,6 +49,7 @@ export function usePaymentSummary() {
 export interface PaymentsFilters {
   periodStart?: string;
   periodEnd?: string;
+  studentId?: string;
 }
 
 export function usePayments(filters: PaymentsFilters = {}, enabled = true) {

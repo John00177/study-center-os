@@ -350,10 +350,14 @@ export class FinanceService {
 
   // ---- Payments ----
 
-  async findAllPayments(organizationId: string, filters: { periodStart?: string; periodEnd?: string } = {}) {
+  async findAllPayments(
+    organizationId: string,
+    filters: { periodStart?: string; periodEnd?: string; studentId?: string } = {},
+  ) {
     const payments = await this.prisma.payment.findMany({
       where: {
         organizationId,
+        ...(filters.studentId ? { studentId: filters.studentId } : {}),
         // A payment matches a period filter when its own period overlaps the
         // requested range at all (not only when it's fully contained) — the
         // typical case is filtering by month while a payment's period spans

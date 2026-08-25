@@ -2,7 +2,7 @@ import { BadRequestException, Injectable, NotFoundException, UnauthorizedExcepti
 import { Prisma } from "@prisma/client";
 import * as argon2 from "argon2";
 import { PrismaService } from "../../prisma/prisma.service";
-import { AuditService } from "../audit/audit.service";
+import { AuditService, redact } from "../audit/audit.service";
 import { SubscriptionLimitsService } from "../subscription/subscription-limits.service";
 import { generateTempPassword } from "../../common/utils/generate-temp-password";
 import { AddNoteDto } from "./dto/add-note.dto";
@@ -55,6 +55,54 @@ export class StudentsService {
     }
     const [withStatus] = await this.withEnrollmentStatus(organizationId, [student]);
     return withStatus;
+  }
+
+  /**
+   * Powers the tabbed Student Profile page. Student has no formal Prisma
+   * relations to GroupMembership/AuditLog (see finance.service.ts's
+   * withStudents/withGroups for the same pattern elsewhere), so groups and
+   * audit history are joined manually here rather than via `include`.
+   * Payments/charges/attendance are deliberately NOT duplicated here — the
+   * profile page fetches those from the existing finance/attendance
+   * endpoints instead (see useCharges, usePayments, useStudentAttendanceHistory).
+   */
+  async getStudentDetail(organizationId: string, id: string) {
+    const student = await this.prisma.student.findFirst({ where: { id, organizationId } });
+    if (!student) {
+      throw new NotFoundException("Student not found");
+    }
+    const { password, tempPassword, parentPassword, ...safeStudent } = student;
+
+    const memberships = await this.prisma.groupMembership.findMany({
+      where: { organizationId, studentId: id, status: "active" },
+    });
+    const groupIds = memberships.map((m) => m.groupId);
+    const groups = groupIds.length
+      ? await this.prisma.group.findMany({ where: { id: { in: groupIds } }, include: { branch: true } })
+      : [];
+    const courseIds = [...new Set(groups.map((g) => g.courseId))];
+    const courses = courseIds.length ? await this.prisma.course.findMany({ where: { id: { in: courseIds } } }) : [];
+    const courseById = new Map(courses.map((c) => [c.id, c]));
+    const groupsWithCourse = groups.map((group) => ({ ...group, course: courseById.get(group.courseId) ?? null }));
+
+    const auditLogRows = await this.prisma.auditLog.findMany({
+      where: { organizationId, entityType: "Student", entityId: id },
+      orderBy: { createdAt: "desc" },
+      take: 50,
+      include: { actor: { select: { name: true } } },
+    });
+    const auditLogs = auditLogRows.map(({ actor, beforeValue, afterValue, ...rest }) => ({
+      ...rest,
+      actorName: actor?.name ?? null,
+      beforeValue: redact(beforeValue),
+      afterValue: redact(afterValue),
+    }));
+
+    return {
+      ...safeStudent,
+      groups: groupsWithCourse,
+      auditLogs,
+    };
   }
 
   async create(organizationId: string, actorId: string, dto: CreateStudentDto) {

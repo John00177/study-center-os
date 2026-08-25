@@ -58,6 +58,12 @@ export class StudentsController {
     return this.studentsService.findOne(this.tenancyService.getOrganizationId(), id);
   }
 
+  // Powers the tabbed Student Profile page (groups + audit history).
+  @Get(":id/detail")
+  getStudentDetail(@Param("id") id: string) {
+    return this.studentsService.getStudentDetail(this.tenancyService.getOrganizationId(), id);
+  }
+
   @RequirePermission("owner", "admin", "manager")
   @Post()
   create(@Body() dto: CreateStudentDto, @Req() req: Request) {

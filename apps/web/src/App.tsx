@@ -70,6 +70,7 @@ import { SupportTicketsPage as AdminSupportTicketsPage } from "./pages/platform-
 import { OrgSupportTicketsPage } from "./pages/support-tickets/OrgSupportTicketsPage";
 import { AuditLogPage } from "./pages/audit/AuditLogPage";
 import { CrmPipelinePage } from "./pages/crm/CrmPipelinePage";
+import { StudentProfilePage as StudentDetailProfilePage } from "./pages/students/StudentProfilePage";
 
 // Each portal is a dead end for the wrong role — a mismatched login doesn't
 // bounce sideways into some other dashboard, it goes back to /login (or
@@ -354,6 +355,7 @@ export default function App() {
         />
         <Route path="newcomers" element={<NewcomersPage />} />
         <Route path="students" element={<StudentsPage />} />
+        <Route path="students/:id/profile" element={<StudentDetailProfilePage />} />
         <Route path="parents" element={<ParentsPage />} />
         <Route path="courses" element={<CoursesPage />} />
         <Route path="groups" element={<GroupsPage />} />

@@ -5,6 +5,7 @@ import type {
   LinkParentInput,
   LinkParentResultDto,
   StageCountsDto,
+  StudentDetailDto,
   StudentDto,
   StudentStage,
   TempPasswordDto,
@@ -15,6 +16,14 @@ export function useStudents() {
   return useQuery({
     queryKey: ["students"],
     queryFn: async () => (await api.get<StudentDto[]>("/students")).data,
+  });
+}
+
+export function useStudentDetail(id: string | undefined) {
+  return useQuery({
+    queryKey: ["students", id, "detail"],
+    queryFn: async () => (await api.get<StudentDetailDto>(`/students/${id}/detail`)).data,
+    enabled: Boolean(id),
   });
 }
 

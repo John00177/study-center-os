@@ -9,7 +9,7 @@ import { QueryAuditLogDto } from "./dto/query-audit-log.dto";
 // before they ever leave the server.
 const SENSITIVE_KEYS = new Set(["password", "parentPassword", "tempPassword"]);
 
-function redact(value: unknown): unknown {
+export function redact(value: unknown): unknown {
   if (value === null || typeof value !== "object") return value;
   if (Array.isArray(value)) return value.map(redact);
   return Object.fromEntries(

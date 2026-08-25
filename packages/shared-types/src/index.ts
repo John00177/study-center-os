@@ -189,6 +189,13 @@ export interface StudentDto {
   updatedAt: string;
 }
 
+// GroupDto and AuditLogDto are declared further down this file — TS doesn't
+// require declaration order for module-level interfaces.
+export type StudentDetailDto = Omit<StudentDto, "activeGroupCount" | "enrollmentStatus"> & {
+  groups: GroupDto[];
+  auditLogs: AuditLogDto[];
+};
+
 export interface CreateStudentDirectInput {
   name: string;
   email?: string;

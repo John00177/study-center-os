@@ -1,6 +1,7 @@
 import type { StudentDto } from "@crm/shared-types";
 import { Bell, CalendarClock, Eye, Loader2, Pencil, Plus, RotateCcw, UserPlus, Trash2 } from "lucide-react";
 import { FormEvent, useEffect, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { ConfirmDialog } from "../components/ConfirmDialog";
 import { DataTable } from "../components/DataTable";
 import { Modal } from "../components/Modal";
@@ -57,7 +58,9 @@ function toFormState(student?: StudentDto | null): FormState {
   };
 }
 
-function StudentForm({
+// Exported so StudentProfilePage's header "Edit" button can reuse this same
+// modal instead of duplicating the form.
+export function StudentForm({
   open,
   onClose,
   student,
@@ -549,6 +552,7 @@ const STAGE_FILTER_OPTIONS = [
 ];
 
 export function StudentsPage() {
+  const navigate = useNavigate();
   const role = useUserRole();
   const isReception = role === "reception";
   const { data, isLoading } = useStudents();
@@ -629,12 +633,34 @@ export function StudentsPage() {
         isLoading={isLoading}
         emptyMessage='No students yet. Click "Add Student" to add one.'
         getRowKey={(s) => s.id}
-        onRowClick={(s) => {
-          setEditing(s);
-          setFormOpen(true);
-        }}
+        onRowClick={
+          isReception
+            ? (s) => {
+                setEditing(s);
+                setFormOpen(true);
+              }
+            : (s) => navigate(`/students/${s.id}/profile`)
+        }
         columns={[
-          { header: "Name", render: (s) => <span className="font-medium text-slate-900">{s.name}</span> },
+          {
+            header: "Name",
+            render: (s) =>
+              // Reception has its own, simpler workflow (this page is shared
+              // between /students and /reception/students) and no access to
+              // the owner/admin-facing profile route — keep their row click
+              // opening the edit modal, same as before this page linked out.
+              isReception ? (
+                <span className="font-medium text-slate-900 dark:text-slate-100">{s.name}</span>
+              ) : (
+                <Link
+                  to={`/students/${s.id}/profile`}
+                  onClick={(e) => e.stopPropagation()}
+                  className="font-medium text-indigo-600 hover:text-indigo-700 hover:underline dark:text-indigo-400"
+                >
+                  {s.name}
+                </Link>
+              ),
+          },
           { header: "Phone", render: (s) => s.phone ?? "-" },
           { header: "Age", render: (s) => ageFromBirthDate(s.dateOfBirth), align: "right" },
           {

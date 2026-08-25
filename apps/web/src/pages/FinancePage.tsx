@@ -172,20 +172,42 @@ function ChargeForm({ open, onClose }: { open: boolean; onClose: () => void }) {
   );
 }
 
-function PaymentForm({ open, onClose }: { open: boolean; onClose: () => void }) {
+// Exported so other pages (e.g. StudentProfilePage's Payments tab) can open
+// this same modal with the student already chosen, instead of duplicating it.
+export function PaymentForm({
+  open,
+  onClose,
+  presetStudentId,
+}: {
+  open: boolean;
+  onClose: () => void;
+  presetStudentId?: string;
+}) {
   const { data: students } = useStudents();
   const { data: accounts } = useFinancialAccounts();
   const createPayment = useCreatePayment();
   const { showToast } = useToast();
-  const [form, setForm] = useState({ studentId: "", financialAccountId: "", amount: "", paymentMethod: "cash", ...defaultPeriod() });
+  const [form, setForm] = useState({
+    studentId: presetStudentId ?? "",
+    financialAccountId: "",
+    amount: "",
+    paymentMethod: "cash",
+    ...defaultPeriod(),
+  });
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   useEffect(() => {
     if (open) {
-      setForm({ studentId: "", financialAccountId: "", amount: "", paymentMethod: "cash", ...defaultPeriod() });
+      setForm({
+        studentId: presetStudentId ?? "",
+        financialAccountId: "",
+        amount: "",
+        paymentMethod: "cash",
+        ...defaultPeriod(),
+      });
       setErrors({});
     }
-  }, [open]);
+  }, [open, presetStudentId]);
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
@@ -226,6 +248,7 @@ function PaymentForm({ open, onClose }: { open: boolean; onClose: () => void }) 
         <SelectField
           label="Student"
           required
+          disabled={Boolean(presetStudentId)}
           value={form.studentId}
           error={errors.studentId}
           onChange={(e) => setForm((f) => ({ ...f, studentId: e.target.value }))}
