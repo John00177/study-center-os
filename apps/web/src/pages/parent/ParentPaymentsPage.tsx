@@ -61,8 +61,8 @@ export function ParentPaymentsPage() {
               <p className="mt-1 text-sm text-slate-500">{formatCurrency(c.amount, c.currency)}</p>
               <p className="mt-1 text-xs text-slate-400">
                 Due {new Date(c.dueDate).toLocaleDateString()}
-                {c.daysOverdue != null && <span className="text-red-600"> · {c.daysOverdue} days overdue</span>}
-                {c.daysUntilDue != null && <span className="text-green-600"> · {c.daysUntilDue} days left</span>}
+                {c.daysOverdue != null && <span className="text-red-600"> · {c.daysOverdue} {t("days overdue")}</span>}
+                {c.daysUntilDue != null && <span className="text-green-600"> · {c.daysUntilDue} {t("days left")}</span>}
               </p>
             </div>
           ))}

@@ -215,7 +215,7 @@ export function PlanAndBillingPage() {
                 disabled={isCurrent}
                 className="mt-6 w-full rounded-md bg-indigo-600 px-3 py-2 text-sm font-medium text-white hover:bg-indigo-700 disabled:cursor-not-allowed disabled:bg-slate-200 disabled:text-slate-400"
               >
-                {isCurrent ? "Current Plan" : "Select"}
+                {isCurrent ? t("Current Plan") : t("Select")}
               </button>
             </div>
           );

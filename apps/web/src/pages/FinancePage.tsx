@@ -702,10 +702,10 @@ export function FinancePage() {
                       <td className="px-4 py-3 text-sm text-slate-600 dark:text-slate-300">{new Date(c.dueDate).toLocaleDateString()}</td>
                       <td className="px-4 py-3 text-sm">
                         {c.isOverdue && c.daysOverdue != null && (
-                          <span className="font-medium text-red-600">{c.daysOverdue} days overdue</span>
+                          <span className="font-medium text-red-600">{c.daysOverdue} {t("days overdue")}</span>
                         )}
                         {!c.isOverdue && c.daysUntilDue != null && (
-                          <span className="font-medium text-green-600">{c.daysUntilDue} days left</span>
+                          <span className="font-medium text-green-600">{c.daysUntilDue} {t("days left")}</span>
                         )}
                         {c.status === "paid" && <span className="text-slate-400">—</span>}
                       </td>
