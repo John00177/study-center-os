@@ -136,6 +136,24 @@ export class StudentsService {
     });
   }
 
+  async getStageCounts(organizationId: string) {
+    const counts = await this.prisma.student.groupBy({
+      by: ["stage"],
+      where: { organizationId },
+      _count: { _all: true },
+    });
+    const byStage = new Map(counts.map((c) => [c.stage, c._count._all]));
+
+    return {
+      leads: byStage.get("lead") ?? 0,
+      trials: byStage.get("trial") ?? 0,
+      active: byStage.get("active") ?? 0,
+      paid: byStage.get("paid") ?? 0,
+      frozen: byStage.get("frozen") ?? 0,
+      debtors: byStage.get("debtor") ?? 0,
+    };
+  }
+
   async getArchivedStudents(organizationId: string) {
     return this.prisma.student.findMany({
       where: { organizationId, status: "archived" },
@@ -209,7 +227,7 @@ export class StudentsService {
       }),
       this.prisma.student.update({
         where: { id },
-        data: { status: "active", convertedAt: new Date() },
+        data: { status: "active", convertedAt: new Date(), stage: "active" },
       }),
       // Auto-charge on conversion — receptionists no longer register every
       // newly-converted student in finance by hand.
@@ -268,6 +286,7 @@ export class StudentsService {
           phone: dto.phone,
           password: passwordHash,
           status: "active",
+          stage: "active",
           mustChangePassword: true,
           tempPassword,
           parentName: dto.parentName,

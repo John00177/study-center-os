@@ -42,6 +42,11 @@ export class StudentsController {
     return this.studentsService.getActiveStudents(this.tenancyService.getOrganizationId());
   }
 
+  @Get("stage-counts")
+  getStageCounts() {
+    return this.studentsService.getStageCounts(this.tenancyService.getOrganizationId());
+  }
+
   @Get()
   findAll() {
     return this.studentsService.findAll(this.tenancyService.getOrganizationId());

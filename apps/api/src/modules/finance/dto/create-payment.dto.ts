@@ -1,4 +1,15 @@
-import { IsInt, IsOptional, IsString, Min } from "class-validator";
+import { IsIn, IsInt, IsOptional, IsDateString, IsString, Min } from "class-validator";
+
+// Text labels only — no real payment gateway/API integration behind any of these.
+export const PAYMENT_METHODS = [
+  "cash",
+  "bank_transfer",
+  "card",
+  "click",
+  "payme",
+  "humo_terminal",
+  "uzum_bank",
+] as const;
 
 export class CreatePaymentDto {
   @IsString()
@@ -18,7 +29,7 @@ export class CreatePaymentDto {
   @IsString()
   currency?: string;
 
-  @IsString()
+  @IsIn(PAYMENT_METHODS)
   paymentMethod!: string;
 
   @IsOptional()
@@ -29,4 +40,12 @@ export class CreatePaymentDto {
   @IsOptional()
   @IsString()
   chargeId?: string;
+
+  @IsOptional()
+  @IsDateString()
+  periodStartDate?: string;
+
+  @IsOptional()
+  @IsDateString()
+  periodEndDate?: string;
 }

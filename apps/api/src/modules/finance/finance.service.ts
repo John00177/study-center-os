@@ -350,9 +350,17 @@ export class FinanceService {
 
   // ---- Payments ----
 
-  async findAllPayments(organizationId: string) {
+  async findAllPayments(organizationId: string, filters: { periodStart?: string; periodEnd?: string } = {}) {
     const payments = await this.prisma.payment.findMany({
-      where: { organizationId },
+      where: {
+        organizationId,
+        // A payment matches a period filter when its own period overlaps the
+        // requested range at all (not only when it's fully contained) — the
+        // typical case is filtering by month while a payment's period spans
+        // exactly that month.
+        ...(filters.periodStart ? { periodEndDate: { gte: new Date(filters.periodStart) } } : {}),
+        ...(filters.periodEnd ? { periodStartDate: { lte: new Date(filters.periodEnd) } } : {}),
+      },
       orderBy: { createdAt: "desc" },
     });
     return this.withStudents(payments);
@@ -375,8 +383,24 @@ export class FinanceService {
       }
     }
 
+    const { periodStartDate, periodEndDate, ...rest } = dto;
+
     const payment = await this.prisma.$transaction(async (tx) => {
-      const created = await tx.payment.create({ data: { ...dto, organizationId } });
+      const created = await tx.payment.create({
+        data: {
+          ...rest,
+          organizationId,
+          periodStartDate: periodStartDate ? new Date(periodStartDate) : undefined,
+          periodEndDate: periodEndDate ? new Date(periodEndDate) : undefined,
+        },
+      });
+
+      // A recorded payment moves the student into the "paid" lifecycle stage
+      // (see Student.stage) — a lightweight funnel signal for the dashboard,
+      // separate from the enrollment-status workflow.
+      if (dto.amount > 0) {
+        await tx.student.update({ where: { id: dto.studentId }, data: { stage: "paid" } });
+      }
 
       await tx.financialTransaction.create({
         data: {
@@ -421,7 +445,15 @@ export class FinanceService {
       throw new NotFoundException("Payment not found");
     }
 
-    const payment = await this.prisma.payment.update({ where: { id }, data: dto });
+    const { periodStartDate, periodEndDate, ...rest } = dto;
+    const payment = await this.prisma.payment.update({
+      where: { id },
+      data: {
+        ...rest,
+        periodStartDate: periodStartDate === undefined ? undefined : periodStartDate === null ? null : new Date(periodStartDate),
+        periodEndDate: periodEndDate === undefined ? undefined : periodEndDate === null ? null : new Date(periodEndDate),
+      },
+    });
 
     await this.auditService.record({
       organizationId,
@@ -453,6 +485,128 @@ export class FinanceService {
     });
 
     return { id };
+  }
+
+  // ---- Dashboard aggregates ----
+
+  /**
+   * Feeds the dashboard's financial KPI row + expected-vs-actual chart.
+   * "Monthly plan" is computed (never stored) as the sum of monthlyFee
+   * across every currently-active group membership — i.e. what the org
+   * would collect this month if every active student paid in full. This
+   * mirrors the rest of finance.service.ts, which never persists derived
+   * financial numbers.
+   */
+  async getDashboardStats(organizationId: string) {
+    const now = new Date();
+    const overdueWhere: Prisma.ChargeWhereInput = {
+      organizationId,
+      OR: [{ status: "overdue" }, { status: "pending", dueDate: { lt: now } }],
+    };
+
+    const [activeMemberships, collectedThisMonth, overdueCharges, overdueStudents] = await Promise.all([
+      this.prisma.groupMembership.findMany({ where: { organizationId, status: "active" } }),
+      this.prisma.payment.aggregate({
+        where: { organizationId, createdAt: { gte: startOfMonth() } },
+        _sum: { amount: true },
+      }),
+      this.prisma.charge.aggregate({ where: overdueWhere, _sum: { amount: true } }),
+      this.prisma.charge.findMany({ where: overdueWhere, select: { studentId: true }, distinct: ["studentId"] }),
+    ]);
+
+    const groupIds = [...new Set(activeMemberships.map((m) => m.groupId))];
+    const groups = groupIds.length ? await this.prisma.group.findMany({ where: { id: { in: groupIds } } }) : [];
+    const groupById = new Map(groups.map((g) => [g.id, g]));
+    const courseIds = [...new Set(groups.map((g) => g.courseId))];
+    const courses = courseIds.length ? await this.prisma.course.findMany({ where: { id: { in: courseIds } } }) : [];
+    const courseById = new Map(courses.map((c) => [c.id, c]));
+    const DEFAULT_MONTHLY_FEE = 600_000;
+    const monthlyPlan = activeMemberships.reduce((sum, m) => {
+      const group = groupById.get(m.groupId);
+      if (!group) return sum;
+      const fee = group.monthlyFee ?? courseById.get(group.courseId)?.monthlyFee ?? DEFAULT_MONTHLY_FEE;
+      return sum + fee;
+    }, 0);
+
+    // Expected vs actual for each of the last 6 months: "expected" is what
+    // was billed (charges due that month), "actual" is what actually came in
+    // (payments recorded that month) — both computed on read.
+    const months: { start: Date; end: Date; label: string }[] = [];
+    for (let i = 5; i >= 0; i--) {
+      const start = new Date(now.getFullYear(), now.getMonth() - i, 1);
+      const end = new Date(now.getFullYear(), now.getMonth() - i + 1, 0, 23, 59, 59, 999);
+      months.push({ start, end, label: start.toLocaleDateString("en-US", { month: "short" }) });
+    }
+    const expectedVsActual = await Promise.all(
+      months.map(async ({ start, end, label }) => {
+        const [expected, actual] = await Promise.all([
+          this.prisma.charge.aggregate({
+            where: { organizationId, dueDate: { gte: start, lte: end } },
+            _sum: { amount: true },
+          }),
+          this.prisma.payment.aggregate({
+            where: { organizationId, createdAt: { gte: start, lte: end } },
+            _sum: { amount: true },
+          }),
+        ]);
+        return { month: label, expected: expected._sum.amount ?? 0, actual: actual._sum.amount ?? 0 };
+      }),
+    );
+
+    return {
+      monthlyPlan,
+      collectedThisMonth: collectedThisMonth._sum.amount ?? 0,
+      debtorsCount: overdueStudents.length,
+      totalDebt: overdueCharges._sum.amount ?? 0,
+      expectedVsActual,
+    };
+  }
+
+  async getTodayReport(organizationId: string) {
+    const todayStart = new Date();
+    todayStart.setHours(0, 0, 0, 0);
+    const todayEnd = new Date();
+    todayEnd.setHours(23, 59, 59, 999);
+    const todayRange = { gte: todayStart, lte: todayEnd };
+
+    const [
+      revenueToday,
+      newPaymentsToday,
+      checkedInToday,
+      lessonsHeldToday,
+      newLeadsToday,
+      newTrialsToday,
+      newContractsToday,
+      dismissedToday,
+    ] = await Promise.all([
+      this.prisma.payment.aggregate({ where: { organizationId, createdAt: todayRange }, _sum: { amount: true } }),
+      this.prisma.payment.count({ where: { organizationId, createdAt: todayRange } }),
+      this.prisma.attendance.findMany({
+        where: { organizationId, date: todayRange, status: { in: ["present", "late"] } },
+        select: { studentId: true },
+        distinct: ["studentId"],
+      }),
+      this.prisma.lesson.findMany({
+        where: { organizationId, date: todayRange },
+        select: { groupId: true },
+        distinct: ["groupId"],
+      }),
+      this.prisma.student.count({ where: { organizationId, createdAt: todayRange, stage: "lead" } }),
+      this.prisma.student.count({ where: { organizationId, createdAt: todayRange, stage: "trial" } }),
+      this.prisma.student.count({ where: { organizationId, convertedAt: todayRange } }),
+      this.prisma.student.count({ where: { organizationId, status: { in: ["dropped", "archived"] }, updatedAt: todayRange } }),
+    ]);
+
+    return {
+      revenueToday: revenueToday._sum.amount ?? 0,
+      checkedInToday: checkedInToday.length,
+      lessonsHeldToday: lessonsHeldToday.length,
+      newLeadsToday,
+      newTrialsToday,
+      newContractsToday,
+      newPaymentsToday,
+      dismissedToday,
+    };
   }
 
   // ---- Transactions (read-only, append-only) ----

@@ -3,9 +3,11 @@ import type {
   ChargeDto,
   ChargesSortBy,
   ChargeStatus,
+  DashboardStatsDto,
   FinancialAccountDto,
   PaymentDto,
   PaymentSummaryDto,
+  TodayReportDto,
 } from "@crm/shared-types";
 import { api } from "../lib/api";
 
@@ -44,10 +46,32 @@ export function usePaymentSummary() {
   });
 }
 
-export function usePayments() {
+export interface PaymentsFilters {
+  periodStart?: string;
+  periodEnd?: string;
+}
+
+export function usePayments(filters: PaymentsFilters = {}, enabled = true) {
   return useQuery({
-    queryKey: ["finance", "payments"],
-    queryFn: async () => (await api.get<PaymentDto[]>("/finance/payments")).data,
+    queryKey: ["finance", "payments", filters],
+    queryFn: async () => (await api.get<PaymentDto[]>("/finance/payments", { params: filters })).data,
+    enabled,
+  });
+}
+
+export function useDashboardStats(enabled = true) {
+  return useQuery({
+    queryKey: ["finance", "payments", "stats"],
+    queryFn: async () => (await api.get<DashboardStatsDto>("/finance/payments/stats")).data,
+    enabled,
+  });
+}
+
+export function useTodayReport(enabled = true) {
+  return useQuery({
+    queryKey: ["finance", "payments", "today"],
+    queryFn: async () => (await api.get<TodayReportDto>("/finance/payments/today")).data,
+    enabled,
   });
 }
 
@@ -85,6 +109,8 @@ export interface PaymentInput {
   paymentMethod: string;
   reference?: string;
   chargeId?: string;
+  periodStartDate?: string;
+  periodEndDate?: string;
 }
 
 export function useCreatePayment() {

@@ -139,8 +139,19 @@ export class FinanceController {
 
   // Payments
   @Get("payments")
-  findAllPayments() {
-    return this.financeService.findAllPayments(this.tenancyService.getOrganizationId());
+  findAllPayments(@Query("periodStart") periodStart?: string, @Query("periodEnd") periodEnd?: string) {
+    return this.financeService.findAllPayments(this.tenancyService.getOrganizationId(), { periodStart, periodEnd });
+  }
+
+  // Must come before "payments/:id" — otherwise "stats"/"today" would be parsed as an :id.
+  @Get("payments/stats")
+  getDashboardStats() {
+    return this.financeService.getDashboardStats(this.tenancyService.getOrganizationId());
+  }
+
+  @Get("payments/today")
+  getTodayReport() {
+    return this.financeService.getTodayReport(this.tenancyService.getOrganizationId());
   }
 
   @Get("payments/:id")

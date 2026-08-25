@@ -40,13 +40,13 @@ export function Modal({ open, onClose, title, children, widthClassName = "max-w-
         aria-modal="true"
         aria-label={title}
         onClick={(e) => e.stopPropagation()}
-        className={`animate-modal-in flex h-full w-full flex-col bg-white sm:h-auto sm:${widthClassName} sm:rounded-xl sm:shadow-xl`}
+        className={`animate-modal-in flex h-full w-full flex-col bg-white sm:h-auto sm:${widthClassName} sm:rounded-xl sm:shadow-xl dark:bg-slate-800`}
       >
-        <div className="flex items-center justify-between border-b border-slate-200 px-5 py-4">
-          <h2 className="text-lg font-semibold text-slate-900">{title}</h2>
+        <div className="flex items-center justify-between border-b border-slate-200 px-5 py-4 dark:border-slate-700">
+          <h2 className="text-lg font-semibold text-slate-900 dark:text-slate-100">{title}</h2>
           <button
             onClick={onClose}
-            className="rounded-md p-1 text-slate-400 hover:bg-slate-100 hover:text-slate-600"
+            className="rounded-md p-1 text-slate-400 hover:bg-slate-100 hover:text-slate-600 dark:hover:bg-slate-700 dark:hover:text-slate-300"
             aria-label="Close"
           >
             <X className="h-5 w-5" />

@@ -180,6 +180,7 @@ export interface StudentDto {
   parentEmail?: string | null;
   parentPhone?: string | null;
   mustChangePassword: boolean;
+  stage: string;
   registeredAt: string;
   convertedAt?: string | null;
   activeGroupCount: number;
@@ -677,6 +678,18 @@ export interface PaymentSummaryDto {
   overdueStudentCount: number;
 }
 
+// Text labels only — no real payment gateway/API integration behind any of these.
+export const PAYMENT_METHODS = [
+  "cash",
+  "bank_transfer",
+  "card",
+  "click",
+  "payme",
+  "humo_terminal",
+  "uzum_bank",
+] as const;
+export type PaymentMethod = (typeof PAYMENT_METHODS)[number];
+
 export interface PaymentDto {
   id: string;
   organizationId: string;
@@ -688,8 +701,44 @@ export interface PaymentDto {
   currency: string;
   paymentMethod: string;
   reference?: string | null;
+  periodStartDate?: string | null;
+  periodEndDate?: string | null;
   student: StudentDto | null;
   createdAt: string;
+}
+
+export interface ExpectedVsActualMonthDto {
+  month: string;
+  expected: number;
+  actual: number;
+}
+
+export interface DashboardStatsDto {
+  monthlyPlan: number;
+  collectedThisMonth: number;
+  debtorsCount: number;
+  totalDebt: number;
+  expectedVsActual: ExpectedVsActualMonthDto[];
+}
+
+export interface TodayReportDto {
+  revenueToday: number;
+  checkedInToday: number;
+  lessonsHeldToday: number;
+  newLeadsToday: number;
+  newTrialsToday: number;
+  newContractsToday: number;
+  newPaymentsToday: number;
+  dismissedToday: number;
+}
+
+export interface StageCountsDto {
+  leads: number;
+  trials: number;
+  active: number;
+  paid: number;
+  frozen: number;
+  debtors: number;
 }
 
 export type ReminderType = "sms" | "whatsapp" | "email" | "push";

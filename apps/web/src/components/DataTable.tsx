@@ -35,15 +35,15 @@ export function DataTable<T>({
   const columnCount = columns.length + (renderActions ? 1 : 0);
 
   return (
-    <div className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm transition-shadow hover:shadow-md">
+    <div className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm transition-shadow hover:shadow-md dark:border-slate-700 dark:bg-slate-800">
       <div className="overflow-x-auto">
-        <table className="min-w-full divide-y divide-slate-200 tabular-nums">
-          <thead className="bg-slate-50">
+        <table className="min-w-full divide-y divide-slate-200 tabular-nums dark:divide-slate-700">
+          <thead className="bg-slate-50 dark:bg-slate-900/40">
             <tr>
               {columns.map((col) => (
                 <th
                   key={col.header}
-                  className={`px-4 py-3 text-xs font-semibold uppercase tracking-wide text-slate-600 ${
+                  className={`px-4 py-3 text-xs font-semibold uppercase tracking-wide text-slate-600 dark:text-slate-400 ${
                     col.align === "right" ? "text-right" : "text-left"
                   }`}
                 >
@@ -51,17 +51,17 @@ export function DataTable<T>({
                 </th>
               ))}
               {renderActions && (
-                <th className="px-4 py-3 text-right text-xs font-semibold uppercase tracking-wide text-slate-600">
+                <th className="px-4 py-3 text-right text-xs font-semibold uppercase tracking-wide text-slate-600 dark:text-slate-400">
                   Actions
                 </th>
               )}
             </tr>
           </thead>
-          <tbody className="divide-y divide-slate-100">
+          <tbody className="divide-y divide-slate-100 dark:divide-slate-700">
             {isLoading && (
               <tr>
                 <td className="px-4 py-8" colSpan={columnCount}>
-                  <div className="flex items-center justify-center gap-2 text-sm text-slate-500">
+                  <div className="flex items-center justify-center gap-2 text-sm text-slate-500 dark:text-slate-400">
                     <BrandedSpinner className="h-4 w-4" />
                     Loading...
                   </div>
@@ -78,15 +78,15 @@ export function DataTable<T>({
             {data?.map((row, index) => (
               <tr
                 key={getRowKey(row)}
-                className={`transition-colors hover:bg-slate-50 ${
-                  striped && index % 2 === 1 ? "bg-slate-50/50" : ""
+                className={`transition-colors hover:bg-slate-50 dark:hover:bg-slate-700/50 ${
+                  striped && index % 2 === 1 ? "bg-slate-50/50 dark:bg-slate-900/20" : ""
                 } ${onRowClick ? "cursor-pointer" : ""}`}
                 onClick={onRowClick ? () => onRowClick(row) : undefined}
               >
                 {columns.map((col) => (
                   <td
                     key={col.header}
-                    className={`px-4 py-3 text-sm text-slate-600 ${col.align === "right" ? "text-right" : "text-left"}`}
+                    className={`px-4 py-3 text-sm text-slate-600 dark:text-slate-300 ${col.align === "right" ? "text-right" : "text-left"}`}
                   >
                     {col.render(row)}
                   </td>

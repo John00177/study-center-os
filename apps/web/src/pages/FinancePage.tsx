@@ -7,6 +7,7 @@ import { DataTable } from "../components/DataTable";
 import { Modal } from "../components/Modal";
 import { useToast } from "../components/Toast";
 import { SelectField, TextField } from "../components/form/Field";
+import { PAYMENT_METHOD_OPTIONS, PaymentMethodBadge } from "../components/finance/PaymentMethodBadge";
 import { ReminderStatsWidget } from "../components/reminders/ReminderStatsWidget";
 import { PaymentStatusBadge, SalaryStatusBadge } from "../components/salary/SalaryStatusBadge";
 import { useBranches } from "../hooks/use-branches";
@@ -27,6 +28,20 @@ import {
 import { useSalaries, useSalaryAnalytics } from "../hooks/use-salary";
 import { formatCurrency } from "../lib/format";
 import { useUserRole } from "../stores/auth.store";
+
+function defaultPeriod() {
+  const now = new Date();
+  const start = new Date(now.getFullYear(), now.getMonth(), 1);
+  const end = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+  const toIso = (d: Date) => d.toISOString().slice(0, 10);
+  return { periodStartDate: toIso(start), periodEndDate: toIso(end) };
+}
+
+function formatPeriod(startIso?: string | null, endIso?: string | null): string {
+  if (!startIso || !endIso) return "-";
+  const fmt = (iso: string) => new Date(iso).toLocaleDateString("en-US", { month: "short", day: "numeric" });
+  return `${fmt(startIso)} - ${fmt(endIso)}`;
+}
 
 const CHARGE_STATUS_STYLES: Record<ChargeStatus, string> = {
   pending: "bg-yellow-100 text-yellow-700",
@@ -162,12 +177,12 @@ function PaymentForm({ open, onClose }: { open: boolean; onClose: () => void }) 
   const { data: accounts } = useFinancialAccounts();
   const createPayment = useCreatePayment();
   const { showToast } = useToast();
-  const [form, setForm] = useState({ studentId: "", financialAccountId: "", amount: "", paymentMethod: "cash" });
+  const [form, setForm] = useState({ studentId: "", financialAccountId: "", amount: "", paymentMethod: "cash", ...defaultPeriod() });
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   useEffect(() => {
     if (open) {
-      setForm({ studentId: "", financialAccountId: "", amount: "", paymentMethod: "cash" });
+      setForm({ studentId: "", financialAccountId: "", amount: "", paymentMethod: "cash", ...defaultPeriod() });
       setErrors({});
     }
   }, [open]);
@@ -192,6 +207,8 @@ function PaymentForm({ open, onClose }: { open: boolean; onClose: () => void }) 
       amount: Number(form.amount),
       currency: "UZS",
       paymentMethod: form.paymentMethod,
+      periodStartDate: form.periodStartDate || undefined,
+      periodEndDate: form.periodEndDate || undefined,
     };
 
     try {
@@ -248,17 +265,33 @@ function PaymentForm({ open, onClose }: { open: boolean; onClose: () => void }) 
           value={form.paymentMethod}
           onChange={(e) => setForm((f) => ({ ...f, paymentMethod: e.target.value }))}
         >
-          <option value="cash">Cash</option>
-          <option value="card">Card</option>
-          <option value="bank_transfer">Bank transfer</option>
+          {PAYMENT_METHOD_OPTIONS.map((option) => (
+            <option key={option.value} value={option.value}>
+              {option.label}
+            </option>
+          ))}
         </SelectField>
+        <div className="grid grid-cols-2 gap-4">
+          <TextField
+            label="Period start"
+            type="date"
+            value={form.periodStartDate}
+            onChange={(e) => setForm((f) => ({ ...f, periodStartDate: e.target.value }))}
+          />
+          <TextField
+            label="Period end"
+            type="date"
+            value={form.periodEndDate}
+            onChange={(e) => setForm((f) => ({ ...f, periodEndDate: e.target.value }))}
+          />
+        </div>
 
-        <div className="flex justify-end gap-3 border-t border-slate-200 pt-4">
+        <div className="flex justify-end gap-3 border-t border-slate-200 pt-4 dark:border-slate-700">
           <button
             type="button"
             onClick={onClose}
             disabled={createPayment.isPending}
-            className="rounded-md border border-slate-300 px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 disabled:opacity-60"
+            className="rounded-md border border-slate-300 px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 disabled:opacity-60 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700"
           >
             Cancel
           </button>
@@ -288,9 +321,9 @@ function SummaryCard({
   icon: React.ReactNode;
 }) {
   return (
-    <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+    <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-700 dark:bg-slate-800">
       <div className="flex items-center justify-between">
-        <span className="text-sm font-medium text-slate-500">{label}</span>
+        <span className="text-sm font-medium text-slate-500 dark:text-slate-400">{label}</span>
         {icon}
       </div>
       <p className={`mt-2 text-2xl font-semibold ${colorClass}`}>{value}</p>
@@ -339,7 +372,8 @@ function StudentHistoryModal({ studentId, onClose }: { studentId: string | null;
             getRowKey={(p) => p.id}
             columns={[
               { header: "Amount", render: (p) => formatCurrency(p.amount, p.currency) },
-              { header: "Method", render: (p) => <span className="capitalize">{p.paymentMethod.replace("_", " ")}</span> },
+              { header: "Method", render: (p) => <PaymentMethodBadge method={p.paymentMethod} /> },
+              { header: "Period", render: (p) => formatPeriod(p.periodStartDate, p.periodEndDate) },
               { header: "Date", render: (p) => new Date(p.createdAt).toLocaleDateString() },
             ]}
           />
@@ -362,6 +396,16 @@ export function FinancePage() {
   const [statusFilter, setStatusFilter] = useState<ChargeStatus | "">("");
   const [groupFilter, setGroupFilter] = useState("");
   const [search, setSearch] = useState("");
+  // "2026-08" from <input type="month"> -> the period range that month spans.
+  const [periodMonthFilter, setPeriodMonthFilter] = useState("");
+  const periodFilter = useMemo(() => {
+    if (!periodMonthFilter) return {};
+    const [year, month] = periodMonthFilter.split("-").map(Number);
+    const start = new Date(year, month - 1, 1);
+    const end = new Date(year, month, 0);
+    const toIso = (d: Date) => d.toISOString().slice(0, 10);
+    return { periodStart: toIso(start), periodEnd: toIso(end) };
+  }, [periodMonthFilter]);
 
   const { data: accounts, isLoading: accountsLoading } = useFinancialAccounts();
   const { data: charges, isLoading: chargesLoading } = useCharges({
@@ -373,7 +417,7 @@ export function FinancePage() {
   const { data: salaryAnalytics } = useSalaryAnalytics(isOwnerOrAdmin);
   const { data: salaries } = useSalaries(isOwnerOrAdmin);
   const { data: groups } = useGroups();
-  const { data: payments, isLoading: paymentsLoading } = usePayments();
+  const { data: payments, isLoading: paymentsLoading } = usePayments(periodFilter);
   const deleteCharge = useDeleteCharge();
   const deletePayment = useDeletePayment();
   const createPayment = useCreatePayment();
@@ -440,7 +484,7 @@ export function FinancePage() {
 
   return (
     <div>
-      <h1 className="mb-6 text-2xl font-semibold text-slate-900">Finance</h1>
+      <h1 className="mb-6 text-2xl font-semibold text-slate-900 dark:text-slate-100">Finance</h1>
 
       <div className="mb-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <SummaryCard
@@ -481,20 +525,20 @@ export function FinancePage() {
 
       {isOwnerOrAdmin && (
         <div className="mb-8">
-          <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-slate-500">Account balances</h2>
+          <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">Account balances</h2>
           {accountsLoading && <p className="text-sm text-slate-500">Loading...</p>}
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {accounts?.map((account) => (
-              <div key={account.id} className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
-                <p className="text-sm font-medium text-slate-500">{account.name}</p>
-                <p className="mt-2 text-2xl font-semibold text-slate-900">
+              <div key={account.id} className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-700 dark:bg-slate-800">
+                <p className="text-sm font-medium text-slate-500 dark:text-slate-400">{account.name}</p>
+                <p className="mt-2 text-2xl font-semibold text-slate-900 dark:text-slate-100">
                   {formatCurrency(account.balance, "UZS")}
                 </p>
-                <p className="mt-1 text-xs capitalize text-slate-400">{account.type.replace("_", " ")}</p>
+                <p className="mt-1 text-xs capitalize text-slate-400 dark:text-slate-500">{account.type.replace("_", " ")}</p>
               </div>
             ))}
             {!accountsLoading && accounts?.length === 0 && (
-              <p className="text-sm text-slate-500">No financial accounts yet.</p>
+              <p className="text-sm text-slate-500 dark:text-slate-400">No financial accounts yet.</p>
             )}
           </div>
         </div>
@@ -503,7 +547,7 @@ export function FinancePage() {
       {isOwnerOrAdmin && (
         <div className="mb-8">
           <div className="mb-3 flex items-center justify-between">
-            <h2 className="text-sm font-semibold uppercase tracking-wide text-slate-500">Teacher Salaries</h2>
+            <h2 className="text-sm font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">Teacher Salaries</h2>
             <Link to="/teachers/salaries" className="text-xs font-medium text-indigo-600 hover:text-indigo-700">
               View All
             </Link>
@@ -525,7 +569,7 @@ export function FinancePage() {
 
       <div className="mb-8">
         <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
-          <h2 className="text-sm font-semibold uppercase tracking-wide text-slate-500">Charges</h2>
+          <h2 className="text-sm font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">Charges</h2>
           {canRecordPayments && (
             <button
               onClick={() => setChargeFormOpen(true)}
@@ -570,51 +614,51 @@ export function FinancePage() {
           </div>
         </div>
 
-        <div className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
+        <div className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm dark:border-slate-700 dark:bg-slate-800">
           <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-slate-200">
-              <thead className="bg-slate-50">
+            <table className="min-w-full divide-y divide-slate-200 dark:divide-slate-700">
+              <thead className="bg-slate-50 dark:bg-slate-900/40">
                 <tr>
-                  <th className="px-4 py-3 text-left text-xs font-medium uppercase text-slate-500">#</th>
-                  <th className="px-4 py-3 text-left text-xs font-medium uppercase text-slate-500">Student</th>
-                  <th className="px-4 py-3 text-left text-xs font-medium uppercase text-slate-500">Group/Course</th>
-                  <th className="px-4 py-3 text-left text-xs font-medium uppercase text-slate-500">Amount</th>
-                  <th className="px-4 py-3 text-left text-xs font-medium uppercase text-slate-500">Due Date</th>
-                  <th className="px-4 py-3 text-left text-xs font-medium uppercase text-slate-500">Days Left/Overdue</th>
-                  <th className="px-4 py-3 text-left text-xs font-medium uppercase text-slate-500">Status</th>
-                  <th className="px-4 py-3 text-right text-xs font-medium uppercase text-slate-500">Actions</th>
+                  <th className="px-4 py-3 text-left text-xs font-medium uppercase text-slate-500 dark:text-slate-400">#</th>
+                  <th className="px-4 py-3 text-left text-xs font-medium uppercase text-slate-500 dark:text-slate-400">Student</th>
+                  <th className="px-4 py-3 text-left text-xs font-medium uppercase text-slate-500 dark:text-slate-400">Group/Course</th>
+                  <th className="px-4 py-3 text-left text-xs font-medium uppercase text-slate-500 dark:text-slate-400">Amount</th>
+                  <th className="px-4 py-3 text-left text-xs font-medium uppercase text-slate-500 dark:text-slate-400">Due Date</th>
+                  <th className="px-4 py-3 text-left text-xs font-medium uppercase text-slate-500 dark:text-slate-400">Days Left/Overdue</th>
+                  <th className="px-4 py-3 text-left text-xs font-medium uppercase text-slate-500 dark:text-slate-400">Status</th>
+                  <th className="px-4 py-3 text-right text-xs font-medium uppercase text-slate-500 dark:text-slate-400">Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-100">
+              <tbody className="divide-y divide-slate-100 dark:divide-slate-700">
                 {chargesLoading && (
                   <tr>
-                    <td colSpan={8} className="px-4 py-4 text-sm text-slate-500">
+                    <td colSpan={8} className="px-4 py-4 text-sm text-slate-500 dark:text-slate-400">
                       Loading...
                     </td>
                   </tr>
                 )}
                 {!chargesLoading && (!filteredCharges || filteredCharges.length === 0) && (
                   <tr>
-                    <td colSpan={8} className="px-4 py-4 text-sm text-slate-500">
+                    <td colSpan={8} className="px-4 py-4 text-sm text-slate-500 dark:text-slate-400">
                       No charges match these filters.
                     </td>
                   </tr>
                 )}
                 {filteredCharges?.map((c, i) => {
-                  const rowBg = c.isOverdue ? "bg-red-50" : c.status === "paid" ? "bg-green-50" : "";
+                  const rowBg = c.isOverdue ? "bg-red-50 dark:bg-red-500/10" : c.status === "paid" ? "bg-green-50 dark:bg-green-500/10" : "";
                   return (
                     <tr key={c.id} className={rowBg}>
-                      <td className="px-4 py-3 text-sm text-slate-500">{i + 1}</td>
-                      <td className={`px-4 py-3 text-sm font-medium ${c.status === "paid" ? "text-slate-400 line-through" : "text-slate-900"}`}>
+                      <td className="px-4 py-3 text-sm text-slate-500 dark:text-slate-400">{i + 1}</td>
+                      <td className={`px-4 py-3 text-sm font-medium ${c.status === "paid" ? "text-slate-400 line-through" : "text-slate-900 dark:text-slate-100"}`}>
                         {c.student?.name ?? "-"}
                       </td>
-                      <td className="px-4 py-3 text-sm text-slate-600">
+                      <td className="px-4 py-3 text-sm text-slate-600 dark:text-slate-300">
                         {c.group ? `${c.group.name}${c.group.courseName ? ` (${c.group.courseName})` : ""}` : "-"}
                       </td>
-                      <td className={`px-4 py-3 text-sm ${c.status === "paid" ? "text-slate-400 line-through" : "text-slate-900"}`}>
+                      <td className={`px-4 py-3 text-sm ${c.status === "paid" ? "text-slate-400 line-through" : "text-slate-900 dark:text-slate-100"}`}>
                         {formatCurrency(c.amount, c.currency)}
                       </td>
-                      <td className="px-4 py-3 text-sm text-slate-600">{new Date(c.dueDate).toLocaleDateString()}</td>
+                      <td className="px-4 py-3 text-sm text-slate-600 dark:text-slate-300">{new Date(c.dueDate).toLocaleDateString()}</td>
                       <td className="px-4 py-3 text-sm">
                         {c.isOverdue && c.daysOverdue != null && (
                           <span className="font-medium text-red-600">{c.daysOverdue} days overdue</span>
@@ -670,8 +714,8 @@ export function FinancePage() {
       </div>
 
       <div>
-        <div className="mb-3 flex items-center justify-between">
-          <h2 className="text-sm font-semibold uppercase tracking-wide text-slate-500">Payments</h2>
+        <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
+          <h2 className="text-sm font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">Payments</h2>
           {canRecordPayments && (
             <button
               onClick={() => setPaymentFormOpen(true)}
@@ -679,6 +723,24 @@ export function FinancePage() {
             >
               <Plus className="h-4 w-4" />
               New Payment
+            </button>
+          )}
+        </div>
+        <div className="mb-4 flex items-end gap-4">
+          <div className="w-48">
+            <TextField
+              label="Filter by period"
+              type="month"
+              value={periodMonthFilter}
+              onChange={(e) => setPeriodMonthFilter(e.target.value)}
+            />
+          </div>
+          {periodMonthFilter && (
+            <button
+              onClick={() => setPeriodMonthFilter("")}
+              className="mb-2 text-xs font-medium text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200"
+            >
+              Clear
             </button>
           )}
         </div>
@@ -690,7 +752,8 @@ export function FinancePage() {
           columns={[
             { header: "Student", render: (p) => p.student?.name ?? "-" },
             { header: "Amount", render: (p) => formatCurrency(p.amount, p.currency) },
-            { header: "Method", render: (p) => <span className="capitalize">{p.paymentMethod.replace("_", " ")}</span> },
+            { header: "Method", render: (p) => <PaymentMethodBadge method={p.paymentMethod} /> },
+            { header: "Period", render: (p) => formatPeriod(p.periodStartDate, p.periodEndDate) },
             { header: "Date", render: (p) => new Date(p.createdAt).toLocaleDateString() },
           ]}
           renderActions={

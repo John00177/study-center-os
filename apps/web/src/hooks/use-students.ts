@@ -4,6 +4,7 @@ import type {
   CreateStudentResultDto,
   LinkParentInput,
   LinkParentResultDto,
+  StageCountsDto,
   StudentDto,
   TempPasswordDto,
 } from "@crm/shared-types";
@@ -13,6 +14,13 @@ export function useStudents() {
   return useQuery({
     queryKey: ["students"],
     queryFn: async () => (await api.get<StudentDto[]>("/students")).data,
+  });
+}
+
+export function useStageCounts() {
+  return useQuery({
+    queryKey: ["students", "stage-counts"],
+    queryFn: async () => (await api.get<StageCountsDto>("/students/stage-counts")).data,
   });
 }
 

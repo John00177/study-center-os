@@ -95,10 +95,41 @@ export function getOrgSlugHint(): string {
   return getActiveOrganizationSlug();
 }
 
-/** Light/dark/auto -> toggles the `dark` class Tailwind's dark: variant looks for. */
-export function applyThemeMode(theme: string | undefined) {
+export type ThemePreference = "light" | "dark" | "system";
+
+const THEME_PREFERENCE_STORAGE_KEY = "theme-preference";
+
+export function hasStoredThemePreference(): boolean {
+  return typeof window !== "undefined" && window.localStorage.getItem(THEME_PREFERENCE_STORAGE_KEY) !== null;
+}
+
+export function getStoredThemePreference(): ThemePreference {
+  const stored = typeof window !== "undefined" ? window.localStorage.getItem(THEME_PREFERENCE_STORAGE_KEY) : null;
+  return stored === "light" || stored === "dark" || stored === "system" ? stored : "system";
+}
+
+export function setStoredThemePreference(preference: ThemePreference) {
+  window.localStorage.setItem(THEME_PREFERENCE_STORAGE_KEY, preference);
+}
+
+/**
+ * Light/dark/auto -> toggles the `dark` class Tailwind's dark: variant looks
+ * for. A user's personal preference (set via the ThemeToggle in the header,
+ * persisted to localStorage) wins outright once they've touched it; until
+ * then this falls back to the organization's branding-level theme default
+ * (`orgTheme`, from Organization.theme — see BrandingSettingsPage).
+ */
+export function applyThemeMode(orgTheme: string | undefined) {
   const root = document.documentElement;
-  const prefersDark = window.matchMedia?.("(prefers-color-scheme: dark)").matches;
-  const shouldBeDark = theme === "dark" || (theme === "auto" && prefersDark);
-  root.classList.toggle("dark", Boolean(shouldBeDark));
+  const prefersDark = window.matchMedia?.("(prefers-color-scheme: dark)").matches ?? false;
+
+  let shouldBeDark: boolean;
+  if (hasStoredThemePreference()) {
+    const preference = getStoredThemePreference();
+    shouldBeDark = preference === "dark" || (preference === "system" && prefersDark);
+  } else {
+    shouldBeDark = orgTheme === "dark" || (orgTheme === "auto" && prefersDark);
+  }
+
+  root.classList.toggle("dark", shouldBeDark);
 }

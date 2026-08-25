@@ -388,6 +388,12 @@ model Student {
   // recently (re)generated forces a change on next login for that side.
   mustChangePassword Boolean     @default(false) @map("must_change_password")
   tempPassword       String?     @map("temp_password")
+  // CRM funnel stage, distinct from `status` (which governs enrollment
+  // mechanics like newcomer -> active conversion). Manually meaningful for
+  // "trial"/"frozen"; "lead"/"active"/"paid" are also set automatically at
+  // creation, conversion, and payment time — see students.service.ts /
+  // finance.service.ts.
+  stage            String        @default("lead")
   registeredAt     DateTime      @default(now()) @map("registered_at")
   convertedAt      DateTime?     @map("converted_at")
   createdAt        DateTime      @default(now()) @map("created_at")
@@ -699,6 +705,11 @@ model Payment {
   currency            String   @default("UZS")
   paymentMethod       String   @map("payment_method")
   reference           String?
+  // The billing period this payment covers (e.g. Aug 1 - Aug 31), distinct
+  // from createdAt (when it was recorded). Both optional — older payments
+  // and quick one-off entries don't require a period.
+  periodStartDate     DateTime? @map("period_start_date") @db.Date
+  periodEndDate       DateTime? @map("period_end_date") @db.Date
   createdAt           DateTime @default(now()) @map("created_at")
   updatedAt           DateTime @updatedAt @map("updated_at")
 
