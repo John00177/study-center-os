@@ -33,7 +33,7 @@ const TYPE_BADGE_STYLES: Record<QuestionType, string> = {
   fill_blank: "bg-purple-100 text-purple-700",
   true_false: "bg-green-100 text-green-700",
   short_answer: "bg-orange-100 text-orange-700",
-  essay: "bg-slate-100 text-slate-600",
+  essay: "bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-400",
 };
 
 const TYPE_LABELS: Record<QuestionType, string> = {
@@ -115,26 +115,26 @@ function QuestionEditorModal({
           ))}
         </SelectField>
         <div>
-          <label className="mb-1 block text-sm font-medium text-slate-700">{t("Question Text")}</label>
+          <label className="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">{t("Question Text")}</label>
           <textarea
             required
             value={text}
             onChange={(e) => setText(e.target.value)}
             rows={2}
-            className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+            className="w-full rounded-md border border-slate-300 dark:border-slate-600 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
           />
         </div>
 
         {type === "multiple_choice" && (
           <div>
-            <label className="mb-1 block text-sm font-medium text-slate-700">{t("Options")}</label>
+            <label className="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">{t("Options")}</label>
             <div className="space-y-2">
               {options.map((opt, i) => (
                 <input
                   key={i}
                   value={opt}
                   onChange={(e) => setOptions((prev) => prev.map((o, j) => (j === i ? e.target.value : o)))}
-                  className="w-full rounded-md border border-slate-300 px-2 py-1.5 text-sm"
+                  className="w-full rounded-md border border-slate-300 dark:border-slate-600 px-2 py-1.5 text-sm"
                 />
               ))}
             </div>
@@ -158,7 +158,7 @@ function QuestionEditorModal({
         ) : type !== "essay" ? (
           <TextField label={t("Correct Answer")} required value={correctAnswer} onChange={(e) => setCorrectAnswer(e.target.value)} />
         ) : (
-          <p className="rounded-md bg-slate-50 p-2 text-xs text-slate-500">
+          <p className="rounded-md bg-slate-50 dark:bg-slate-700/50 p-2 text-xs text-slate-500 dark:text-slate-400">
             {t("Essay questions have no fixed correct answer — the teacher grades these manually.")}
           </p>
         )}
@@ -173,23 +173,23 @@ function QuestionEditorModal({
         />
 
         <div>
-          <label className="mb-1 block text-sm font-medium text-slate-700">{t("Explanation (optional)")}</label>
+          <label className="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">{t("Explanation (optional)")}</label>
           <textarea
             value={explanation}
             onChange={(e) => setExplanation(e.target.value)}
             rows={2}
-            className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm"
+            className="w-full rounded-md border border-slate-300 dark:border-slate-600 px-3 py-2 text-sm"
           />
         </div>
 
-        <div className="flex justify-end gap-3 border-t border-slate-200 pt-4">
+        <div className="flex justify-end gap-3 border-t border-slate-200 dark:border-slate-700 pt-4">
           <button
             type="button"
             onClick={() => {
               reset();
               onClose();
             }}
-            className="rounded-md border border-slate-300 px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50"
+            className="rounded-md border border-slate-300 dark:border-slate-600 px-3 py-2 text-sm font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700/50"
           >
             {t("Cancel")}
           </button>
@@ -217,17 +217,17 @@ function QuestionCard({
 }) {
   const { t } = useTranslation();
   return (
-    <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+    <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-4 shadow-sm">
       <div className="flex items-start justify-between gap-2">
         <p className="font-medium text-slate-900 dark:text-slate-100">
           Question {index + 1}: {question.text}
         </p>
         {editable && (
           <div className="flex shrink-0 gap-1">
-            <button onClick={onEdit} className="rounded p-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-700" aria-label={t("Edit question")}>
+            <button onClick={onEdit} className="rounded p-1.5 text-slate-400 dark:text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-700 hover:text-slate-700" aria-label={t("Edit question")}>
               <Pencil className="h-4 w-4" />
             </button>
-            <button onClick={onDelete} className="rounded p-1.5 text-slate-400 hover:bg-red-50 hover:text-red-600" aria-label={t("Delete question")}>
+            <button onClick={onDelete} className="rounded p-1.5 text-slate-400 dark:text-slate-500 hover:bg-red-50 hover:text-red-600" aria-label={t("Delete question")}>
               <Trash2 className="h-4 w-4" />
             </button>
           </div>
@@ -237,7 +237,7 @@ function QuestionCard({
         <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${TYPE_BADGE_STYLES[question.type]}`}>
           {TYPE_LABELS[question.type]}
         </span>
-        <span className="text-xs text-slate-500">Marks: {question.marks}</span>
+        <span className="text-xs text-slate-500 dark:text-slate-400">Marks: {question.marks}</span>
       </div>
 
       {question.type === "multiple_choice" && (
@@ -248,7 +248,7 @@ function QuestionCard({
             return (
               <li
                 key={i}
-                className={`rounded-md px-2 py-1 text-sm ${isCorrect ? "bg-green-50 font-medium text-green-700" : "text-slate-700"}`}
+                className={`rounded-md px-2 py-1 text-sm ${isCorrect ? "bg-green-50 font-medium text-green-700" : "text-slate-700 dark:text-slate-300"}`}
               >
                 {opt}
               </li>
@@ -266,9 +266,9 @@ function QuestionCard({
           Correct answer: {question.correctAnswer}
         </p>
       )}
-      {question.type === "essay" && <p className="mt-3 text-sm italic text-slate-500">{t("Teacher will grade manually.")}</p>}
+      {question.type === "essay" && <p className="mt-3 text-sm italic text-slate-500 dark:text-slate-400">{t("Teacher will grade manually.")}</p>}
 
-      {question.explanation && <p className="mt-2 text-xs text-slate-400">{question.explanation}</p>}
+      {question.explanation && <p className="mt-2 text-xs text-slate-400 dark:text-slate-500">{question.explanation}</p>}
     </div>
   );
 }
@@ -415,14 +415,14 @@ export function AiTestGeneratorPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-semibold text-slate-900 dark:text-slate-100">{t("AI Test Generator")}</h1>
-          <p className="text-sm text-slate-500">{t("Generate a complete test with AI in seconds.")}</p>
+          <p className="text-sm text-slate-500 dark:text-slate-400">{t("Generate a complete test with AI in seconds.")}</p>
         </div>
         <Link to="/teacher/ai-tests" className="text-sm font-medium text-indigo-600 hover:text-indigo-700">
           {t("My Tests →")}
         </Link>
       </div>
 
-      <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+      <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-5 shadow-sm">
         <form onSubmit={handleGenerateSubmit} className="space-y-4">
           <TextField
             label={t("Topic")}
@@ -450,9 +450,9 @@ export function AiTestGeneratorPage() {
           </div>
 
           <div>
-            <label className="mb-1 block text-sm font-medium text-slate-700">
+            <label className="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">
               {t("Number of Questions")}<span className="ml-0.5 text-red-500">*</span>
-              <span className="ml-2 font-normal text-slate-500">{form.questionCount}</span>
+              <span className="ml-2 font-normal text-slate-500 dark:text-slate-400">{form.questionCount}</span>
             </label>
             <input
               type="range"
@@ -462,23 +462,23 @@ export function AiTestGeneratorPage() {
               onChange={(e) => setForm((f) => ({ ...f, questionCount: Number(e.target.value) }))}
               className="w-full"
             />
-            <div className="flex justify-between text-xs text-slate-400">
+            <div className="flex justify-between text-xs text-slate-400 dark:text-slate-500">
               <span>5</span>
               <span>50</span>
             </div>
           </div>
 
           <div>
-            <label className="mb-2 block text-sm font-medium text-slate-700">{t("Question Types")}</label>
+            <label className="mb-2 block text-sm font-medium text-slate-700 dark:text-slate-300">{t("Question Types")}</label>
             <div className="flex flex-wrap gap-3">
               {TYPE_OPTIONS.map((o) => (
-                <label key={o.value} className="flex items-center gap-2 text-sm text-slate-700">
+                <label key={o.value} className="flex items-center gap-2 text-sm text-slate-700 dark:text-slate-300">
                   <input type="checkbox" checked={form.types.has(o.value)} onChange={() => toggleType(o.value)} />
                   {t(o.label)}
                 </label>
               ))}
             </div>
-            <p className="mt-1 text-xs text-slate-400">Leave unchecked to use the default mix (60% MC, 20% fill-in, 10% true/false, 10% short answer).</p>
+            <p className="mt-1 text-xs text-slate-400 dark:text-slate-500">Leave unchecked to use the default mix (60% MC, 20% fill-in, 10% true/false, 10% short answer).</p>
           </div>
 
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
@@ -517,7 +517,7 @@ export function AiTestGeneratorPage() {
             {t("Generate Test with AI")}
           </button>
           {generate.isPending && (
-            <p className="text-center text-sm text-slate-500">
+            <p className="text-center text-sm text-slate-500 dark:text-slate-400">
               {t("AI is generating your test")}<span className="inline-block animate-pulse">...</span>
             </p>
           )}
@@ -526,7 +526,7 @@ export function AiTestGeneratorPage() {
 
       {test && (
         <div className="space-y-4">
-          <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+          <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-5 shadow-sm">
             <div className="flex flex-wrap items-center gap-2">
               <span className="inline-flex items-center gap-1 rounded-full bg-indigo-100 px-2.5 py-1 text-xs font-medium text-indigo-700">
                 <Sparkles className="h-3 w-3" />
@@ -536,7 +536,7 @@ export function AiTestGeneratorPage() {
             <h2 className="mt-2 text-lg font-bold text-slate-900 dark:text-slate-100">
               {test.topic} — {test.level} Test ({test.questions.length} questions, {test.duration} min)
             </h2>
-            <p className="mt-1 text-sm text-slate-600">
+            <p className="mt-1 text-sm text-slate-600 dark:text-slate-400">
               {t("Total Marks:")}<span className="font-semibold">{totalMarks}</span> · Pass Marks:{" "}
               <span className="font-semibold">{passMarks}</span> (60%)
             </p>
@@ -553,14 +553,14 @@ export function AiTestGeneratorPage() {
               <button
                 onClick={runGenerate}
                 disabled={generate.isPending}
-                className="rounded-md border border-slate-300 px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 disabled:opacity-60"
+                className="rounded-md border border-slate-300 dark:border-slate-600 px-3 py-2 text-sm font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700/50 disabled:opacity-60"
               >
                 {t("Regenerate")}
               </button>
               <button
                 onClick={() => setQuestionsEditable((v) => !v)}
                 className={`rounded-md border px-3 py-2 text-sm font-medium ${
-                  questionsEditable ? "border-indigo-300 bg-indigo-50 text-indigo-700" : "border-slate-300 text-slate-700 hover:bg-slate-50"
+                  questionsEditable ? "border-indigo-300 bg-indigo-50 text-indigo-700" : "border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700/50"
                 }`}
               >
                 {questionsEditable ? "Done Editing" : "Edit Questions"}
@@ -584,7 +584,7 @@ export function AiTestGeneratorPage() {
           {questionsEditable && (
             <button
               onClick={openAddQuestion}
-              className="flex w-full items-center justify-center gap-2 rounded-md border border-dashed border-slate-300 py-3 text-sm font-medium text-indigo-600 hover:bg-indigo-50"
+              className="flex w-full items-center justify-center gap-2 rounded-md border border-dashed border-slate-300 dark:border-slate-600 py-3 text-sm font-medium text-indigo-600 hover:bg-indigo-50"
             >
               <Plus className="h-4 w-4" />
               {t("Add Question")}

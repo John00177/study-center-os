@@ -24,7 +24,7 @@ function StatCard({ label, value, icon: Icon, onClick }: StatCardProps) {
   const content = (
     <>
       <div className="flex items-center justify-between">
-        <span className="text-sm font-medium text-slate-500">{label}</span>
+        <span className="text-sm font-medium text-slate-500 dark:text-slate-400">{label}</span>
         <Icon size={18} />
       </div>
       <p className="mt-3 text-3xl font-semibold text-slate-900 dark:text-slate-100">{value ?? "-"}</p>
@@ -36,14 +36,14 @@ function StatCard({ label, value, icon: Icon, onClick }: StatCardProps) {
       <button
         type="button"
         onClick={onClick}
-        className="w-full rounded-xl border border-slate-200 bg-white p-5 text-left shadow-sm hover:bg-slate-50"
+        className="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-5 text-left shadow-sm hover:bg-slate-50 dark:hover:bg-slate-700/50"
       >
         {content}
       </button>
     );
   }
 
-  return <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">{content}</div>;
+  return <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-5 shadow-sm">{content}</div>;
 }
 
 // Student login/portal doesn't exist yet — this previews the "My Homework"
@@ -68,14 +68,14 @@ function StudentHomeworkPreviewCard() {
         type="button"
         onClick={() => setOpen(true)}
         disabled={!previewStudent}
-        className="w-full rounded-xl border border-slate-200 bg-white p-5 text-left shadow-sm hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-60"
+        className="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-5 text-left shadow-sm hover:bg-slate-50 dark:hover:bg-slate-700/50 disabled:cursor-not-allowed disabled:opacity-60"
       >
         <div className="flex items-center justify-between">
-          <span className="text-sm font-medium text-slate-500">{t("My Homework")}</span>
+          <span className="text-sm font-medium text-slate-500 dark:text-slate-400">{t("My Homework")}</span>
           <ClipboardList size={18} />
         </div>
         <p className="mt-3 text-3xl font-semibold text-slate-900 dark:text-slate-100">{isLoading ? "-" : pendingCount}</p>
-        <p className="mt-1 text-xs text-slate-400">
+        <p className="mt-1 text-xs text-slate-400 dark:text-slate-500">
           {previewStudent ? `Student preview: ${previewStudent.name}` : "No students to preview yet"}
         </p>
       </button>
@@ -97,20 +97,20 @@ function AiTestGeneratorWidget() {
 
   if (lockInfo) {
     return (
-      <div className="rounded-xl border border-slate-200 bg-slate-50 p-5">
+      <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-700/50 p-5">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div className="flex items-center gap-3">
             <div className="flex h-10 w-10 items-center justify-center rounded-full bg-slate-200">
-              <Lock className="h-5 w-5 text-slate-400" />
+              <Lock className="h-5 w-5 text-slate-400 dark:text-slate-500" />
             </div>
             <div>
-              <p className="text-sm font-semibold text-slate-500">{t("AI Test Generator")}</p>
-              <p className="text-sm text-slate-400">Requires the {lockInfo.requiredPlan} plan or higher</p>
+              <p className="text-sm font-semibold text-slate-500 dark:text-slate-400">{t("AI Test Generator")}</p>
+              <p className="text-sm text-slate-400 dark:text-slate-500">Requires the {lockInfo.requiredPlan} plan or higher</p>
             </div>
           </div>
           <Link
             to="/settings/plan"
-            className="rounded-md border border-slate-300 bg-white px-3 py-2 text-sm font-medium text-slate-600 hover:bg-slate-100"
+            className="rounded-md border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 px-3 py-2 text-sm font-medium text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700"
           >
             {t("Upgrade to unlock")}
           </Link>
@@ -120,7 +120,7 @@ function AiTestGeneratorWidget() {
   }
 
   return (
-    <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+    <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-5 shadow-sm">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="flex items-center gap-3">
           <div className="flex h-10 w-10 items-center justify-center rounded-full bg-indigo-50">
@@ -128,7 +128,7 @@ function AiTestGeneratorWidget() {
           </div>
           <div>
             <p className="text-sm font-semibold text-slate-900 dark:text-slate-100">{t("AI Test Generator")}</p>
-            <p className="text-sm text-slate-500">
+            <p className="text-sm text-slate-500 dark:text-slate-400">
               {isLoading ? "-" : data?.countThisMonth ?? 0} tests created this month
               {!isLoading && ` · ${data?.submissionsThisWeek ?? 0} submissions this week`}
             </p>
@@ -149,10 +149,10 @@ function AiTestGeneratorWidget() {
             <Link
               key={t.id}
               to="/teacher/ai-tests"
-              className="flex items-center justify-between rounded-md px-2 py-1.5 text-sm hover:bg-slate-50"
+              className="flex items-center justify-between rounded-md px-2 py-1.5 text-sm hover:bg-slate-50 dark:hover:bg-slate-700/50"
             >
               <span className="truncate font-medium text-slate-800 dark:text-slate-200">{t.title}</span>
-              <span className="shrink-0 text-xs text-slate-400">{new Date(t.createdAt).toLocaleDateString()}</span>
+              <span className="shrink-0 text-xs text-slate-400 dark:text-slate-500">{new Date(t.createdAt).toLocaleDateString()}</span>
             </Link>
           ))}
         </div>

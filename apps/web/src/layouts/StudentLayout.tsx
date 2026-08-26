@@ -37,8 +37,8 @@ export function StudentLayout() {
   }
 
   return (
-    <div className="flex min-h-screen flex-col bg-slate-50">
-      <header className="flex items-center justify-between border-b border-primary/10 bg-primary/5 px-4 py-3">
+    <div className="flex min-h-screen flex-col bg-slate-50 dark:bg-slate-900">
+      <header className="flex items-center justify-between border-b border-primary/10 bg-primary/5 px-4 py-3 dark:border-slate-700 dark:bg-slate-800">
         <div className="flex items-center gap-2">
           <OrgLogo
             logoUrl={branding?.logoUrl}
@@ -47,15 +47,15 @@ export function StudentLayout() {
             className="h-8 w-8"
           />
           <div>
-            <p className="text-sm font-semibold text-slate-900">{student?.name}</p>
-            <p className="text-xs text-slate-500">{resolveOrgDisplayName(branding)}</p>
+            <p className="text-sm font-semibold text-slate-900 dark:text-slate-100">{student?.name}</p>
+            <p className="text-xs text-slate-500 dark:text-slate-400">{resolveOrgDisplayName(branding)}</p>
           </div>
         </div>
         <div className="flex items-center gap-2">
           <StudentNotificationBell />
           <button
             onClick={handleLogout}
-            className="flex items-center gap-1 rounded-md px-2 py-1.5 text-sm text-slate-500 transition hover:bg-slate-100 hover:text-slate-900"
+            className="flex items-center gap-1 rounded-md px-2 py-1.5 text-sm text-slate-500 transition hover:bg-slate-100 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-700 dark:hover:text-slate-100"
           >
             <LogOut size={16} />
             {t("Logout")}
@@ -67,7 +67,7 @@ export function StudentLayout() {
         <Outlet />
       </main>
 
-      <nav className="fixed inset-x-0 bottom-0 z-40 flex border-t border-slate-200 bg-white">
+      <nav className="fixed inset-x-0 bottom-0 z-40 flex border-t border-slate-200 bg-white dark:border-slate-700 dark:bg-slate-800">
         {NAV_ITEMS.map(({ to, label, icon: Icon, end }) => (
           <NavLink
             key={to}
@@ -75,7 +75,7 @@ export function StudentLayout() {
             end={end}
             className={({ isActive }) =>
               `flex flex-1 flex-col items-center gap-0.5 py-2.5 text-xs font-medium ${
-                isActive ? "text-primary" : "text-slate-500"
+                isActive ? "text-primary" : "text-slate-500 dark:text-slate-400"
               }`
             }
           >

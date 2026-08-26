@@ -6,10 +6,10 @@ import { formatCurrency } from "../../lib/format";
 import { useTranslation } from "../../hooks/use-translation";
 
 const CHARGE_STATUS_STYLES: Record<string, string> = {
-  pending: "bg-slate-100 text-slate-600",
+  pending: "bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-400",
   paid: "bg-green-100 text-green-700",
   overdue: "bg-red-100 text-red-700",
-  cancelled: "bg-slate-100 text-slate-400",
+  cancelled: "bg-slate-100 dark:bg-slate-700 text-slate-400 dark:text-slate-500",
 };
 
 export function StudentPaymentsPage() {
@@ -22,10 +22,10 @@ export function StudentPaymentsPage() {
 
   return (
     <div>
-      <h1 className="mb-4 text-xl font-semibold text-slate-900">{t("Payments")}</h1>
+      <h1 className="mb-4 text-xl font-semibold text-slate-900 dark:text-slate-100">{t("Payments")}</h1>
 
       <div className={`mb-6 rounded-xl p-6 text-center shadow-sm ${balance > 0 ? "bg-red-50" : "bg-green-50"}`}>
-        <p className="text-xs font-medium uppercase text-slate-500">{t("Balance")}</p>
+        <p className="text-xs font-medium uppercase text-slate-500 dark:text-slate-400">{t("Balance")}</p>
         <p className={`mt-1 text-3xl font-bold ${balance > 0 ? "text-red-600" : "text-green-600"}`}>
           {isLoading ? "-" : formatCurrency(balance, "UZS")}
         </p>
@@ -39,11 +39,11 @@ export function StudentPaymentsPage() {
         >
           {t("Pay Now")}
         </button>
-        {payClicked && <p className="mt-2 text-xs text-slate-500">{t("Contact reception to complete your payment.")}</p>}
+        {payClicked && <p className="mt-2 text-xs text-slate-500 dark:text-slate-400">{t("Contact reception to complete your payment.")}</p>}
       </div>
 
       <div className="mb-6">
-        <h2 className="mb-2 text-sm font-semibold uppercase tracking-wide text-slate-500">{t("Charges")}</h2>
+        <h2 className="mb-2 text-sm font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">{t("Charges")}</h2>
         <DataTable
           data={data?.charges}
           isLoading={isLoading}
@@ -66,7 +66,7 @@ export function StudentPaymentsPage() {
       </div>
 
       <div>
-        <h2 className="mb-2 text-sm font-semibold uppercase tracking-wide text-slate-500">{t("Payments")}</h2>
+        <h2 className="mb-2 text-sm font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">{t("Payments")}</h2>
         <DataTable
           data={data?.payments}
           isLoading={isLoading}

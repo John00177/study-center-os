@@ -24,10 +24,10 @@ export function TeacherGroupsPage() {
     <div>
       <h1 className="mb-6 text-2xl font-semibold text-slate-900 dark:text-slate-100">{t("My Groups")}</h1>
 
-      {isLoading && <p className="text-sm text-slate-500">{t("Loading...")}</p>}
+      {isLoading && <p className="text-sm text-slate-500 dark:text-slate-400">{t("Loading...")}</p>}
 
       {!isLoading && (groups?.length ?? 0) === 0 && (
-        <p className="text-sm text-slate-500">{t("You have no assigned groups yet.")}</p>
+        <p className="text-sm text-slate-500 dark:text-slate-400">{t("You have no assigned groups yet.")}</p>
       )}
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -45,16 +45,16 @@ function GroupCard({ group }: { group: TeacherGroupDto }) {
   return (
     <Link
       to={`/teacher/groups/${group.id}`}
-      className="block rounded-xl border border-slate-200 bg-white p-5 shadow-sm transition hover:shadow-md"
+      className="block rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-5 shadow-sm transition hover:shadow-md"
     >
       <p className="font-semibold text-slate-900 dark:text-slate-100">{group.name}</p>
-      <p className="mt-1 text-sm text-slate-500">{group.course?.name ?? "-"}</p>
-      <p className="text-sm text-slate-500">{group.branch.name}</p>
+      <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">{group.course?.name ?? "-"}</p>
+      <p className="text-sm text-slate-500 dark:text-slate-400">{group.branch.name}</p>
 
       <div className="mt-3 flex items-center justify-between text-sm">
-        <span className="text-slate-600">{group.studentCount} students</span>
+        <span className="text-slate-600 dark:text-slate-400">{group.studentCount} students</span>
         {next && (
-          <span className="text-slate-500">
+          <span className="text-slate-500 dark:text-slate-400">
             Next: {DAY_LABELS[next.dayOfWeek]} {next.startTime}
           </span>
         )}

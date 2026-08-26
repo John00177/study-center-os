@@ -17,15 +17,15 @@ export function StudentHomeworkPage() {
   const [selected, setSelected] = useState<StudentHomeworkDto | null>(null);
 
   if (isLoading) {
-    return <p className="text-sm text-slate-500">{t("Loading...")}</p>;
+    return <p className="text-sm text-slate-500 dark:text-slate-400">{t("Loading...")}</p>;
   }
 
   return (
     <div>
-      <h1 className="mb-4 text-xl font-semibold text-slate-900">{t("My Homework")}</h1>
+      <h1 className="mb-4 text-xl font-semibold text-slate-900 dark:text-slate-100">{t("My Homework")}</h1>
 
       {(data ?? []).length === 0 && (
-        <p className="rounded-xl border border-slate-200 bg-white p-4 text-sm text-slate-500">
+        <p className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-4 text-sm text-slate-500 dark:text-slate-400">
           {t("No homework assigned yet.")}
         </p>
       )}
@@ -35,16 +35,16 @@ export function StudentHomeworkPage() {
           <button
             key={h.submissionId}
             onClick={() => setSelected(h)}
-            className="w-full rounded-xl border border-slate-200 bg-white p-4 text-left shadow-sm hover:bg-slate-50"
+            className="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-4 text-left shadow-sm hover:bg-slate-50 dark:hover:bg-slate-700/50"
           >
             <div className="flex items-center justify-between gap-2">
-              <p className="font-medium text-slate-900">{h.title}</p>
+              <p className="font-medium text-slate-900 dark:text-slate-100">{h.title}</p>
               <span className={`inline-flex shrink-0 items-center rounded-full px-2 py-0.5 text-xs font-medium capitalize ${STATUS_STYLES[h.submissionStatus]}`}>
                 {h.submissionStatus}
               </span>
             </div>
-            <p className="mt-1 text-sm text-slate-500">{h.group?.name}</p>
-            <p className="mt-1 text-xs text-slate-400">
+            <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">{h.group?.name}</p>
+            <p className="mt-1 text-xs text-slate-400 dark:text-slate-500">
               Due {h.dueDate ? new Date(h.dueDate).toLocaleDateString() : "-"}
             </p>
           </button>
@@ -59,24 +59,24 @@ export function StudentHomeworkPage() {
             </span>
             {selected.description && (
               <div>
-                <p className="text-xs font-medium uppercase text-slate-400">{t("Description")}</p>
-                <p className="text-slate-900">{selected.description}</p>
+                <p className="text-xs font-medium uppercase text-slate-400 dark:text-slate-500">{t("Description")}</p>
+                <p className="text-slate-900 dark:text-slate-100">{selected.description}</p>
               </div>
             )}
             <div>
-              <p className="text-xs font-medium uppercase text-slate-400">{t("Due date")}</p>
-              <p className="text-slate-900">{selected.dueDate ? new Date(selected.dueDate).toLocaleDateString() : "-"}</p>
+              <p className="text-xs font-medium uppercase text-slate-400 dark:text-slate-500">{t("Due date")}</p>
+              <p className="text-slate-900 dark:text-slate-100">{selected.dueDate ? new Date(selected.dueDate).toLocaleDateString() : "-"}</p>
             </div>
             {selected.score !== null && selected.score !== undefined && (
               <div>
-                <p className="text-xs font-medium uppercase text-slate-400">{t("Score")}</p>
-                <p className="text-slate-900">{selected.score} / 100</p>
+                <p className="text-xs font-medium uppercase text-slate-400 dark:text-slate-500">{t("Score")}</p>
+                <p className="text-slate-900 dark:text-slate-100">{selected.score} / 100</p>
               </div>
             )}
             {selected.feedback && (
               <div>
-                <p className="text-xs font-medium uppercase text-slate-400">{t("Feedback")}</p>
-                <p className="text-slate-900">{selected.feedback}</p>
+                <p className="text-xs font-medium uppercase text-slate-400 dark:text-slate-500">{t("Feedback")}</p>
+                <p className="text-slate-900 dark:text-slate-100">{selected.feedback}</p>
               </div>
             )}
           </div>

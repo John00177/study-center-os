@@ -62,14 +62,14 @@ export function TakeTestPage() {
   }
 
   if (isLoading) {
-    return <p className="text-sm text-slate-500">{t("Loading...")}</p>;
+    return <p className="text-sm text-slate-500 dark:text-slate-400">{t("Loading...")}</p>;
   }
 
   if (error) {
     if (isAxiosError(error) && error.response?.status === 409) {
       return (
-        <div className="rounded-xl border border-slate-200 bg-white p-6 text-center">
-          <p className="text-sm text-slate-600">{t("You have already submitted this test.")}</p>
+        <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-6 text-center">
+          <p className="text-sm text-slate-600 dark:text-slate-400">{t("You have already submitted this test.")}</p>
           <button
             onClick={() => navigate(`/student/tests/${id}/result`)}
             className="mt-4 rounded-md bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700"
@@ -88,14 +88,14 @@ export function TakeTestPage() {
 
   if (submitted) {
     return (
-      <div className="mx-auto max-w-md rounded-xl border border-slate-200 bg-white p-8 text-center shadow-sm">
-        <p className="text-2xl font-bold text-slate-900">{t("Test Submitted!")}</p>
+      <div className="mx-auto max-w-md rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-8 text-center shadow-sm">
+        <p className="text-2xl font-bold text-slate-900 dark:text-slate-100">{t("Test Submitted!")}</p>
         {submitted.status === "graded" ? (
-          <p className="mt-2 text-lg text-slate-700">
+          <p className="mt-2 text-lg text-slate-700 dark:text-slate-300">
             {t("You scored")}<span className="font-bold text-indigo-600">{submitted.totalScore}</span> / {test.totalMarks}
           </p>
         ) : (
-          <p className="mt-2 text-sm text-slate-500">
+          <p className="mt-2 text-sm text-slate-500 dark:text-slate-400">
             {t("Your objective answers are graded. Essay questions are pending teacher review.")}
           </p>
         )}
@@ -116,27 +116,27 @@ export function TakeTestPage() {
   return (
     <div className="mx-auto max-w-lg">
       <div className="mb-4 flex items-center justify-between">
-        <p className="text-sm font-medium text-slate-500">
+        <p className="text-sm font-medium text-slate-500 dark:text-slate-400">
           Question {index + 1} of {test.questions.length}
         </p>
         <span
           className={`rounded-full px-3 py-1 text-sm font-semibold ${
-            secondsLeft !== null && secondsLeft < 60 ? "bg-red-100 text-red-700" : "bg-slate-100 text-slate-700"
+            secondsLeft !== null && secondsLeft < 60 ? "bg-red-100 text-red-700" : "bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300"
           }`}
         >
           {secondsLeft !== null ? formatTime(secondsLeft) : "--:--"}
         </span>
       </div>
 
-      <div className="mb-4 h-2 w-full overflow-hidden rounded-full bg-slate-100">
+      <div className="mb-4 h-2 w-full overflow-hidden rounded-full bg-slate-100 dark:bg-slate-700">
         <div className="h-full bg-indigo-600 transition-all" style={{ width: `${progress}%` }} />
       </div>
 
-      <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
-        <p className="text-xs font-medium uppercase tracking-wide text-slate-400">
+      <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-5 shadow-sm">
+        <p className="text-xs font-medium uppercase tracking-wide text-slate-400 dark:text-slate-500">
           {question.marks} {question.marks === 1 ? "mark" : "marks"}
         </p>
-        <p className="mt-1 text-lg font-semibold text-slate-900">{question.text}</p>
+        <p className="mt-1 text-lg font-semibold text-slate-900 dark:text-slate-100">{question.text}</p>
 
         <div className="mt-4 space-y-2">
           {question.type === "multiple_choice" &&
@@ -146,7 +146,7 @@ export function TakeTestPage() {
                 <label
                   key={i}
                   className={`flex cursor-pointer items-center gap-3 rounded-md border p-3 text-sm ${
-                    answers[question.id] === letter ? "border-indigo-400 bg-indigo-50" : "border-slate-200"
+                    answers[question.id] === letter ? "border-indigo-400 bg-indigo-50" : "border-slate-200 dark:border-slate-700"
                   }`}
                 >
                   <input
@@ -165,7 +165,7 @@ export function TakeTestPage() {
               <label
                 key={val}
                 className={`flex cursor-pointer items-center gap-3 rounded-md border p-3 text-sm capitalize ${
-                  answers[question.id] === val ? "border-indigo-400 bg-indigo-50" : "border-slate-200"
+                  answers[question.id] === val ? "border-indigo-400 bg-indigo-50" : "border-slate-200 dark:border-slate-700"
                 }`}
               >
                 <input
@@ -182,7 +182,7 @@ export function TakeTestPage() {
             <input
               value={answers[question.id] ?? ""}
               onChange={(e) => setAnswers((a) => ({ ...a, [question.id]: e.target.value }))}
-              className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+              className="w-full rounded-md border border-slate-300 dark:border-slate-600 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
               placeholder={t("Type your answer")}
             />
           )}
@@ -192,7 +192,7 @@ export function TakeTestPage() {
               value={answers[question.id] ?? ""}
               onChange={(e) => setAnswers((a) => ({ ...a, [question.id]: e.target.value }))}
               rows={6}
-              className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+              className="w-full rounded-md border border-slate-300 dark:border-slate-600 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
               placeholder={t("Write your answer")}
             />
           )}
@@ -203,7 +203,7 @@ export function TakeTestPage() {
         <button
           onClick={() => setIndex((i) => Math.max(0, i - 1))}
           disabled={index === 0}
-          className="flex-1 rounded-md border border-slate-300 py-3 text-sm font-medium text-slate-700 hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50"
+          className="flex-1 rounded-md border border-slate-300 dark:border-slate-600 py-3 text-sm font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700/50 disabled:cursor-not-allowed disabled:opacity-50"
         >
           {t("Previous")}
         </button>

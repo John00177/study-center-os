@@ -14,7 +14,7 @@ import { useTranslation } from "../../hooks/use-translation";
 const SUBJECTS = ["IELTS", "General English", "Mathematics", "Science", "Other"];
 
 const STATUS_STYLES: Record<TestStatus, string> = {
-  draft: "bg-slate-100 text-slate-600",
+  draft: "bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-400",
   published: "bg-green-100 text-green-700",
   closed: "bg-red-100 text-red-500",
 };
@@ -24,7 +24,7 @@ const TYPE_BADGE_STYLES: Record<QuestionType, string> = {
   fill_blank: "bg-purple-100 text-purple-700",
   true_false: "bg-green-100 text-green-700",
   short_answer: "bg-orange-100 text-orange-700",
-  essay: "bg-slate-100 text-slate-600",
+  essay: "bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-400",
 };
 const TYPE_LABELS: Record<QuestionType, string> = {
   multiple_choice: "Multiple Choice",
@@ -41,25 +41,25 @@ function TestPreviewModal({ testId, onClose }: { testId: string | null; onClose:
   return (
     <Modal open={Boolean(testId)} onClose={onClose} title={test?.title ?? "Test"} widthClassName="max-w-2xl">
       {isLoading || !test ? (
-        <p className="text-sm text-slate-500">{t("Loading...")}</p>
+        <p className="text-sm text-slate-500 dark:text-slate-400">{t("Loading...")}</p>
       ) : (
         <div className="space-y-4">
           <div className="flex flex-wrap items-center gap-2">
             <span className="inline-flex items-center rounded-full bg-indigo-50 px-2.5 py-1 text-xs font-medium text-indigo-700">{test.subject}</span>
-            <span className="inline-flex items-center rounded-full bg-slate-100 px-2.5 py-1 text-xs font-medium text-slate-600">{test.level}</span>
-            <span className="inline-flex items-center rounded-full bg-slate-100 px-2.5 py-1 text-xs font-medium text-slate-600">{test.duration} min</span>
+            <span className="inline-flex items-center rounded-full bg-slate-100 dark:bg-slate-700 px-2.5 py-1 text-xs font-medium text-slate-600 dark:text-slate-400">{test.level}</span>
+            <span className="inline-flex items-center rounded-full bg-slate-100 dark:bg-slate-700 px-2.5 py-1 text-xs font-medium text-slate-600 dark:text-slate-400">{test.duration} min</span>
             <span className={`inline-flex items-center rounded-full px-2.5 py-1 text-xs font-medium capitalize ${STATUS_STYLES[test.status]}`}>
               {test.status}
             </span>
           </div>
-          <p className="text-sm text-slate-600">
+          <p className="text-sm text-slate-600 dark:text-slate-400">
             {t("Total Marks:")}<span className="font-semibold">{test.totalMarks}</span> · Pass Marks:{" "}
             <span className="font-semibold">{test.passMarks}</span>
           </p>
 
           <div className="space-y-3">
             {test.questions?.map((q, i) => (
-              <div key={q.id} className="rounded-lg border border-slate-200 p-3">
+              <div key={q.id} className="rounded-lg border border-slate-200 dark:border-slate-700 p-3">
                 <p className="text-sm font-medium text-slate-900 dark:text-slate-100">
                   Question {i + 1}: {q.text}
                 </p>
@@ -67,7 +67,7 @@ function TestPreviewModal({ testId, onClose }: { testId: string | null; onClose:
                   <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${TYPE_BADGE_STYLES[q.type]}`}>
                     {TYPE_LABELS[q.type]}
                   </span>
-                  <span className="text-xs text-slate-500">Marks: {q.marks}</span>
+                  <span className="text-xs text-slate-500 dark:text-slate-400">Marks: {q.marks}</span>
                 </div>
                 {q.type === "multiple_choice" && (
                   <ul className="mt-2 space-y-1">
@@ -75,7 +75,7 @@ function TestPreviewModal({ testId, onClose }: { testId: string | null; onClose:
                       const letter = ["A", "B", "C", "D"][j];
                       const isCorrect = letter === q.correctAnswer;
                       return (
-                        <li key={j} className={`rounded-md px-2 py-1 text-sm ${isCorrect ? "bg-green-50 font-medium text-green-700" : "text-slate-700"}`}>
+                        <li key={j} className={`rounded-md px-2 py-1 text-sm ${isCorrect ? "bg-green-50 font-medium text-green-700" : "text-slate-700 dark:text-slate-300"}`}>
                           {opt}
                         </li>
                       );
@@ -90,7 +90,7 @@ function TestPreviewModal({ testId, onClose }: { testId: string | null; onClose:
                     Correct answer: {q.correctAnswer}
                   </p>
                 )}
-                {q.type === "essay" && <p className="mt-2 text-sm italic text-slate-500">{t("Teacher will grade manually.")}</p>}
+                {q.type === "essay" && <p className="mt-2 text-sm italic text-slate-500 dark:text-slate-400">{t("Teacher will grade manually.")}</p>}
               </div>
             ))}
           </div>
@@ -122,7 +122,7 @@ function PublishModal({ test, onClose }: { test: TestDto | null; onClose: () => 
     <Modal open={Boolean(test)} onClose={onClose} title={t("Publish to Group")} widthClassName="max-w-sm">
       {test && (
         <div className="space-y-4">
-          <p className="text-sm text-slate-600">
+          <p className="text-sm text-slate-600 dark:text-slate-400">
             Publish "<span className="font-medium text-slate-900 dark:text-slate-100">{test.title}</span>" to a group. Students will be able to take it immediately.
           </p>
           <SelectField label={t("Group")} required value={groupId} onChange={(e) => setGroupId(e.target.value)}>
@@ -133,8 +133,8 @@ function PublishModal({ test, onClose }: { test: TestDto | null; onClose: () => 
               </option>
             ))}
           </SelectField>
-          <div className="flex justify-end gap-3 border-t border-slate-200 pt-4">
-            <button onClick={onClose} className="rounded-md border border-slate-300 px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50">
+          <div className="flex justify-end gap-3 border-t border-slate-200 dark:border-slate-700 pt-4">
+            <button onClick={onClose} className="rounded-md border border-slate-300 dark:border-slate-600 px-3 py-2 text-sm font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700/50">
               {t("Cancel")}
             </button>
             <button
@@ -236,7 +236,7 @@ export function MyTestsPage() {
           { header: t("Title"), render: (test) => <span className="font-medium text-slate-900 dark:text-slate-100">{test.title}</span> },
           { header: t("Topic"), render: (test) => test.topic },
           { header: t("Subject"), render: (test) => <span className="inline-flex items-center rounded-full bg-indigo-50 px-2 py-0.5 text-xs font-medium text-indigo-700">{test.subject}</span> },
-          { header: t("Level"), render: (test) => <span className="inline-flex items-center rounded-full bg-slate-100 px-2 py-0.5 text-xs font-medium text-slate-600">{test.level}</span> },
+          { header: t("Level"), render: (test) => <span className="inline-flex items-center rounded-full bg-slate-100 dark:bg-slate-700 px-2 py-0.5 text-xs font-medium text-slate-600 dark:text-slate-400">{test.level}</span> },
           { header: t("Questions"), render: (test) => test.questionCount, align: "right" },
           { header: t("Group"), render: (test) => test.group?.name ?? "-" },
           {
@@ -253,36 +253,36 @@ export function MyTestsPage() {
         ]}
         renderActions={(test) => (
           <>
-            <button onClick={() => setPreviewingId(test.id)} className="rounded p-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-700" aria-label={t("View test")} title={t("View")}>
+            <button onClick={() => setPreviewingId(test.id)} className="rounded p-1.5 text-slate-400 dark:text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-700 hover:text-slate-700" aria-label={t("View test")} title={t("View")}>
               <Eye className="h-4 w-4" />
             </button>
             <button
               onClick={() => setPreviewingId(test.id)}
-              className="rounded p-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-700"
+              className="rounded p-1.5 text-slate-400 dark:text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-700 hover:text-slate-700"
               aria-label={t("Edit test")}
               title={t("Edit")}
             >
               <Pencil className="h-4 w-4" />
             </button>
             {test.status === "draft" && (
-              <button onClick={() => setPublishing(test)} className="rounded p-1.5 text-slate-400 hover:bg-green-50 hover:text-green-600" aria-label={t("Publish test")} title={t("Publish")}>
+              <button onClick={() => setPublishing(test)} className="rounded p-1.5 text-slate-400 dark:text-slate-500 hover:bg-green-50 hover:text-green-600" aria-label={t("Publish test")} title={t("Publish")}>
                 <Send className="h-4 w-4" />
               </button>
             )}
             {test.status === "published" && (
-              <button onClick={() => setClosing(test)} className="rounded p-1.5 text-slate-400 hover:bg-orange-50 hover:text-orange-600" aria-label={t("Close test")} title={t("Close")}>
+              <button onClick={() => setClosing(test)} className="rounded p-1.5 text-slate-400 dark:text-slate-500 hover:bg-orange-50 hover:text-orange-600" aria-label={t("Close test")} title={t("Close")}>
                 <Lock className="h-4 w-4" />
               </button>
             )}
             <button
               onClick={() => navigate(`/teacher/ai-tests/${test.id}/results`)}
-              className="rounded p-1.5 text-slate-400 hover:bg-indigo-50 hover:text-indigo-600"
+              className="rounded p-1.5 text-slate-400 dark:text-slate-500 hover:bg-indigo-50 hover:text-indigo-600"
               aria-label={t("View results")}
               title={t("Results")}
             >
               <BarChart3 className="h-4 w-4" />
             </button>
-            <button onClick={() => setDeleting(test)} className="rounded p-1.5 text-slate-400 hover:bg-red-50 hover:text-red-600" aria-label={t("Delete test")} title={t("Delete")}>
+            <button onClick={() => setDeleting(test)} className="rounded p-1.5 text-slate-400 dark:text-slate-500 hover:bg-red-50 hover:text-red-600" aria-label={t("Delete test")} title={t("Delete")}>
               <Trash2 className="h-4 w-4" />
             </button>
           </>

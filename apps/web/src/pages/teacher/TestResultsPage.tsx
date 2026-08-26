@@ -12,8 +12,8 @@ import { useTranslation } from "../../hooks/use-translation";
 
 function SummaryCard({ label, value }: { label: string; value: string | number }) {
   return (
-    <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
-      <p className="text-xs font-medium uppercase tracking-wide text-slate-500">{label}</p>
+    <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-4 shadow-sm">
+      <p className="text-xs font-medium uppercase tracking-wide text-slate-500 dark:text-slate-400">{label}</p>
       <p className="mt-1 text-2xl font-semibold text-slate-900 dark:text-slate-100">{value}</p>
     </div>
   );
@@ -52,25 +52,25 @@ function SubmissionDetailModal({
   return (
     <Modal open={Boolean(row)} onClose={onClose} title={detail?.student?.name ? `${detail.student.name}'s Answers` : "Answers"} widthClassName="max-w-2xl">
       {isLoading || !detail ? (
-        <p className="text-sm text-slate-500">{t("Loading...")}</p>
+        <p className="text-sm text-slate-500 dark:text-slate-400">{t("Loading...")}</p>
       ) : (
         <div className="space-y-3">
-          <p className="text-sm text-slate-600">
+          <p className="text-sm text-slate-600 dark:text-slate-400">
             {t("Score:")}<span className="font-semibold">{detail.totalScore}</span> / {detail.totalMarks} ({detail.percentage}%)
           </p>
           {detail.questions.map((q, i) => (
-            <div key={q.id} className="rounded-lg border border-slate-200 p-3">
+            <div key={q.id} className="rounded-lg border border-slate-200 dark:border-slate-700 p-3">
               <p className="text-sm font-medium text-slate-900 dark:text-slate-100">
                 Question {i + 1}: {q.text}
               </p>
               <p className="mt-1 text-sm">
                 Your answer:{" "}
-                <span className={q.isCorrect === true ? "font-medium text-green-700" : q.isCorrect === false ? "font-medium text-red-700" : "text-slate-700"}>
+                <span className={q.isCorrect === true ? "font-medium text-green-700" : q.isCorrect === false ? "font-medium text-red-700" : "text-slate-700 dark:text-slate-300"}>
                   {q.yourAnswer ?? "-"}
                 </span>
               </p>
-              {q.type !== "essay" && <p className="text-xs text-slate-500">Correct answer: {q.correctAnswer}</p>}
-              {q.explanation && <p className="mt-1 text-xs text-slate-400">{q.explanation}</p>}
+              {q.type !== "essay" && <p className="text-xs text-slate-500 dark:text-slate-400">Correct answer: {q.correctAnswer}</p>}
+              {q.explanation && <p className="mt-1 text-xs text-slate-400 dark:text-slate-500">{q.explanation}</p>}
 
               {q.type === "essay" && q.isCorrect === null && (
                 <form onSubmit={(e) => handleGrade(q.id, e)} className="mt-2 flex items-end gap-2">
@@ -131,7 +131,7 @@ export function TestResultsPage() {
       </div>
 
       {isLoading || !results ? (
-        <p className="text-sm text-slate-500">{t("Loading...")}</p>
+        <p className="text-sm text-slate-500 dark:text-slate-400">{t("Loading...")}</p>
       ) : (
         <>
           <div className="mb-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-5">
@@ -143,7 +143,7 @@ export function TestResultsPage() {
           </div>
 
           <div className="mb-8">
-            <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-slate-500">{t("Submissions")}</h2>
+            <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">{t("Submissions")}</h2>
             <DataTable
               data={results.rows}
               isLoading={false}
@@ -169,7 +169,7 @@ export function TestResultsPage() {
               ]}
               renderActions={(r) => (
                 <>
-                  <button onClick={() => setViewingRow(r)} className="rounded p-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-700" aria-label={t("View answers")} title={t("View Answers")}>
+                  <button onClick={() => setViewingRow(r)} className="rounded p-1.5 text-slate-400 dark:text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-700 hover:text-slate-700" aria-label={t("View answers")} title={t("View Answers")}>
                     <Eye className="h-4 w-4" />
                   </button>
                   {r.hasPendingEssay && (
@@ -188,11 +188,11 @@ export function TestResultsPage() {
           </div>
 
           <div>
-            <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-slate-500">{t("Per-Question Analytics")}</h2>
-            <p className="mb-2 text-xs text-slate-400">Red bars mark questions where fewer than half the class answered correctly — worth reteaching.</p>
-            <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+            <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">{t("Per-Question Analytics")}</h2>
+            <p className="mb-2 text-xs text-slate-400 dark:text-slate-500">Red bars mark questions where fewer than half the class answered correctly — worth reteaching.</p>
+            <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-4 shadow-sm">
               {chartData.length === 0 ? (
-                <p className="py-8 text-center text-sm text-slate-400">{t("No auto-graded questions to analyze.")}</p>
+                <p className="py-8 text-center text-sm text-slate-400 dark:text-slate-500">{t("No auto-graded questions to analyze.")}</p>
               ) : (
                 <ResponsiveContainer width="100%" height={260}>
                   <BarChart data={chartData} margin={{ top: 8, right: 8, left: 0, bottom: 0 }}>

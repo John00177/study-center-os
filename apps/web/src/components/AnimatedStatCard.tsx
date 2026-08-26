@@ -56,15 +56,15 @@ export function AnimatedStatCard({ icon: Icon, value, label, delay = 0, urgent =
 
   return (
     <div
-      className={`rounded-xl border bg-white p-4 shadow-sm transition-all duration-500 ease-out sm:p-6 ${
-        urgent ? "border-red-200 border-l-4 border-l-red-500" : "border-slate-200"
+      className={`rounded-xl border bg-white dark:bg-slate-800 p-4 shadow-sm transition-all duration-500 ease-out sm:p-6 ${
+        urgent ? "border-red-200 dark:border-red-900 border-l-4 border-l-red-500" : "border-slate-200 dark:border-slate-700"
       } ${mounted ? "translate-y-0 opacity-100" : "translate-y-4 opacity-0"}`}
     >
       <Icon size={24} className={urgent ? "text-red-500" : "text-primary"} />
       <div className="mt-3 text-2xl font-bold text-slate-900 dark:text-slate-100 sm:text-3xl">
         {formatValue ? formatValue(displayValue) : displayValue.toLocaleString()}
       </div>
-      <div className="mt-1 text-sm text-slate-500">{t(label)}</div>
+      <div className="mt-1 text-sm text-slate-500 dark:text-slate-400">{t(label)}</div>
     </div>
   );
 }

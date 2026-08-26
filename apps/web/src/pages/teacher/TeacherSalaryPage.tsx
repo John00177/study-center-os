@@ -23,16 +23,16 @@ export function TeacherSalaryPage() {
   const [printing, setPrinting] = useState<SalaryPaymentDto | null>(null);
 
   if (isLoading) {
-    return <p className="text-sm text-slate-500">{t("Loading...")}</p>;
+    return <p className="text-sm text-slate-500 dark:text-slate-400">{t("Loading...")}</p>;
   }
 
   if (!salary) {
     return (
       <div>
         <h1 className="mb-6 text-2xl font-semibold text-slate-900 dark:text-slate-100">{t("My Salary")}</h1>
-        <div className="rounded-xl border border-slate-200 bg-white p-6 text-center shadow-sm">
+        <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-6 text-center shadow-sm">
           <Wallet className="mx-auto h-8 w-8 text-slate-300" />
-          <p className="mt-3 text-sm text-slate-500">{t("Salary not yet configured. Contact administration.")}</p>
+          <p className="mt-3 text-sm text-slate-500 dark:text-slate-400">{t("Salary not yet configured. Contact administration.")}</p>
         </div>
       </div>
     );
@@ -45,29 +45,29 @@ export function TeacherSalaryPage() {
       <h1 className="mb-6 text-2xl font-semibold text-slate-900 dark:text-slate-100">{t("My Salary")}</h1>
 
       <div className="mb-8 grid grid-cols-1 gap-6 lg:grid-cols-2">
-        <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+        <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-6 shadow-sm">
           <div className="flex items-center justify-between">
-            <span className="text-sm font-medium text-slate-500">{t("Monthly Salary")}</span>
+            <span className="text-sm font-medium text-slate-500 dark:text-slate-400">{t("Monthly Salary")}</span>
             <SalaryStatusBadge status={salary.status} />
           </div>
           <p className="mt-2 text-3xl font-bold text-slate-900 dark:text-slate-100">{formatCurrency(salary.amount, salary.currency)}</p>
           <dl className="mt-4 grid grid-cols-2 gap-3 text-sm">
             <div>
-              <dt className="text-xs text-slate-500">{t("Type")}</dt>
+              <dt className="text-xs text-slate-500 dark:text-slate-400">{t("Type")}</dt>
               <dd className="font-medium text-slate-900 dark:text-slate-100">{TYPE_LABELS[salary.type] ?? salary.type}</dd>
             </div>
             <div>
-              <dt className="text-xs text-slate-500">{t("Effective From")}</dt>
+              <dt className="text-xs text-slate-500 dark:text-slate-400">{t("Effective From")}</dt>
               <dd className="font-medium text-slate-900 dark:text-slate-100">{new Date(salary.effectiveFrom).toLocaleDateString()}</dd>
             </div>
             <div>
-              <dt className="text-xs text-slate-500">{t("This Month")}</dt>
+              <dt className="text-xs text-slate-500 dark:text-slate-400">{t("This Month")}</dt>
               <dd>
                 <PaymentStatusBadge status={salary.thisMonthPaymentStatus} />
               </dd>
             </div>
             <div>
-              <dt className="text-xs text-slate-500">{t("Last Paid")}</dt>
+              <dt className="text-xs text-slate-500 dark:text-slate-400">{t("Last Paid")}</dt>
               <dd className="font-medium text-slate-900 dark:text-slate-100">
                 {salary.lastPaidAt ? new Date(salary.lastPaidAt).toLocaleDateString() : "—"}
               </dd>
@@ -86,7 +86,7 @@ export function TeacherSalaryPage() {
       </div>
 
       <div>
-        <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-slate-500">{t("Payment History")}</h2>
+        <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">{t("Payment History")}</h2>
         <DataTable
           data={salary.paymentHistory}
           isLoading={false}
@@ -103,7 +103,7 @@ export function TeacherSalaryPage() {
             <button
               onClick={() => setPrinting(p)}
               disabled={p.status !== "paid"}
-              className="rounded p-1.5 text-slate-400 hover:bg-indigo-50 hover:text-indigo-600 disabled:cursor-not-allowed disabled:opacity-40"
+              className="rounded p-1.5 text-slate-400 dark:text-slate-500 hover:bg-indigo-50 hover:text-indigo-600 disabled:cursor-not-allowed disabled:opacity-40"
               aria-label={t("Print slip")}
               title={p.status === "paid" ? "Print slip" : "Only paid months have a slip"}
             >

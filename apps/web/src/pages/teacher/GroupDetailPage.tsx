@@ -233,7 +233,7 @@ function AttendanceTab({ groupId }: { groupId: string }) {
               type="button"
               onClick={() => setDate(pill.iso)}
               className={`flex shrink-0 flex-col items-center rounded-full px-3 py-1.5 text-xs font-medium ${
-                pill.iso === date ? "bg-indigo-600 text-white" : "bg-slate-100 text-slate-600"
+                pill.iso === date ? "bg-indigo-600 text-white" : "bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-400"
               }`}
             >
               <span>{t(pill.label)}</span>
@@ -243,20 +243,20 @@ function AttendanceTab({ groupId }: { groupId: string }) {
         </div>
         <button
           onClick={markAllPresent}
-          className="hidden items-center gap-2 rounded-md border border-slate-300 px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 sm:flex"
+          className="hidden items-center gap-2 rounded-md border border-slate-300 dark:border-slate-600 px-3 py-2 text-sm font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700/50 sm:flex"
         >
           <CheckCheck className="h-4 w-4" />
           {t("Mark All Present")}
         </button>
       </div>
 
-      {!isReady && <p className="text-sm text-slate-500">{t("Loading...")}</p>}
-      {isReady && roster.length === 0 && <p className="text-sm text-slate-500">{t("No active students in this group.")}</p>}
+      {!isReady && <p className="text-sm text-slate-500 dark:text-slate-400">{t("Loading...")}</p>}
+      {isReady && roster.length === 0 && <p className="text-sm text-slate-500 dark:text-slate-400">{t("No active students in this group.")}</p>}
 
       {isReady && roster.length > 0 && (
         <>
-          <div className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
-            <div className="divide-y divide-slate-100">
+          <div className="overflow-hidden rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 shadow-sm">
+            <div className="divide-y divide-slate-100 dark:divide-slate-700">
               {roster.map((student) => {
                 const entry = entries[student.id] ?? { status: null, notes: "" };
                 return (
@@ -274,7 +274,7 @@ function AttendanceTab({ groupId }: { groupId: string }) {
                               type="button"
                               onClick={() => setStatus(student.id, opt.value)}
                               className={`rounded-full border px-3 py-1.5 text-sm font-medium transition ${
-                                isActive ? opt.activeClass : "border-slate-300 bg-white text-slate-600 hover:bg-slate-50"
+                                isActive ? opt.activeClass : "border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-700/50"
                               }`}
                             >
                               {t(opt.label)}
@@ -291,7 +291,7 @@ function AttendanceTab({ groupId }: { groupId: string }) {
                         onTouchEnd={handleTouchEnd}
                         onTouchCancel={handleTouchEnd}
                         className={`flex min-h-[48px] w-full items-center justify-center rounded-lg border text-sm font-semibold transition sm:hidden ${
-                          entry.status ? MOBILE_STATUS_STYLE[entry.status] : "border-slate-300 bg-white text-slate-500"
+                          entry.status ? MOBILE_STATUS_STYLE[entry.status] : "border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-500 dark:text-slate-400"
                         }`}
                       >
                         {entry.status ? MOBILE_STATUS_LABEL[entry.status] : "Tap to mark"}
@@ -393,12 +393,12 @@ function AddLessonNoteModal({ open, onClose, groupId }: { open: boolean; onClose
           onChange={(e) => setForm((f) => ({ ...f, date: e.target.value }))}
         />
 
-        <div className="flex justify-end gap-3 border-t border-slate-200 pt-4">
+        <div className="flex justify-end gap-3 border-t border-slate-200 dark:border-slate-700 pt-4">
           <button
             type="button"
             onClick={onClose}
             disabled={createLessonNote.isPending}
-            className="rounded-md border border-slate-300 px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 disabled:opacity-60"
+            className="rounded-md border border-slate-300 dark:border-slate-600 px-3 py-2 text-sm font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700/50 disabled:opacity-60"
           >
             {t("Cancel")}
           </button>
@@ -513,15 +513,15 @@ export function GroupDetailPage() {
 
   return (
     <div>
-      <Link to="/teacher/groups" className="mb-4 inline-flex items-center gap-1 text-sm text-slate-500 hover:text-slate-700">
+      <Link to="/teacher/groups" className="mb-4 inline-flex items-center gap-1 text-sm text-slate-500 dark:text-slate-400 hover:text-slate-700">
         <ArrowLeft className="h-4 w-4" />
         {t("Back to my groups")}
       </Link>
 
       <h1 className="mb-1 text-2xl font-semibold text-slate-900 dark:text-slate-100">{group?.name ?? "Group"}</h1>
-      <p className="mb-6 text-sm text-slate-500">{group?.course?.name}</p>
+      <p className="mb-6 text-sm text-slate-500 dark:text-slate-400">{group?.course?.name}</p>
 
-      <div className="mb-6 flex gap-1 border-b border-slate-200">
+      <div className="mb-6 flex gap-1 border-b border-slate-200 dark:border-slate-700">
         {(["students", "attendance", "lessons", "homework"] as TabKey[]).map((key) => (
           <button
             key={key}
@@ -529,7 +529,7 @@ export function GroupDetailPage() {
             className={`border-b-2 px-4 py-2 text-sm font-medium capitalize ${
               tab === key
                 ? "border-indigo-600 text-indigo-700"
-                : "border-transparent text-slate-500 hover:text-slate-700"
+                : "border-transparent text-slate-500 dark:text-slate-400 hover:text-slate-700"
             }`}
           >
             {key === "lessons" ? "Lesson Notes" : key}

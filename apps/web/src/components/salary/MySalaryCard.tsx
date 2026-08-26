@@ -17,20 +17,20 @@ export function MySalaryCard() {
 
   if (isLoading) {
     return (
-      <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
-        <p className="text-sm text-slate-500">{t("Loading salary...")}</p>
+      <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-5 shadow-sm">
+        <p className="text-sm text-slate-500 dark:text-slate-400">{t("Loading salary...")}</p>
       </div>
     );
   }
 
   if (!salary) {
     return (
-      <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
-        <div className="flex items-center gap-2 text-slate-500">
+      <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-5 shadow-sm">
+        <div className="flex items-center gap-2 text-slate-500 dark:text-slate-400">
           <Wallet size={18} />
           <span className="text-sm font-medium">{t("My Salary")}</span>
         </div>
-        <p className="mt-3 text-sm text-slate-500">{t("Salary not yet configured. Contact administration.")}</p>
+        <p className="mt-3 text-sm text-slate-500 dark:text-slate-400">{t("Salary not yet configured. Contact administration.")}</p>
       </div>
     );
   }
@@ -38,9 +38,9 @@ export function MySalaryCard() {
   const recentPayments = salary.paymentHistory.slice(0, 3);
 
   return (
-    <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+    <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-5 shadow-sm">
       <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2 text-slate-500">
+        <div className="flex items-center gap-2 text-slate-500 dark:text-slate-400">
           <Wallet size={18} />
           <span className="text-sm font-medium">{t("My Salary")}</span>
         </div>
@@ -48,7 +48,7 @@ export function MySalaryCard() {
       </div>
 
       <p className="mt-3 text-3xl font-semibold text-slate-900 dark:text-slate-100">{formatCurrency(salary.amount, salary.currency)}</p>
-      <p className="mt-1 text-xs text-slate-500">
+      <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
         {TYPE_LABELS[salary.type] ?? salary.type} · Last paid{" "}
         {salary.lastPaidAt ? new Date(salary.lastPaidAt).toLocaleDateString() : "—"}
       </p>
@@ -57,8 +57,8 @@ export function MySalaryCard() {
         <div className="mt-4 space-y-1.5 border-t border-slate-100 pt-3">
           {recentPayments.map((p) => (
             <div key={p.id} className="flex items-center justify-between text-xs">
-              <span className="text-slate-500">{p.month}</span>
-              <span className="font-medium text-slate-700">{formatCurrency(p.amount, p.currency)}</span>
+              <span className="text-slate-500 dark:text-slate-400">{p.month}</span>
+              <span className="font-medium text-slate-700 dark:text-slate-300">{formatCurrency(p.amount, p.currency)}</span>
               <PaymentStatusBadge status={p.status} />
             </div>
           ))}
@@ -67,7 +67,7 @@ export function MySalaryCard() {
 
       <Link
         to="/teacher/salary"
-        className="mt-4 block rounded-md border border-slate-300 px-3 py-2 text-center text-sm font-medium text-slate-700 hover:bg-slate-50"
+        className="mt-4 block rounded-md border border-slate-300 dark:border-slate-600 px-3 py-2 text-center text-sm font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700/50"
       >
         {t("View full details")}
       </Link>

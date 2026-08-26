@@ -151,7 +151,7 @@ export function DailyBriefingModal({ briefing, onDismiss, dashboardHref }: Daily
     <div
       className={`fixed inset-0 z-50 flex items-center justify-center overflow-y-auto p-4 transition-opacity duration-300 ${
         visible ? "opacity-100" : "opacity-0"
-      } ${isDark ? "bg-slate-950/80" : "bg-gradient-to-br from-primary/10 via-white/80 to-white backdrop-blur-sm"}`}
+      } ${isDark ? "bg-slate-950/80" : "bg-gradient-to-br from-primary/10 via-white/80 to-white backdrop-blur-sm dark:from-primary/10 dark:via-slate-900/80 dark:to-slate-900"}`}
       onClick={() => onDismiss(dontShowAgain)}
       role="presentation"
     >
@@ -162,11 +162,11 @@ export function DailyBriefingModal({ briefing, onDismiss, dashboardHref }: Daily
         onClick={(e) => e.stopPropagation()}
         className={`w-full max-w-2xl rounded-2xl p-6 shadow-2xl transition-all duration-400 ease-out sm:p-8 ${
           visible ? "translate-y-0 scale-100 opacity-100" : "translate-y-2 scale-95 opacity-0"
-        } ${isDark ? "bg-slate-900 text-white" : "bg-white text-slate-900"}`}
+        } ${isDark ? "bg-slate-900 text-white" : "bg-white text-slate-900 dark:bg-slate-800 dark:text-slate-100"}`}
       >
         <div className="text-center">
           <h1 className="text-2xl font-bold sm:text-3xl">{greeting}</h1>
-          <p className={`mt-1 text-sm ${isDark ? "text-slate-400" : "text-slate-500"}`}>{date}</p>
+          <p className={`mt-1 text-sm ${isDark ? "text-slate-400" : "text-slate-500 dark:text-slate-400"}`}>{date}</p>
           {childName && <p className="mt-1 text-sm font-medium text-primary">{childName}</p>}
           <p className={`mx-auto mt-4 max-w-md text-sm italic ${isDark ? "text-slate-400" : "text-slate-400"}`}>
             &ldquo;{quote}&rdquo;
@@ -180,7 +180,7 @@ export function DailyBriefingModal({ briefing, onDismiss, dashboardHref }: Daily
         </div>
 
         {(nextClass || attendanceRate !== null) && (
-          <div className={`mt-4 flex items-center gap-4 rounded-xl border p-4 ${isDark ? "border-slate-700 bg-slate-800" : "border-slate-200 bg-slate-50"}`}>
+          <div className={`mt-4 flex items-center gap-4 rounded-xl border p-4 ${isDark ? "border-slate-700 bg-slate-800" : "border-slate-200 bg-slate-50 dark:border-slate-700 dark:bg-slate-700/50"}`}>
             {attendanceRate !== null && (
               <CircularProgress
                 value={Math.round(attendanceRate)}
@@ -194,7 +194,7 @@ export function DailyBriefingModal({ briefing, onDismiss, dashboardHref }: Daily
             {nextClass && (
               <div className="min-w-0 flex-1">
                 <p className="text-sm font-semibold">Next class: {nextClass.groupName}</p>
-                <p className={`text-xs ${isDark ? "text-slate-400" : "text-slate-500"}`}>
+                <p className={`text-xs ${isDark ? "text-slate-400" : "text-slate-500 dark:text-slate-400"}`}>
                   {nextClass.time} · {nextClass.classroom}
                 </p>
               </div>
@@ -203,11 +203,11 @@ export function DailyBriefingModal({ briefing, onDismiss, dashboardHref }: Daily
         )}
 
         {teacherContacts && teacherContacts.length > 0 && (
-          <div className={`mt-4 rounded-xl border p-4 ${isDark ? "border-slate-700 bg-slate-800" : "border-slate-200 bg-slate-50"}`}>
+          <div className={`mt-4 rounded-xl border p-4 ${isDark ? "border-slate-700 bg-slate-800" : "border-slate-200 bg-slate-50 dark:border-slate-700 dark:bg-slate-700/50"}`}>
             <p className="text-sm font-semibold">{t("Teachers")}</p>
             <ul className="mt-2 space-y-1">
               {teacherContacts.map((t) => (
-                <li key={t.name} className={`text-xs ${isDark ? "text-slate-400" : "text-slate-500"}`}>
+                <li key={t.name} className={`text-xs ${isDark ? "text-slate-400" : "text-slate-500 dark:text-slate-400"}`}>
                   {t.name}
                   {t.phone ? ` · ${t.phone}` : ""}
                 </li>
@@ -225,13 +225,13 @@ export function DailyBriefingModal({ briefing, onDismiss, dashboardHref }: Daily
                   onDismiss(dontShowAgain);
                   navigate(action.href);
                 }}
-                className={`flex w-full items-center justify-between rounded-lg border-l-4 px-4 py-3 text-left text-sm transition hover:bg-slate-50 ${
+                className={`flex w-full items-center justify-between rounded-lg border-l-4 px-4 py-3 text-left text-sm transition ${
                   action.urgent
-                    ? `border-l-red-500 ${isDark ? "bg-red-950/40 hover:bg-red-950/60" : "bg-red-50"}`
-                    : `border-l-primary ${isDark ? "bg-slate-800 hover:bg-slate-700" : "bg-slate-50"}`
+                    ? `border-l-red-500 ${isDark ? "bg-red-950/40 hover:bg-red-950/60" : "bg-red-50 hover:bg-red-100 dark:bg-red-950/40 dark:hover:bg-red-950/60"}`
+                    : `border-l-primary ${isDark ? "bg-slate-800 hover:bg-slate-700" : "bg-slate-50 hover:bg-slate-100 dark:bg-slate-700/50 dark:hover:bg-slate-700"}`
                 }`}
               >
-                <span className={`flex items-center gap-2 font-medium ${action.urgent ? "text-red-600" : isDark ? "text-slate-100" : "text-slate-700"}`}>
+                <span className={`flex items-center gap-2 font-medium ${action.urgent ? "text-red-600" : isDark ? "text-slate-100" : "text-slate-700 dark:text-slate-300"}`}>
                   {t(action.label)}
                 </span>
                 <ArrowRight size={16} className={action.urgent ? "text-red-500" : "text-slate-400"} />
@@ -247,7 +247,7 @@ export function DailyBriefingModal({ briefing, onDismiss, dashboardHref }: Daily
           >
             {t("Go to Dashboard")}
           </button>
-          <label className={`flex items-center justify-center gap-2 text-xs ${isDark ? "text-slate-400" : "text-slate-500"}`}>
+          <label className={`flex items-center justify-center gap-2 text-xs ${isDark ? "text-slate-400" : "text-slate-500 dark:text-slate-400"}`}>
             <input
               type="checkbox"
               checked={dontShowAgain}
