@@ -880,6 +880,7 @@ export interface StaffMemberDto {
   userId: string;
   name: string;
   email: string;
+  phone: string | null;
   roleSlug: string;
   roleName: string;
   branchName: string | null;
@@ -889,13 +890,20 @@ export interface StaffMemberDto {
   mustChangePassword: boolean;
 }
 
-export interface CreateReceptionistInput {
+export type StaffRole = "reception" | "teacher" | "manager";
+
+export interface CreateStaffInput {
   name: string;
-  email: string;
-  phone: string;
+  role: StaffRole;
+  phone?: string;
 }
 
-export interface CreateReceptionistResultDto {
+export interface UpdateStaffInput {
+  name?: string;
+  phone?: string;
+}
+
+export interface CreateStaffResultDto {
   user: { id: string; name: string; email: string };
   tempPassword: string;
 }

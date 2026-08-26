@@ -5,6 +5,7 @@ import { AuditService } from "../audit/audit.service";
 import { IdentityService } from "../identity/identity.service";
 import { SubscriptionLimitsService } from "../subscription/subscription-limits.service";
 import { generateTempPassword } from "../../common/utils/generate-temp-password";
+import { generateStaffEmail } from "../../common/utils/generate-staff-email";
 import { CreateTeacherDto } from "./dto/create-teacher.dto";
 import { UpdateTeacherDto } from "./dto/update-teacher.dto";
 
@@ -142,13 +143,22 @@ export class TeachersService {
 
     const { groupIds, ...teacherFields } = dto;
 
-    const existingUser = await this.identityService.findByEmail(dto.email);
-    if (existingUser) {
-      throw new ConflictException("A user with this email already exists");
+    if (dto.phone) {
+      const phoneTaken = await this.prisma.teacher.findFirst({ where: { phone: dto.phone } });
+      if (phoneTaken) {
+        throw new ConflictException("A user with this phone number already exists");
+      }
     }
-    const phoneTaken = await this.prisma.teacher.findFirst({ where: { phone: dto.phone } });
-    if (phoneTaken) {
-      throw new ConflictException("A user with this phone number already exists");
+
+    let email = dto.email;
+    if (email) {
+      const existingUser = await this.identityService.findByEmail(email);
+      if (existingUser) {
+        throw new ConflictException("A user with this email already exists");
+      }
+    } else {
+      const org = await this.prisma.organization.findUniqueOrThrow({ where: { id: organizationId }, select: { slug: true } });
+      email = await generateStaffEmail(this.prisma, dto.name, org.slug);
     }
 
     const tempPassword = generateTempPassword();
@@ -162,7 +172,7 @@ export class TeachersService {
     const { teacher, user } = await this.prisma.$transaction(async (tx) => {
       const user = await tx.user.create({
         data: {
-          email: dto.email,
+          email,
           name: dto.name,
           password: passwordHash,
           status: "active",
@@ -172,7 +182,7 @@ export class TeachersService {
       });
 
       const teacher = await tx.teacher.create({
-        data: { ...teacherFields, organizationId, userId: user.id },
+        data: { ...teacherFields, email, organizationId, userId: user.id },
       });
 
       await tx.userOrganizationRole.create({

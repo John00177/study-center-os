@@ -6,6 +6,7 @@ import { part5 } from "./parts/part5";
 import { part6 } from "./parts/part6";
 import { part7 } from "./parts/part7";
 import { part8 } from "./parts/part8";
+import { part9 } from "./parts/part9";
 
 /**
  * Project-wide UI strings, keyed by the English source text.
@@ -20,7 +21,7 @@ import { part8 } from "./parts/part8";
  */
 export type StringPart = Record<string, readonly [uz: string, ru: string]>;
 
-const parts: StringPart[] = [part1, part2, part3, part4, part5, part6, part7, part8];
+const parts: StringPart[] = [part1, part2, part3, part4, part5, part6, part7, part8, part9];
 
 function build(index: 0 | 1): Record<string, string> {
   const out: Record<string, string> = {};

@@ -16,6 +16,7 @@ import {
   MessageCircle,
   Palette,
   CreditCard,
+  UserCog,
   UserPlus,
   UserRound,
   Users,
@@ -46,6 +47,7 @@ const NAV_ITEMS: {
   { to: "/branches", label: "Branches", icon: Building2, roles: ["owner", "admin"], requiresBranches: true },
   { to: "/teachers", label: "Teachers", translationKey: "teachers", icon: GraduationCap, roles: ["owner", "admin"] },
   { to: "/teachers/salaries", label: "Teacher Salaries", icon: Wallet, roles: ["owner", "admin"] },
+  { to: "/staff", label: "Staff Members", icon: UserCog, roles: ["owner"] },
   // Newcomers/Students/Courses/Attendance are receptionist-only on the
   // shared owner+admin nav — owner uses the reception role's dashboard for
   // these, so "owner" is deliberately absent from their roles lists here.

@@ -4,11 +4,15 @@ export class CreateTeacherDto {
   @IsString()
   name!: string;
 
+  // Auto-generated server-side (firstname.lastname@{org}.uz) when omitted —
+  // see generateStaffEmail, used by the unified staff-creation flow.
+  @IsOptional()
   @IsEmail()
-  email!: string;
+  email?: string;
 
+  @IsOptional()
   @IsString()
-  phone!: string;
+  phone?: string;
 
   @IsOptional()
   @IsString()

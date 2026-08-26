@@ -28,6 +28,7 @@ import { PlanAndBillingPage } from "./pages/PlanAndBillingPage";
 import { BranchesPage } from "./pages/BranchesPage";
 import { TeachersPage } from "./pages/TeachersPage";
 import { TeacherSalariesPage } from "./pages/TeacherSalariesPage";
+import { StaffMembersPage } from "./pages/staff/StaffMembersPage";
 import { StudentsPage } from "./pages/StudentsPage";
 import { NewcomersPage } from "./pages/NewcomersPage";
 import { ParentsPage } from "./pages/ParentsPage";
@@ -133,6 +134,25 @@ function RequireOwnerOrAdmin({ children }: { children: ReactNode }) {
         <div className="max-w-sm rounded-xl border border-slate-200 bg-white p-6 text-center shadow-sm">
           <h1 className="mb-2 text-lg font-semibold text-slate-900">{t("Access restricted")}</h1>
           <p className="text-sm text-slate-500">{t("This page is only available to owners and admins.")}</p>
+        </div>
+      </div>
+    );
+  }
+  return <>{children}</>;
+}
+
+function RequireOwner({ children }: { children: ReactNode }) {
+  const { t } = useTranslation();
+  const user = useAuthStore((state) => state.user);
+  if (!user) {
+    return <Navigate to="/login" replace />;
+  }
+  if (user.role !== "owner") {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-slate-50 p-6 dark:bg-slate-900">
+        <div className="max-w-sm rounded-xl border border-slate-200 bg-white p-6 text-center shadow-sm dark:border-slate-700 dark:bg-slate-800">
+          <h1 className="mb-2 text-lg font-semibold text-slate-900 dark:text-slate-100">{t("Access restricted")}</h1>
+          <p className="text-sm text-slate-500 dark:text-slate-400">{t("This page is only available to the owner.")}</p>
         </div>
       </div>
     );
@@ -359,6 +379,14 @@ export default function App() {
             <RequireOwnerOrAdmin>
               <TeacherSalariesPage />
             </RequireOwnerOrAdmin>
+          }
+        />
+        <Route
+          path="staff"
+          element={
+            <RequireOwner>
+              <StaffMembersPage />
+            </RequireOwner>
           }
         />
         <Route

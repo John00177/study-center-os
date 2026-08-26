@@ -9,10 +9,10 @@ function pick(chars: string): string {
   return chars[randomInt(chars.length)];
 }
 
-/** Random 8-char temp password guaranteed to contain upper, lower, and a digit. */
+/** Random 12-char temp password guaranteed to contain upper, lower, and a digit. */
 export function generateTempPassword(): string {
   const required = [pick(UPPER), pick(LOWER), pick(DIGITS)];
-  const rest = Array.from({ length: 5 }, () => pick(ALL));
+  const rest = Array.from({ length: 9 }, () => pick(ALL));
   const chars = [...required, ...rest];
   // Fisher-Yates shuffle so the required chars aren't always in the same slots.
   for (let i = chars.length - 1; i > 0; i--) {

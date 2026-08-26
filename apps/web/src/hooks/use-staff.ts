@@ -1,9 +1,10 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import type {
-  CreateReceptionistInput,
-  CreateReceptionistResultDto,
+  CreateStaffInput,
+  CreateStaffResultDto,
   StaffMemberDto,
   TempPasswordDto,
+  UpdateStaffInput,
 } from "@crm/shared-types";
 import { api } from "../lib/api";
 
@@ -30,11 +31,27 @@ export function useActivateStaffMember() {
   });
 }
 
-export function useCreateReceptionist() {
+export function useCreateStaffMember() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: async (input: CreateReceptionistInput) =>
-      (await api.post<CreateReceptionistResultDto>("/staff/receptionists", input)).data,
+    mutationFn: async (input: CreateStaffInput) => (await api.post<CreateStaffResultDto>("/staff", input)).data,
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["staff"] }),
+  });
+}
+
+export function useUpdateStaffMember() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async ({ userId, ...input }: UpdateStaffInput & { userId: string }) =>
+      (await api.patch(`/staff/${userId}`, input)).data,
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["staff"] }),
+  });
+}
+
+export function useDeleteStaffMember() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (userId: string) => (await api.delete(`/staff/${userId}`)).data,
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["staff"] }),
   });
 }

@@ -38,7 +38,6 @@ import { SubscriptionLimitBanners } from "../components/subscription/Subscriptio
 import { PaymentMethodBadge } from "../components/finance/PaymentMethodBadge";
 import { DataTable } from "../components/DataTable";
 import { TodaysClassesWidget } from "../components/calendar/TodaysClassesWidget";
-import { StaffSection } from "../components/dashboard/StaffSection";
 import { useTheme } from "../contexts/ThemeContext";
 import { getMondayIso } from "../lib/week";
 import { useUserRole } from "../stores/auth.store";
@@ -389,10 +388,6 @@ export function DashboardPage() {
           </div>
         </div>
       )}
-
-      {/* Staff management (list, suspend/activate) is owner-only — admins see
-          the rest of this dashboard but not staff administration. */}
-      {role === "owner" && <StaffSection />}
 
       {/* Today's Classes is hidden on the owner dashboard per cleanup request; admin keeps it. */}
       {role === "admin" && (

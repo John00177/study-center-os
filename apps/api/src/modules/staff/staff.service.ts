@@ -1,15 +1,29 @@
-import { ConflictException, Injectable, NotFoundException } from "@nestjs/common";
+import { ForbiddenException, Injectable, NotFoundException } from "@nestjs/common";
 import { PrismaService } from "../../prisma/prisma.service";
 import { AuditService } from "../audit/audit.service";
 import { IdentityService } from "../identity/identity.service";
+import { TeachersService } from "../teachers/teachers.service";
 import { generateTempPassword } from "../../common/utils/generate-temp-password";
-import { CreateReceptionistDto } from "./dto/create-receptionist.dto";
+import { generateStaffEmail } from "../../common/utils/generate-staff-email";
+import { CreateStaffDto } from "./dto/create-staff.dto";
+import { UpdateStaffDto } from "./dto/update-staff.dto";
 
-const RECEPTIONIST_PERMISSION_SLUGS = [
-  { slug: "reception.view", name: "View reception data" },
-  { slug: "reception.manage", name: "Manage newcomers, students, and groups" },
-  { slug: "finance.view", name: "View finance data" },
-];
+// "manager" in the UI maps to the existing "admin" role slug — that's the
+// real elevated-permission tier already wired through every PermissionGuard
+// check in the app; a distinct "manager" role has no permission plumbing
+// anywhere, so introducing one would just create a role nothing recognizes.
+const ROLE_CONFIG: Record<"reception" | "manager", { slug: string; name: string; permissionSlugs: { slug: string; name: string }[] }> = {
+  reception: {
+    slug: "reception",
+    name: "Reception",
+    permissionSlugs: [
+      { slug: "reception.view", name: "View reception data" },
+      { slug: "reception.manage", name: "Manage newcomers, students, and groups" },
+      { slug: "finance.view", name: "View finance data" },
+    ],
+  },
+  manager: { slug: "admin", name: "Admin", permissionSlugs: [] },
+};
 
 @Injectable()
 export class StaffService {
@@ -17,16 +31,18 @@ export class StaffService {
     private readonly prisma: PrismaService,
     private readonly auditService: AuditService,
     private readonly identityService: IdentityService,
+    private readonly teachersService: TeachersService,
   ) {}
 
-  private async getOrCreateReceptionRole(organizationId: string) {
+  private async getOrCreateRole(organizationId: string, kind: "reception" | "manager") {
+    const config = ROLE_CONFIG[kind];
     const role = await this.prisma.role.upsert({
-      where: { organizationId_slug: { organizationId, slug: "reception" } },
+      where: { organizationId_slug: { organizationId, slug: config.slug } },
       update: {},
-      create: { organizationId, name: "Reception", slug: "reception", isSystem: true },
+      create: { organizationId, name: config.name, slug: config.slug, isSystem: true },
     });
 
-    for (const { slug, name } of RECEPTIONIST_PERMISSION_SLUGS) {
+    for (const { slug, name } of config.permissionSlugs) {
       const permission = await this.prisma.permission.upsert({ where: { slug }, update: {}, create: { slug, name } });
       await this.prisma.rolePermission.upsert({
         where: { roleId_permissionId: { roleId: role.id, permissionId: permission.id } },
@@ -38,23 +54,34 @@ export class StaffService {
     return role;
   }
 
-  // Receptionist accounts are plain Users + UserOrganizationRole — there's
-  // no dedicated "Receptionist" profile table (unlike Teacher/Student), so
-  // phone is accepted for form parity but not persisted or uniqueness-checked
-  // — the schema has no phone column on User to check against.
-  async createReceptionist(organizationId: string, actorId: string, dto: CreateReceptionistDto) {
-    const existingUser = await this.identityService.findByEmail(dto.email);
-    if (existingUser) {
-      throw new ConflictException("A user with this email already exists");
+  /**
+   * Unified entry point for every staff type. Teacher creation delegates to
+   * TeachersService (which owns the Teacher profile table and dashboard
+   * access row) so that logic isn't duplicated; reception/manager are plain
+   * User + UserOrganizationRole and are handled directly here.
+   */
+  async createStaffMember(organizationId: string, actorId: string, dto: CreateStaffDto) {
+    if (dto.role === "teacher") {
+      const result = await this.teachersService.create(organizationId, actorId, {
+        name: dto.name,
+        phone: dto.phone,
+      });
+      return {
+        user: { id: result.teacher.userId!, name: result.teacher.name, email: result.teacher.email! },
+        tempPassword: result.tempPassword,
+      };
     }
+
+    const org = await this.prisma.organization.findUniqueOrThrow({ where: { id: organizationId }, select: { slug: true } });
+    const email = await generateStaffEmail(this.prisma, dto.name, org.slug);
 
     const tempPassword = generateTempPassword();
     const passwordHash = await this.identityService.hashPassword(tempPassword);
-    const receptionRole = await this.getOrCreateReceptionRole(organizationId);
+    const role = await this.getOrCreateRole(organizationId, dto.role);
 
     const user = await this.prisma.user.create({
       data: {
-        email: dto.email,
+        email,
         name: dto.name,
         password: passwordHash,
         status: "active",
@@ -67,7 +94,7 @@ export class StaffService {
       data: {
         userId: user.id,
         organizationId,
-        roleId: receptionRole.id,
+        roleId: role.id,
         status: "active",
         acceptedAt: new Date(),
       },
@@ -76,12 +103,76 @@ export class StaffService {
     await this.auditService.record({
       organizationId,
       actorId,
-      action: "receptionist.created",
+      action: "staff.created",
       entityType: "User",
       entityId: user.id,
+      metadata: { role: dto.role },
     });
 
     return { user: { id: user.id, name: user.name, email: user.email }, tempPassword };
+  }
+
+  async updateStaffMember(organizationId: string, actorId: string, userId: string, dto: UpdateStaffDto) {
+    const membership = await this.prisma.userOrganizationRole.findUnique({
+      where: { userId_organizationId: { userId, organizationId } },
+    });
+    if (!membership) {
+      throw new NotFoundException("Staff member not found");
+    }
+
+    const user = await this.prisma.user.update({
+      where: { id: userId },
+      data: { name: dto.name },
+    });
+
+    if (dto.phone !== undefined) {
+      // Only teachers have a phone field on their own profile row.
+      await this.prisma.teacher.updateMany({ where: { organizationId, userId }, data: { phone: dto.phone } });
+    }
+
+    await this.auditService.record({
+      organizationId,
+      actorId,
+      action: "staff.updated",
+      entityType: "User",
+      entityId: userId,
+    });
+
+    return { id: user.id, name: user.name, email: user.email };
+  }
+
+  /**
+   * Removing a staff member unlinks them from the org (and deletes their
+   * Teacher profile, if any) rather than hard-deleting the User row —
+   * AuditLog.actorId has no cascade, so a user who has ever acted on
+   * anything can't be physically deleted without breaking that history.
+   * The account also stops being able to sign in (status: suspended).
+   */
+  async deleteStaffMember(organizationId: string, actorId: string, userId: string) {
+    const membership = await this.prisma.userOrganizationRole.findUnique({
+      where: { userId_organizationId: { userId, organizationId } },
+      include: { role: true },
+    });
+    if (!membership) {
+      throw new NotFoundException("Staff member not found");
+    }
+    if (membership.role.slug === "owner") {
+      throw new ForbiddenException("Cannot remove the organization owner");
+    }
+
+    await this.prisma.teacher.deleteMany({ where: { organizationId, userId } });
+    await this.prisma.userOrganizationRole.delete({ where: { id: membership.id } });
+    await this.prisma.user.update({ where: { id: userId }, data: { status: "suspended" } });
+
+    await this.auditService.record({
+      organizationId,
+      actorId,
+      action: "staff.removed",
+      entityType: "User",
+      entityId: userId,
+    });
+
+    return { id: userId };
   }
 
   /** Returns the temp password only while it's still unchanged — null once the account holder has changed it. */
@@ -164,11 +255,13 @@ export class StaffService {
       const user = userById.get(membership.userId);
       const teacher = teacherByUserId.get(membership.userId);
       const access = teacher ? accessByTeacherId.get(teacher.id) : undefined;
+      const phone = teacher?.phone ?? null;
 
       return {
         userId: membership.userId,
         name: user?.name ?? "Unknown",
         email: user?.email ?? "",
+        phone,
         roleSlug: membership.role.slug,
         roleName: membership.role.name,
         branchName: branchNameByUser.get(membership.userId) ?? null,
