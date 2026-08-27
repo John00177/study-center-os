@@ -12,9 +12,9 @@ interface KpiCardProps {
 
 export function KpiCard({ label, value, trend, colorClass, icon, sparkline }: KpiCardProps) {
   return (
-    <div className="h-24 overflow-hidden rounded-lg border border-slate-200 bg-white p-3 shadow-sm">
+    <div className="h-24 overflow-hidden rounded-lg border border-slate-200 bg-white p-3 shadow-sm dark:border-slate-700 dark:bg-slate-800">
       <div className="flex items-center justify-between">
-        <span className="text-xs font-medium text-slate-500">{label}</span>
+        <span className="text-xs font-medium text-slate-500 dark:text-slate-400">{label}</span>
         {icon}
       </div>
       <div className="mt-1.5 flex items-end justify-between gap-3">

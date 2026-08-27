@@ -164,12 +164,12 @@ function ChargeForm({ open, onClose }: { open: boolean; onClose: () => void }) {
           onChange={(e) => setForm((f) => ({ ...f, dueDate: e.target.value }))}
         />
 
-        <div className="flex justify-end gap-3 border-t border-slate-200 pt-4">
+        <div className="flex justify-end gap-3 border-t border-slate-200 pt-4 dark:border-slate-700">
           <button
             type="button"
             onClick={onClose}
             disabled={createCharge.isPending}
-            className="rounded-md border border-slate-300 px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 disabled:opacity-60"
+            className="rounded-md border border-slate-300 px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 disabled:opacity-60 dark:border-slate-600 dark:text-slate-300 dark:hover:bg-slate-700/50"
           >
             {t("Cancel")}
           </button>
@@ -382,7 +382,7 @@ function StudentHistoryModal({ studentId, onClose }: { studentId: string | null;
     <Modal open={Boolean(studentId)} onClose={onClose} title={`Payment history — ${studentName}`} widthClassName="max-w-xl">
       <div className="space-y-6">
         <div>
-          <h3 className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-500">{t("Charges")}</h3>
+          <h3 className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">{t("Charges")}</h3>
           <DataTable
             data={charges}
             isLoading={false}
@@ -404,7 +404,7 @@ function StudentHistoryModal({ studentId, onClose }: { studentId: string | null;
           />
         </div>
         <div>
-          <h3 className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-500">{t("Payments")}</h3>
+          <h3 className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">{t("Payments")}</h3>
           <DataTable
             data={payments}
             isLoading={false}
@@ -531,7 +531,7 @@ export function FinancePage() {
         <SummaryCard
           label={t("Total Owed")}
           value={summary ? formatCurrency(summary.totalAmountOwed, "UZS") : "-"}
-          colorClass={summary && summary.totalAmountOwed > 0 ? "text-red-600" : "text-slate-900"}
+          colorClass={summary && summary.totalAmountOwed > 0 ? "text-red-600" : "text-slate-900 dark:text-slate-100"}
           icon={<Wallet className="h-5 w-5 text-slate-400" />}
         />
         <SummaryCard
@@ -567,7 +567,7 @@ export function FinancePage() {
       {isOwnerOrAdmin && (
         <div className="mb-8">
           <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">{t("Account balances")}</h2>
-          {accountsLoading && <p className="text-sm text-slate-500">{t("Loading...")}</p>}
+          {accountsLoading && <p className="text-sm text-slate-500 dark:text-slate-400">{t("Loading...")}</p>}
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {accounts?.map((account) => (
               <div key={account.id} className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-700 dark:bg-slate-800">
@@ -730,7 +730,7 @@ export function FinancePage() {
                           )}
                           <button
                             onClick={() => setHistoryStudentId(c.studentId)}
-                            className="rounded-md border border-slate-300 px-2.5 py-1.5 text-xs font-medium text-slate-700 hover:bg-slate-50"
+                            className="rounded-md border border-slate-300 px-2.5 py-1.5 text-xs font-medium text-slate-700 hover:bg-slate-50 dark:border-slate-600 dark:text-slate-300 dark:hover:bg-slate-700/50"
                           >
                             {t("View History")}
                           </button>

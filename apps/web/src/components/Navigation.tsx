@@ -68,8 +68,8 @@ const NAV_ITEMS: {
     requiredModule: "payment_reminders" as PlanModule,
   },
   { to: "/settings/branding", label: "Branding", icon: Palette, roles: ["owner", "admin"] },
-  { to: "/settings/plan", label: "Plan & Billing", icon: CreditCard, roles: ["owner", "admin"] },
-  { to: "/support-tickets", label: "Support Tickets", icon: MessageCircle, roles: ["owner", "admin"] },
+  { to: "/settings/plan", label: "Plan & Billing", icon: CreditCard, roles: ["admin"] },
+  { to: "/support-tickets", label: "Support Tickets", icon: MessageCircle, roles: ["admin"] },
   { to: "/audit-log", label: "Audit Log", icon: History, roles: ["admin"] },
 ];
 

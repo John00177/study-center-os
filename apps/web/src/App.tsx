@@ -350,7 +350,9 @@ export default function App() {
           path="settings/plan"
           element={
             <RequireOwnerOrAdmin>
-              <PlanAndBillingPage />
+              <RequireNotOwner>
+                <PlanAndBillingPage />
+              </RequireNotOwner>
             </RequireOwnerOrAdmin>
           }
         />
@@ -358,7 +360,9 @@ export default function App() {
           path="support-tickets"
           element={
             <RequireOwnerOrAdmin>
-              <OrgSupportTicketsPage />
+              <RequireNotOwner>
+                <OrgSupportTicketsPage />
+              </RequireNotOwner>
             </RequireOwnerOrAdmin>
           }
         />

@@ -40,7 +40,7 @@ function ExportButton<T>({ filename, columns, rows }: { filename: string; column
     <button
       onClick={() => rows && exportToCsv(filename, columns, rows)}
       disabled={!rows || rows.length === 0}
-      className="flex items-center gap-2 rounded-md border border-slate-300 px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50"
+      className="flex items-center gap-2 rounded-md border border-slate-300 px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50 dark:border-slate-600 dark:text-slate-300 dark:hover:bg-slate-700/50"
     >
       <Download className="h-4 w-4" />
       {t("Export CSV")}
@@ -107,8 +107,8 @@ function OverviewTab({ filters, canViewRevenue }: { filters: AnalyticsFilters; c
 
       <div className="mb-4 grid grid-cols-1 gap-4 lg:grid-cols-2">
         {canViewRevenue && (
-          <div className="rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
-            <h3 className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-500">
+          <div className="rounded-lg border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-700 dark:bg-slate-800">
+            <h3 className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
               {t("Revenue — last 30 days")}
             </h3>
             <RevenueChart
@@ -117,8 +117,8 @@ function OverviewTab({ filters, canViewRevenue }: { filters: AnalyticsFilters; c
             />
           </div>
         )}
-        <div className="rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
-          <h3 className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-500">
+        <div className="rounded-lg border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-700 dark:bg-slate-800">
+          <h3 className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
             {t("Enrollment — new vs dropped (12mo)")}
           </h3>
           <EnrollmentChart
@@ -135,7 +135,7 @@ function OverviewTab({ filters, canViewRevenue }: { filters: AnalyticsFilters; c
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
           <div>
             <div className="mb-3 flex items-center justify-between">
-              <h3 className="text-sm font-semibold uppercase tracking-wide text-slate-500">{t("Revenue by Branch")}</h3>
+              <h3 className="text-sm font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">{t("Revenue by Branch")}</h3>
               <ExportButton
                 filename={`revenue-by-branch-${new Date().toISOString().slice(0, 10)}.csv`}
                 rows={revenue?.revenueByBranch}
@@ -164,7 +164,7 @@ function OverviewTab({ filters, canViewRevenue }: { filters: AnalyticsFilters; c
 
           <div>
             <div className="mb-3 flex items-center justify-between">
-              <h3 className="text-sm font-semibold uppercase tracking-wide text-slate-500">{t("Overdue Payments")}</h3>
+              <h3 className="text-sm font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">{t("Overdue Payments")}</h3>
               <ExportButton
                 filename={`overdue-payments-${new Date().toISOString().slice(0, 10)}.csv`}
                 rows={overdueCharges?.slice(0, 10)}
@@ -197,7 +197,7 @@ function OverviewTab({ filters, canViewRevenue }: { filters: AnalyticsFilters; c
       )}
 
       <div className="mt-6">
-        <h3 className="mb-3 text-sm font-semibold uppercase tracking-wide text-slate-500">{t("Teacher Workload")}</h3>
+        <h3 className="mb-3 text-sm font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">{t("Teacher Workload")}</h3>
         <DataTable
           data={teachers?.teacherWorkload}
           isLoading={!teachers}
@@ -248,9 +248,9 @@ function RevenueTab({ filters }: { filters: AnalyticsFilters }) {
         <KpiCard label={t("Outstanding")} value={revenue ? formatCurrency(revenue.outstandingBalance, "UZS") : "-"} />
       </div>
 
-      <div className="mb-4 rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
-        <h3 className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-500">{t("Daily revenue — last 30 days")}</h3>
-        {isLoading && <p className="text-sm text-slate-500">{t("Loading...")}</p>}
+      <div className="mb-4 rounded-lg border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-700 dark:bg-slate-800">
+        <h3 className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">{t("Daily revenue — last 30 days")}</h3>
+        {isLoading && <p className="text-sm text-slate-500 dark:text-slate-400">{t("Loading...")}</p>}
         <RevenueChart
           data={(revenue?.dailyRevenue ?? []).map((d) => ({ name: d.date.slice(5), value: d.amount }))}
           valueFormatter={(v) => formatCurrency(v, "UZS")}
@@ -267,28 +267,28 @@ function RevenueTab({ filters }: { filters: AnalyticsFilters }) {
         <KpiCard
           label={t("Salary vs Revenue")}
           value={salaryVsRevenueRatio != null ? `${salaryVsRevenueRatio.toFixed(1)}%` : "-"}
-          colorClass={salaryVsRevenueRatio != null && salaryVsRevenueRatio > 50 ? "text-red-600" : "text-slate-900"}
+          colorClass={salaryVsRevenueRatio != null && salaryVsRevenueRatio > 50 ? "text-red-600" : "text-slate-900 dark:text-slate-100"}
         />
-        <div className="rounded-lg border border-slate-200 bg-white p-3 shadow-sm">
-          <span className="text-xs font-medium text-slate-500">{t("Teachers Paid / Total")}</span>
+        <div className="rounded-lg border border-slate-200 bg-white p-3 shadow-sm dark:border-slate-700 dark:bg-slate-800">
+          <span className="text-xs font-medium text-slate-500 dark:text-slate-400">{t("Teachers Paid / Total")}</span>
           <p className="mt-1.5 text-xl font-semibold text-slate-900 dark:text-slate-100">
             {teachersPaidCount} / {teachersTotalCount}
           </p>
-          <div className="mt-2 h-2 overflow-hidden rounded-full bg-slate-100">
+          <div className="mt-2 h-2 overflow-hidden rounded-full bg-slate-100 dark:bg-slate-700">
             <div className="h-full rounded-full bg-green-500 transition-all" style={{ width: `${teachersPaidPct}%` }} />
           </div>
         </div>
       </div>
 
-      <div className="mb-4 rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
-        <h3 className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-500">{t("Revenue vs Salary Expense — by month")}</h3>
+      <div className="mb-4 rounded-lg border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-700 dark:bg-slate-800">
+        <h3 className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">{t("Revenue vs Salary Expense — by month")}</h3>
         <RevenueVsSalaryChart data={revenueVsSalaryData} valueFormatter={(v) => formatCurrency(v, "UZS")} />
       </div>
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
         <div>
           <div className="mb-3 flex items-center justify-between">
-            <h3 className="text-sm font-semibold uppercase tracking-wide text-slate-500">{t("By Branch")}</h3>
+            <h3 className="text-sm font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">{t("By Branch")}</h3>
             <ExportButton
               filename={`revenue-by-branch-${new Date().toISOString().slice(0, 10)}.csv`}
               rows={revenue?.revenueByBranch}
@@ -310,7 +310,7 @@ function RevenueTab({ filters }: { filters: AnalyticsFilters }) {
           />
         </div>
         <div>
-          <h3 className="mb-3 text-sm font-semibold uppercase tracking-wide text-slate-500">{t("By Payment Method")}</h3>
+          <h3 className="mb-3 text-sm font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">{t("By Payment Method")}</h3>
           <DataTable
             data={revenue?.revenueByPaymentMethod}
             isLoading={isLoading}
@@ -340,11 +340,11 @@ function EnrollmentTab({ filters }: { filters: AnalyticsFilters }) {
         <KpiCard label={t("Conversion Rate")} value={enrollment ? `${enrollment.conversionRate.toFixed(1)}%` : "-"} />
       </div>
 
-      <div className="mb-4 rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
-        <h3 className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-500">
+      <div className="mb-4 rounded-lg border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-700 dark:bg-slate-800">
+        <h3 className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
           {t("Enrollment trend — new vs dropped (12mo)")}
         </h3>
-        {isLoading && <p className="text-sm text-slate-500">{t("Loading...")}</p>}
+        {isLoading && <p className="text-sm text-slate-500 dark:text-slate-400">{t("Loading...")}</p>}
         <EnrollmentChart
           data={(enrollment?.enrollmentTrend ?? []).map((t) => ({
             month: t.month.slice(2),
@@ -356,7 +356,7 @@ function EnrollmentTab({ filters }: { filters: AnalyticsFilters }) {
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
         <div>
-          <h3 className="mb-3 text-sm font-semibold uppercase tracking-wide text-slate-500">{t("Students by Branch")}</h3>
+          <h3 className="mb-3 text-sm font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">{t("Students by Branch")}</h3>
           <DataTable
             data={enrollment?.studentsByBranch}
             isLoading={isLoading}
@@ -369,7 +369,7 @@ function EnrollmentTab({ filters }: { filters: AnalyticsFilters }) {
           />
         </div>
         <div>
-          <h3 className="mb-3 text-sm font-semibold uppercase tracking-wide text-slate-500">{t("Students by Course")}</h3>
+          <h3 className="mb-3 text-sm font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">{t("Students by Course")}</h3>
           <DataTable
             data={enrollment?.studentsByCourse}
             isLoading={isLoading}
@@ -399,7 +399,7 @@ function TeachersTab({ filters }: { filters: AnalyticsFilters }) {
       </div>
 
       <div className="mb-3 flex items-center justify-between">
-        <h3 className="text-sm font-semibold uppercase tracking-wide text-slate-500">{t("Teacher Workload")}</h3>
+        <h3 className="text-sm font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">{t("Teacher Workload")}</h3>
         <ExportButton
           filename={`teacher-workload-${new Date().toISOString().slice(0, 10)}.csv`}
           rows={teachers?.teacherWorkload}
@@ -442,9 +442,9 @@ function AttendanceTab({ filters }: { filters: AnalyticsFilters }) {
         <KpiCard label={t("Late / Excused")} value={attendance ? `${attendance.lateCount} / ${attendance.excusedCount}` : "-"} />
       </div>
 
-      <div className="mb-4 rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
-        <h3 className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-500">{t("Daily attendance rate")}</h3>
-        {isLoading && <p className="text-sm text-slate-500">{t("Loading...")}</p>}
+      <div className="mb-4 rounded-lg border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-700 dark:bg-slate-800">
+        <h3 className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">{t("Daily attendance rate")}</h3>
+        {isLoading && <p className="text-sm text-slate-500 dark:text-slate-400">{t("Loading...")}</p>}
         <RateTrendChart
           data={(attendance?.dailyRate ?? []).map((d) => ({ name: d.date.slice(5), value: d.rate }))}
           valueFormatter={(v) => `${v.toFixed(1)}%`}
@@ -453,7 +453,7 @@ function AttendanceTab({ filters }: { filters: AnalyticsFilters }) {
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
         <div>
-          <h3 className="mb-3 text-sm font-semibold uppercase tracking-wide text-slate-500">{t("Rate by Group")}</h3>
+          <h3 className="mb-3 text-sm font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">{t("Rate by Group")}</h3>
           <DataTable
             data={attendance?.rateByGroup}
             isLoading={isLoading}
@@ -471,7 +471,7 @@ function AttendanceTab({ filters }: { filters: AnalyticsFilters }) {
         </div>
         <div>
           <div className="mb-3 flex items-center justify-between">
-            <h3 className="text-sm font-semibold uppercase tracking-wide text-slate-500">{t("Low Attendance Students")}</h3>
+            <h3 className="text-sm font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">{t("Low Attendance Students")}</h3>
             <ExportButton
               filename={`low-attendance-${new Date().toISOString().slice(0, 10)}.csv`}
               rows={attendance?.lowAttendanceStudents}
@@ -540,13 +540,15 @@ export function AnalyticsPage() {
         </div>
       </div>
 
-      <div className="mb-6 flex gap-1 border-b border-slate-200">
+      <div className="mb-6 flex gap-1 border-b border-slate-200 dark:border-slate-700">
         {visibleTabs.map(({ key, label }) => (
           <button
             key={key}
             onClick={() => setTab(key)}
             className={`border-b-2 px-4 py-2 text-sm font-medium ${
-              activeTab === key ? "border-indigo-600 text-indigo-700" : "border-transparent text-slate-500 hover:text-slate-700"
+              activeTab === key
+                ? "border-indigo-600 text-indigo-700 dark:text-indigo-400"
+                : "border-transparent text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200"
             }`}
           >
             {t(label)}
